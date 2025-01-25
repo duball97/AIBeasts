@@ -1,0 +1,34 @@
+/* src/components/Header.css */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 05px 20px;
+    background-color: transparent;
+    z-index: 10;
+    margin-bottom: 20px;
+  }
+  
+  .nav-menu ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-menu ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-menu ul li a:hover {
+    color: #00ff00;
+  }
+  
+  .logo-container .logo {
+    height: 80px;
+    width: auto;
+  }
+  
