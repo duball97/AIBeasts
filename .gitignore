@@ -27,3 +27,5 @@ dist-ssr
 
 .vercel
 flux_inference.py
+
+.vercel
