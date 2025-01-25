@@ -1,36 +1,39 @@
 // src/components/Header.jsx
+import React, { useState } from 'react';
+import './Header.css'; // Create this CSS file for styling
+import { Link } from 'react-router-dom';
 
-import React from "react";
-import { Link } from "react-router-dom";
-import "./Header.css";
-import logo from "../assets/logo.png"; // Ensure you have a logo image in this path
+const Header = () => {
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-function Header() {
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <header className="header">
-      <nav className="nav-menu">
+      <div className="logo">
+        <img src="/logo.png" alt="AI Beasts Logo" />
+      </div>
+      <nav className={`nav ${isMobileMenuOpen ? 'active' : ''}`}>
         <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/chat">Create</Link>
-          </li>
-          <li>
-            <Link to="/agents">Agents</Link>
-          </li>
-          <li>
-            <Link to="/leaderboard">Generate Tweets</Link>
-          </li>
-
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/dashboard">Dashboard</Link></li>
+          {/* Add more navigation links as needed */}
         </ul>
       </nav>
-      <div className="logo-container">
-        <img src={logo} alt="Logo" className="logo" />
+      <div className="start-button">
+        <Link to="/dashboard">
+          <button className="btn">Start</button>
+        </Link>
+      </div>
+      <div className="hamburger" onClick={toggleMobileMenu}>
+        <div className={`bar ${isMobileMenuOpen ? 'change' : ''}`}></div>
+        <div className={`bar ${isMobileMenuOpen ? 'change' : ''}`}></div>
+        <div className={`bar ${isMobileMenuOpen ? 'change' : ''}`}></div>
       </div>
     </header>
   );
-}
+};
 
 export default Header;
- 
