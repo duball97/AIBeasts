@@ -1,0 +1,28 @@
+/* src/components/BattleArena.css */
+
+.battle-arena-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    gap: 20px;
+    padding: 20px;
+    background-color: #121212;
+  }
+  
+  .terminal-column,
+  .visual-column {
+    flex: 1;
+  }
+  
+  @media (min-width: 768px) {
+    .battle-arena-container {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  
+    .terminal-column,
+    .visual-column {
+      flex: 1 1 48%;
+    }
+  }
+  

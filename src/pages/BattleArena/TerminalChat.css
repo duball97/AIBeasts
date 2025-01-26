@@ -1,0 +1,41 @@
+/* src/components/TerminalChat.css */
+
+.terminal-chat {
+    background-color: #1e1e1e;
+    color: #00ff00;
+    padding: 15px;
+    border-radius: 8px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .terminal-chat h2 {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .chat-window {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #000000;
+    padding: 10px;
+    border-radius: 6px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+  .chat-message.user p {
+    text-align: right;
+    color: #ffcc00;
+  }
+  
+  .chat-message.ai p {
+    text-align: left;
+    color: #33c1ff;
+  }
+  
+  .chat-message.system p {
+    text-align: center;
+    color: #aaaaaa;
+  }
+  

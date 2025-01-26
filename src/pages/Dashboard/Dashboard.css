@@ -1,0 +1,23 @@
+/* src/components/Dashboard/Dashboard.css */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+/* Responsive Layout */
+@media (min-width: 768px) {
+  .dashboard {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .dashboard > div {
+    flex: 1 1 45%;
+  }
+}

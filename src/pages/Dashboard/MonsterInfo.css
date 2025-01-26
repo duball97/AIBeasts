@@ -1,0 +1,26 @@
+/* src/components/Dashboard/MonsterInfo.css */
+
+.monster-info {
+    display: flex;
+    align-items: center;
+    background-color: #2e2e2e;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  .monster-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 20px;
+  }
+  
+  .info h2 {
+    margin-bottom: 10px;
+  }
+  
+  .info p {
+    margin: 5px 0;
+  }
+  

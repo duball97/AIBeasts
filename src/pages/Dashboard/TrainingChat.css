@@ -1,0 +1,67 @@
+/* src/components/Dashboard/TrainingChat.css */
+
+.training-chat {
+    background-color: #2e2e2e;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  .training-chat h2 {
+    margin-bottom: 10px;
+  }
+  
+  .chat-window {
+    background-color: #1e1e1e;
+    padding: 10px;
+    height: 200px;
+    overflow-y: scroll;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  
+  .message {
+    margin-bottom: 10px;
+  }
+  
+  .message.system {
+    text-align: center;
+    color: #aaaaaa;
+  }
+  
+  .message.user {
+    text-align: right;
+    color: #ffcc00;
+  }
+  
+  .message.ai {
+    text-align: left;
+    color: #33c1ff;
+  }
+  
+  .chat-input-container {
+    display: flex;
+  }
+  
+  .chat-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    margin-right: 10px;
+  }
+  
+  .send-button {
+    padding: 10px 20px;
+    background-color: #ffcc00;
+    color: #1e1e1e;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .send-button:hover {
+    background-color: #e6b800;
+  }
+  

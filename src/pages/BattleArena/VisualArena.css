@@ -1,0 +1,96 @@
+/* src/components/VisualArena.css */
+
+.visual-arena {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .monster {
+    position: absolute;
+    bottom: 20px;
+    width: 150px;
+    height: auto;
+    transition: transform 0.5s;
+  }
+  
+  .monster1 {
+    left: 20px;
+  }
+  
+  .monster2 {
+    right: 20px;
+  }
+  
+  .attack-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Example Attack Effects */
+  
+  .fire-breath {
+    width: 100px;
+    height: 100px;
+    background: url('/effects/fire.png') no-repeat center center;
+    background-size: contain;
+    animation: fireAnim 1s forwards;
+  }
+  
+  @keyframes fireAnim {
+    from {
+      opacity: 1;
+      transform: scale(0.5) translate(-50%, -50%);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2) translate(-50%, -50%);
+    }
+  }
+  
+  .invisibility-effect {
+    width: 200px;
+    height: 200px;
+    border: 2px dashed #ffffff;
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: invisibilityAnim 2s forwards;
+  }
+  
+  @keyframes invisibilityAnim {
+    from {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  
+  /* Additional Effects */
+  .magic-spell {
+    width: 100px;
+    height: 100px;
+    background: url('/effects/magic.png') no-repeat center center;
+    background-size: contain;
+    animation: magicAnim 1.5s forwards;
+  }
+  
+  @keyframes magicAnim {
+    from {
+      opacity: 1;
+      transform: scale(0.7) rotate(0deg);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.5) rotate(360deg);
+    }
+  }
+  

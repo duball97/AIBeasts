@@ -1,0 +1,37 @@
+/* src/components/Dashboard/NewsUpdates.css */
+
+.news-updates {
+    background-color: #2e2e2e;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  .news-updates h3 {
+    margin-bottom: 10px;
+  }
+  
+  .news-updates ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .news-updates li {
+    padding: 10px 0;
+    border-bottom: 1px solid #3e3e3e;
+  }
+  
+  .news-updates h4 {
+    margin: 0 0 5px 0;
+  }
+  
+  .news-updates p {
+    margin: 0;
+    color: #cccccc;
+  }
+  
+  .news-time {
+    font-size: 0.8em;
+    color: #aaaaaa;
+  }
+  
