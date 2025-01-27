@@ -10,28 +10,30 @@ const TrainingChat = () => {
     const fetchInitialMessage = async () => {
       try {
         const token = localStorage.getItem("aibeasts_token");
-
+    
         if (!token) {
           setMessages([
             { sender: "system", text: "You are not logged in. Please log in to continue." },
           ]);
           return;
         }
-
-        // Fetch initial interaction
+    
         const response = await fetch("/api/training", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ message: "" }), // Send null to indicate initial load
+          body: JSON.stringify({ message: "" }),
         });
-
+    
         const data = await response.json();
-
+    
         if (response.ok) {
-          setMessages([{ sender: "ai", text: data.response }]);
+          setMessages([
+            { sender: "ai", text: data.response },
+            { sender: "ai", text: "For example, you can say: 'Make my beast courageous' or 'Teach it FireBreath!'" },
+          ]);
         } else {
           setMessages([{ sender: "system", text: data.error || "Something went wrong." }]);
         }
@@ -40,6 +42,7 @@ const TrainingChat = () => {
         setMessages([{ sender: "system", text: "Something went wrong :(" }]);
       }
     };
+    
 
     fetchInitialMessage();
   }, []);

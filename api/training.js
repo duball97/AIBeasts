@@ -77,34 +77,66 @@ export default async function handler(req, res) {
       return res.status(200).json({
         response: character
           ? `Welcome back! Your beast is ${character.name}. What are we going to train today?`
-          : "Welcome to AIBeasts Game. I am your new beast. I can be whatever you want me to be. You will train me to win battles against other players around the world. The better you train me, the better I become. What do you want to call me?",
+          : "Welcome to AIBeasts Game. I am your new beast. What do you want to call me?",
       });
     }
 
-    const cleanedConversationLog = (character.conversation_log || [])
-      .filter((msg) => msg && typeof msg.text === "string" && msg.text.trim())
-      .map((msg) => ({
-        role: msg.sender === "user" ? "user" : "assistant",
-        content: msg.text.trim(),
-      }));
+    // Helper: Analyze the message for training categories
+    const analyzeMessage = (message) => {
+      if (/ability|can/i.test(message)) {
+        return { type: "ability", value: message.trim() };
+      } else if (/personality|trait|feeling|emotion/i.test(message)) {
+        return { type: "personality", value: message.trim() };
+      }
+      return { type: "general" };
+    };
+
+    const analysis = analyzeMessage(message);
+
+    // Update Supabase based on analysis
+    const updateFields = {};
+
+    if (analysis.type === "ability") {
+      updateFields.abilities = [...(character.abilities || []), analysis.value];
+    } else if (analysis.type === "personality") {
+      updateFields.personality = [...(character.personality || []), analysis.value];
+    }
+
+    const updatedConversationLog = [
+      ...(character.conversation_log || []),
+      { sender: "user", text: message.trim() },
+    ];
+
+    // Update conversation_log and relevant fields
+    const { error: updateError } = await supabase
+      .from("aibeasts_characters")
+      .update({
+        ...updateFields,
+        conversation_log: updatedConversationLog,
+      })
+      .eq("id", character.id);
+
+    if (updateError) {
+      throw new Error("Error updating character in Supabase.");
+    }
+
+    // Clean conversation log for OpenAI
+    const cleanedConversationLog = updatedConversationLog.map((msg) => ({
+      role: msg.sender === "user" ? "user" : "assistant",
+      content: msg.text.trim(),
+    }));
 
     const openaiMessages = [
-      {
-        role: "system",
-        content: "You are an assistant that helps train monsters in a chaotic battle game.",
-      },
+      { role: "system", content: "You are a beast in training guided by your master." },
       ...cleanedConversationLog,
-      {
-        role: "user",
-        content: message.trim(),
-      },
+      { role: "user", content: message.trim() },
     ];
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: openaiMessages,
       temperature: 0.7,
-      max_tokens: 150,
+      max_tokens: 90,
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0.6,
@@ -112,20 +144,17 @@ export default async function handler(req, res) {
 
     const aiResponse = completion.choices[0].message.content.trim();
 
-    const finalConversation = [
-      ...(character.conversation_log || []),
-      { sender: "user", text: message.trim() },
+    // Append AI response to conversation log
+    const finalConversationLog = [
+      ...updatedConversationLog,
       { sender: "assistant", text: aiResponse },
     ];
 
-    const { error: updateError } = await supabase
+    // Update conversation log with AI response
+    await supabase
       .from("aibeasts_characters")
-      .update({ conversation_log: finalConversation })
+      .update({ conversation_log: finalConversationLog })
       .eq("id", character.id);
-
-    if (updateError) {
-      throw updateError;
-    }
 
     res.status(200).json({ response: aiResponse });
   } catch (error) {
