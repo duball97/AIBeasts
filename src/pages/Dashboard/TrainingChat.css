@@ -1,67 +1,52 @@
-/* src/components/Dashboard/TrainingChat.css */
+/* TrainingChat.css */
 
 .training-chat {
-    background-color: #2e2e2e;
-    padding: 15px;
-    border-radius: 8px;
-  }
-  
-  .training-chat h2 {
-    margin-bottom: 10px;
-  }
-  
-  .chat-window {
-    background-color: #1e1e1e;
-    padding: 10px;
-    height: 200px;
-    overflow-y: scroll;
-    border-radius: 6px;
-    margin-bottom: 10px;
-  }
-  
-  .message {
-    margin-bottom: 10px;
-  }
-  
-  .message.system {
-    text-align: center;
-    color: #aaaaaa;
-  }
-  
-  .message.user {
-    text-align: right;
-    color: #ffcc00;
-  }
-  
-  .message.ai {
-    text-align: left;
-    color: #33c1ff;
-  }
-  
-  .chat-input-container {
-    display: flex;
-  }
-  
-  .chat-input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 6px;
-    margin-right: 10px;
-  }
-  
-  .send-button {
-    padding: 10px 20px;
-    background-color: #ffcc00;
-    color: #1e1e1e;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-  }
-  
-  .send-button:hover {
-    background-color: #e6b800;
-  }
-  
+  background-color: #333;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.training-chat-title {
+  color: #fff;
+}
+
+.training-chat-window {
+  background-color: #222;
+  min-height: 150px;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.training-chat-message {
+  margin: 5px 0;
+}
+
+.training-chat-message-user {
+  color: #ffd700; /* Gold for user messages */
+}
+
+.training-chat-message-ai {
+  color: #fff; /* White for AI messages */
+}
+
+.training-chat-input {
+  width: 80%;
+  padding: 8px;
+  margin-right: 5px;
+}
+
+.training-chat-send-button {
+  padding: 8px 15px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.training-chat-send-button:hover {
+  background-color: #777;
+}
