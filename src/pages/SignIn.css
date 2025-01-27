@@ -1,0 +1,85 @@
+
+  
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  .sign-in-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .sign-in-box {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    width: 300px;
+    text-align: center;
+  }
+  
+  .sign-in-box h1 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+  
+  .sign-in-box label {
+    display: block;
+    text-align: left;
+    margin-bottom: 15px;
+  }
+  
+  .sign-in-box label span {
+    color: #ffffff;
+    font-weight: 500;
+  }
+  
+  .sign-in-box input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: #1c1c1c;
+    color: #ffffff;
+  }
+  
+  .sign-in-box input:focus {
+    outline: none;
+    border-color: #42a5f5;
+    box-shadow: 0 0 5px #42a5f5;
+  }
+  
+  .submit-button {
+    background: linear-gradient(45deg, #ec407a, #42a5f5);
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background: linear-gradient(45deg, #673ab7, #42a5f5);
+    transform: translateY(-3px);
+  }
+  
+  .error-message {
+    color: #ff6b6b;
+    margin-top: 15px;
+    font-size: 0.9rem;
+  }
+  

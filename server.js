@@ -4,7 +4,8 @@ import cors from "cors";
 
 dotenv.config();
 
-import trainingRouter from "./api/training.js"; // Your training route
+import trainingRouter from "./api/training.js"; // Training API route
+import authRouter from "./api/auth.js"; // Authentication API route
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +16,7 @@ app.use(express.json()); // Parse incoming JSON request bodies
 
 // Routes
 app.use("/api/training", trainingRouter); // Mount the training API
+app.use("/api/auth", authRouter); // Mount the auth API
 
 // Root Route for Testing
 app.get("/", (req, res) => {

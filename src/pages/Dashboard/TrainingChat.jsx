@@ -1,11 +1,48 @@
-import React, { useState } from "react";
-import "./TrainingChat.css"; // Import the CSS file for styles
+import React, { useState, useEffect } from "react";
+import "./TrainingChat.css";
 
 const TrainingChat = () => {
-  const [messages, setMessages] = useState([
-    { sender: "system", text: "Start training your monster! Type a command or question below." },
-  ]);
+  const [messages, setMessages] = useState([]); // Start empty
   const [input, setInput] = useState("");
+
+  // Fetch the initial message when the component mounts
+  useEffect(() => {
+    const fetchInitialMessage = async () => {
+      try {
+        const token = localStorage.getItem("aibeasts_token");
+
+        if (!token) {
+          setMessages([
+            { sender: "system", text: "You are not logged in. Please log in to continue." },
+          ]);
+          return;
+        }
+
+        // Fetch initial interaction
+        const response = await fetch("/api/training", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ message: "" }), // Send null to indicate initial load
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setMessages([{ sender: "ai", text: data.response }]);
+        } else {
+          setMessages([{ sender: "system", text: data.error || "Something went wrong." }]);
+        }
+      } catch (err) {
+        console.error("Error fetching initial message:", err);
+        setMessages([{ sender: "system", text: "Something went wrong :(" }]);
+      }
+    };
+
+    fetchInitialMessage();
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -14,11 +51,24 @@ const TrainingChat = () => {
     setMessages((prev) => [...prev, { sender: "user", text: input }]);
 
     try {
-      // Make POST request to the API
+      const token = localStorage.getItem("aibeasts_token");
+
+      if (!token) {
+        setMessages((prev) => [
+          ...prev,
+          { sender: "system", text: "You are not logged in. Please log in to continue." },
+        ]);
+        return;
+      }
+
+      // Send the user message to the API
       const response = await fetch("/api/training", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: "123", character_name: "MonsterX", message: input }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message: input }),
       });
 
       const data = await response.json();
