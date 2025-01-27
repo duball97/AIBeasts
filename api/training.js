@@ -1,50 +1,213 @@
-// /api/training.js (Vercel or Next.js style serverless function)
+import dotenv from "dotenv";
+dotenv.config();
 
-// If using Next.js or Vercel serverless, we do something like:
-import Replicate from "replicate";
+import express from "express";
+import openai from "../openaiClient.js"; // Import OpenAI client from openaiClient.js
+import { supabase } from "../supabaseClient.js"; // Import your Supabase client
 
-// Using top-level await not always allowed, so we wrap in function
-export default async function handler(req, res) {
-  // Ensure only POST is used
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+const router = express.Router();
+
+/**
+ * Helper Function: Retrieve or Create AI Beast (Character)
+ */
+const getOrCreateCharacter = async (user_id, character_name) => {
+  const { data, error } = await supabase
+    .from("aibeasts_characters")
+    .select("*")
+    .eq("user_id", user_id)
+    .eq("name", character_name)
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    // 116: No rows found
+    throw error;
   }
 
-  // You might parse the body differently if using raw Express
-  const { prompt } = req.body;
+  if (data) {
+    return data;
+  } else {
+    // Create a new character if not found
+    const { data: newData, error: newError } = await supabase
+      .from("aibeasts_characters")
+      .insert([
+        {
+          user_id,
+          name: character_name,
+          image_url: "", // Placeholder for now
+          abilities: [],
+          conversation_log: [],
+          personality: "",
+          wins: 0,
+          games_played: 0,
+          experience: 0,
+        },
+      ])
+      .single();
 
-  if (!prompt) {
-    return res.status(400).json({ error: 'No prompt provided' });
+    if (newError) {
+      throw newError;
+    }
+
+    return newData;
+  }
+};
+
+/**
+ * Helper Function: Award Achievement
+ */
+const awardAchievement = async (user_id, character_id, achievement) => {
+  const { data, error } = await supabase
+    .from("aibeasts_achievements")
+    .insert([
+      {
+        name: achievement.name,
+        description: achievement.description,
+        criteria: achievement.criteria,
+        awarded_to: user_id,
+        character_id,
+      },
+    ]);
+
+  if (error) {
+    console.error("Error awarding achievement:", error.message);
   }
 
-  // Initialize Replicate
-  const replicate = new Replicate({
-    auth: process.env.REPLICATE_API_TOKEN
-  });
+  return data;
+};
+
+/**
+ * POST /api/training
+ * Body: { user_id: string, character_name: string, message: string }
+ */
+router.post("/", async (req, res) => {
+  const { user_id, character_name, message } = req.body;
+
+  if (!user_id || !character_name || !message) {
+    return res.status(400).json({ error: "user_id, character_name, and message are required" });
+  }
 
   try {
-    // Prepare input for meta/meta-llama-3-8b
-    const input = {
-      top_p: 0.9,
-      prompt: prompt,          // user prompt
-      min_tokens: 0,
-      temperature: 0.6,
-      presence_penalty: 1.15,
-    };
+    // Retrieve or create the character
+    const character = await getOrCreateCharacter(user_id, character_name);
 
-    // Actually call the model
-    // replicate.run or replicate.stream are available.
-    // We'll use .run to get full text at once:
-    const output = await replicate.run(
-      "meta/meta-llama-3-8b", 
-      { input }
-    );
+    // Append user message to conversation_log
+    const updatedConversation = [...character.conversation_log, { sender: "user", text: message }];
 
-    // output will be the model's text completion.
-    // Usually it's a string (the entire completion)
-    return res.status(200).json({ completion: output });
+    // Prepare conversation for OpenAI
+    const openaiMessages = [
+      {
+        role: "system",
+        content: "You are an assistant that helps train monsters in a chaotic battle game. Maintain a friendly and informative tone.",
+      },
+      ...updatedConversation.map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text,
+      })),
+    ];
+
+    // Call OpenAI
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo", // or 'gpt-4' if available
+      messages: openaiMessages,
+      temperature: 0.7,
+      max_tokens: 150,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0.6,
+    });
+
+    const aiResponse = completion.choices[0].message.content.trim();
+
+    // Append AI response to conversation_log
+    const finalConversation = [...updatedConversation, { sender: "assistant", text: aiResponse }];
+
+    // Update conversation_log in Supabase
+    const { error: updateError } = await supabase
+      .from("aibeasts_characters")
+      .update({ conversation_log: finalConversation })
+      .eq("id", character.id);
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    // Optional: Parse AI response for updates (abilities, personality, etc.)
+    const abilityRegex = /has learned '(.+?)'/;
+    const abilityMatch = aiResponse.match(abilityRegex);
+
+    let updatedAbilities = character.abilities;
+
+    if (abilityMatch && abilityMatch[1]) {
+      const newAbility = abilityMatch[1];
+      if (!updatedAbilities.includes(newAbility)) {
+        updatedAbilities = [...updatedAbilities, newAbility];
+      }
+    }
+
+    const personalityRegex = /personality has become '(.+?)'/;
+    const personalityMatch = aiResponse.match(personalityRegex);
+
+    let updatedPersonality = character.personality;
+
+    if (personalityMatch && personalityMatch[1]) {
+      updatedPersonality = personalityMatch[1];
+    }
+
+    // Update abilities and personality
+    if (updatedAbilities !== character.abilities || updatedPersonality !== character.personality) {
+      const { error: attrUpdateError } = await supabase
+        .from("aibeasts_characters")
+        .update({
+          abilities: updatedAbilities,
+          personality: updatedPersonality,
+        })
+        .eq("id", character.id);
+
+      if (attrUpdateError) {
+        throw attrUpdateError;
+      }
+    }
+
+    // Increment stats
+    const incrementExperience = 10;
+    const newGamesPlayed = character.games_played + 1;
+    const newExperience = character.experience + incrementExperience;
+
+    const { error: statsUpdateError } = await supabase
+      .from("aibeasts_characters")
+      .update({
+        games_played: newGamesPlayed,
+        experience: newExperience,
+      })
+      .eq("id", character.id);
+
+    if (statsUpdateError) {
+      throw statsUpdateError;
+    }
+
+    // Check achievements
+    if (newGamesPlayed === 10) {
+      await awardAchievement(user_id, character.id, {
+        name: "Battle Novice",
+        description: "Participated in 10 battles.",
+        criteria: { type: "games_played", value: 10 },
+      });
+    }
+
+    if (newExperience >= 100) {
+      await awardAchievement(user_id, character.id, {
+        name: "Experienced Fighter",
+        description: "Accumulated 100 experience points.",
+        criteria: { type: "experience", value: 100 },
+      });
+    }
+
+    // Respond to frontend
+    res.status(200).json({ response: aiResponse });
   } catch (error) {
-    console.error('Error calling Llama 3 API:', error);
-    return res.status(500).json({ error: 'Something went wrong', details: String(error) });
+    console.error("Error in /api/training:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-}
+});
+
+export default router;
