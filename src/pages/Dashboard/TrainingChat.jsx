@@ -32,7 +32,7 @@ const TrainingChat = () => {
         if (response.ok) {
           setMessages([
             { sender: "ai", text: data.response },
-            { sender: "ai", text: "For example, you can say: 'Make my beast courageous' or 'Teach it FireBreath!'" },
+          
           ]);
         } else {
           setMessages([{ sender: "system", text: data.error || "Something went wrong." }]);

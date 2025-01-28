@@ -1,55 +1,117 @@
-import dotenv from "dotenv";
-dotenv.config();
+  import dotenv from "dotenv";
+  dotenv.config();
 
-import jwt from "jsonwebtoken"; // For JWT validation
-import openai from "../openaiClient.js"; // Import OpenAI client
-import { supabase } from "../supabaseClient.js"; // Import Supabase client
+  import jwt from "jsonwebtoken"; // For JWT validation
+  import openai from "../openaiClient.js"; // Import OpenAI client
+  import { supabase } from "../supabaseClient.js"; // Import Supabase client
+  import extractTraitOrAbility from "./extractTraitOrAbility.js"; // [NEW CODE] Our custom parser function
 
-// Helper Function: Retrieve or Create AI Beast (Character)
-const getOrCreateCharacter = async (user_id, character_name = null) => {
-  const { data, error } = await supabase
-    .from("aibeasts_characters")
-    .select("*")
-    .eq("user_id", user_id)
-    .single();
-
-  if (error && error.code !== "PGRST116") {
-    throw error;
-  }
-
-  if (data) {
-    return data; // Return existing character
-  } else if (character_name) {
-    // Create a new character if a name is provided
-    const { data: newCharacter, error: insertError } = await supabase
+  // Helper Function: Retrieve or Create AI Beast (Character)
+  const getOrCreateCharacter = async (user_id, character_name = null) => {
+    const { data, error } = await supabase
       .from("aibeasts_characters")
-      .insert([
-        {
-          user_id,
-          name: character_name,
-          image_url: "", // Defaults can be adjusted
-          abilities: [],
-          conversation_log: [
-            { sender: "system", text: `Your beast, ${character_name}, has been created!` },
-          ],
-          personality: [], // Initialize as an empty array
-          wins: 0,
-          games_played: 0,
-          experience: 0,
-        },
-      ])
-      .select()
+      .select("*")
+      .eq("user_id", user_id)
       .single();
 
-    if (insertError) {
-      throw insertError;
+    if (error && error.code !== "PGRST116") {
+      throw error;
     }
 
-    return newCharacter;
-  }
+    if (data) {
+      return data; // Return existing character
+    } else if (character_name) {
+      // Create a new character if a name is provided
+      const { data: newCharacter, error: insertError } = await supabase
+        .from("aibeasts_characters")
+        .insert([
+          {
+            user_id,
+            name: character_name,
+            image_url: "",
+            abilities: [],
+            personality: [],
+            physic:[],
+            wins: 0,
+            games_played: 0,
+            experience: 0,
+          },
+        ])
+        .select()
+        .single();
 
-  // If no character exists and no name is provided
-  return null;
+      if (insertError) {
+        throw insertError;
+      }
+
+      return newCharacter;
+    }
+
+    // If no character exists and no name is provided
+    return null;
+  };
+
+  const generateFollowUpQuestion = async (traitType, trait, basisPrompt) => {
+    const systemPrompt = {
+      role: "system",
+      content: `
+        ${basisPrompt}
+        Based on the trait type and trait provided, generate a relevant follow-up question if necessary.
+  
+        Examples:
+        - Trait Type: "physic", Trait: "big wings"
+          Question: "What color should the big wings be?"
+        - Trait Type: "abilities", Trait: "fire breath"
+          Question: "How does the fire breath work in combat?"
+        - Trait Type: "personality", Trait: "brave"
+          Question: "Can you describe a situation where being brave would be helpful?"
+  
+        If no follow-up question is needed, respond with: "No follow-up needed."
+  
+        Respond in this JSON format:
+        {
+          "question": "<follow-up question or 'No follow-up needed'>"
+        }
+      `,
+    };
+  
+    const userPrompt = {
+      role: "user",
+      content: `Trait Type: "${traitType}", Trait: "${trait}"`,
+    };
+  
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [systemPrompt, userPrompt],
+        temperature: 0.5,
+        max_tokens: 60,
+      });
+  
+      const response = completion.choices[0].message.content.trim();
+      const parsed = JSON.parse(response);
+  
+      return parsed.question !== "No follow-up needed" ? parsed.question : null;
+    } catch (error) {
+      console.error("Error generating follow-up question:", error.message);
+      return null; // Default to no follow-up if there's an error
+    }
+  };
+  
+  
+  
+
+// Function to generate the basis prompt for AI context
+const generateBasisPrompt = (character) => {
+  const { name, abilities, personality, physic } = character;
+
+  return `
+    You are named ${name}, a unique AI beast.
+    Your physical appearance includes: ${physic.length > 0 ? physic.join(", ") : "unspecified"}.
+    Your abilities include: ${abilities.length > 0 ? abilities.join(", ") : "none yet"}.
+    Your personality traits are: ${personality.length > 0 ? personality.join(", ") : "still developing"}.
+    Always respond as if you are this character, and help guide the user in training and improving you.
+  `;
 };
 
 // Serverless Handler for /api/training
@@ -72,8 +134,13 @@ export default async function handler(req, res) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user_id = decoded.id;
 
-    let character = await getOrCreateCharacter(user_id);
+    // Retrieve or create character
+    const character = await getOrCreateCharacter(user_id);
 
+    // Generate the basis prompt
+    const basisPrompt = generateBasisPrompt(character);
+
+    // Greet if no message
     if (!message) {
       return res.status(200).json({
         response: character
@@ -82,88 +149,60 @@ export default async function handler(req, res) {
       });
     }
 
-    // Helper: Analyze the message for training categories
-    const analyzeMessage = (message) => {
-      if (/ability|can/i.test(message)) {
-        return { type: "ability", value: message.trim() };
-      } else if (/personality|trait|feeling|emotion/i.test(message)) {
-        return { type: "personality", value: message.trim() };
-      } else if (/physic|looks|appearance|body/i.test(message)) {
-        return { type: "physic", value: message.trim() };
-      }
-      return { type: "general" };
-    };
+    // Extract trait, type, and intent
+    const traitData = await extractTraitOrAbility(message);
 
-    const analysis = analyzeMessage(message);
-
-    // Update Supabase based on analysis
-    const updateFields = {};
-
-    if (analysis.type === "ability") {
-      updateFields.abilities = [...(character.abilities || []), analysis.value];
-    } else if (analysis.type === "personality") {
-      updateFields.personality = [...(character.personality || []), analysis.value];
-    } else if (analysis.type === "physic") {
-      updateFields.physic = [...(character.physic || []), analysis.value];
+    if (!traitData) {
+      return res.status(400).json({ error: "Unable to interpret the message." });
     }
 
-    const updatedConversationLog = [
-      ...(character.conversation_log || []),
-      { sender: "user", text: message.trim() },
-    ];
+    const { traitType, trait, stopIntent } = traitData;
 
-    // Update conversation_log and relevant fields
+    // Handle stop intent
+    if (stopIntent) {
+      return res.status(200).json({
+        response: "Alright, let me know if you want to train your beast further!",
+      });
+    }
+
+    // Update character with the new trait
+    const updatedTraits = {
+      [traitType]: [...(character[traitType] || []), trait],
+    };
+
+    // Update character in Supabase
     const { error: updateError } = await supabase
       .from("aibeasts_characters")
-      .update({
-        ...updateFields,
-        conversation_log: updatedConversationLog,
-      })
+      .update(updatedTraits)
       .eq("id", character.id);
 
     if (updateError) {
-      throw new Error("Error updating character in Supabase.");
+      throw new Error("Error updating character in Supabase: " + updateError.message);
     }
 
-    // Clean conversation log for OpenAI
-    const cleanedConversationLog = updatedConversationLog.map((msg) => ({
-      role: msg.sender === "user" ? "user" : "assistant",
-      content: msg.text.trim(),
-    }));
+    // Generate a follow-up question dynamically using the basis prompt
+    const followUpQuestion = await generateFollowUpQuestion(traitType, trait, basisPrompt);
 
-    const openaiMessages = [
-      { role: "system", content: "You are a beast in training guided by your master." },
-      ...cleanedConversationLog,
-      { role: "user", content: message.trim() },
-    ];
-
-    const completion = await openai.chat.completions.create({
+    // Pass the basis prompt and user message to OpenAI for a response
+    const openaiResponse = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: openaiMessages,
+      messages: [
+        { role: "system", content: basisPrompt },
+        { role: "user", content: message },
+      ],
       temperature: 0.7,
-      max_tokens: 90,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0.6,
+      max_tokens: 150,
     });
 
-    const aiResponse = completion.choices[0].message.content.trim();
+    const assistantReply = openaiResponse.choices[0].message.content.trim();
 
-    // Append AI response to conversation log
-    const finalConversationLog = [
-      ...updatedConversationLog,
-      { sender: "assistant", text: aiResponse },
-    ];
-
-    // Update conversation log with AI response
-    await supabase
-      .from("aibeasts_characters")
-      .update({ conversation_log: finalConversationLog })
-      .eq("id", character.id);
-
-    res.status(200).json({ response: aiResponse });
+    // Send success response
+    return res.status(200).json({
+      response: assistantReply + (followUpQuestion ? ` ${followUpQuestion}` : ""),
+    });
   } catch (error) {
-    console.error("Error in /api/training:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error in /api/training:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
