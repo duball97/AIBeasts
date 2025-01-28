@@ -53,6 +53,7 @@ const getOrCreateCharacter = async (user_id, character_name = null) => {
 };
 
 // Serverless Handler for /api/training
+// Serverless Handler for /api/training
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -77,7 +78,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         response: character
           ? `Welcome back! Your beast is ${character.name}. What are we going to train today?`
-          : "Welcome to AIBeasts Game. I am your new beast. What do you want to call me?",
+          : "Welcome to AIBeasts Game. What do you want to call your new beast?",
       });
     }
 
@@ -87,6 +88,8 @@ export default async function handler(req, res) {
         return { type: "ability", value: message.trim() };
       } else if (/personality|trait|feeling|emotion/i.test(message)) {
         return { type: "personality", value: message.trim() };
+      } else if (/physic|looks|appearance|body/i.test(message)) {
+        return { type: "physic", value: message.trim() };
       }
       return { type: "general" };
     };
@@ -100,6 +103,8 @@ export default async function handler(req, res) {
       updateFields.abilities = [...(character.abilities || []), analysis.value];
     } else if (analysis.type === "personality") {
       updateFields.personality = [...(character.personality || []), analysis.value];
+    } else if (analysis.type === "physic") {
+      updateFields.physic = [...(character.physic || []), analysis.value];
     }
 
     const updatedConversationLog = [
