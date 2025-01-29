@@ -19,6 +19,8 @@ const Header = () => {
         <ul>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/dashboard">Dashboard</Link></li>
+          <li><Link to="/arena">Train</Link></li>
+          <li><Link to="/flux">Looks</Link></li>
           <li><Link to="/arena">Arena</Link></li>
           {/* Add more navigation links as needed */}
         </ul>

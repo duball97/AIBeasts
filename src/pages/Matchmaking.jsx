@@ -1,25 +1,18 @@
-// src/pages/Matchmaking.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./Matchmaking.css"; // Optional CSS for the matchmaking page
+import "./Matchmaking.css"; // Make sure to update the CSS file accordingly
 
 const Matchmaking = () => {
   const navigate = useNavigate();
 
   return (
     <div className="matchmaking-page">
-      <h2>Choose Your Battle Mode</h2>
+      <h2 className="matchmaking-title">Choose Your Battle Mode</h2>
       <div className="matchmaking-options">
-        <button
-          className="matchmaking-button"
-          onClick={() => navigate("/online-match")}
-        >
+        <button className="matchmaking-button" onClick={() => navigate("/online-match")}>
           Play Online
         </button>
-        <button
-          className="matchmaking-button"
-          onClick={() => navigate("/ai-battle")}
-        >
+        <button className="matchmaking-button" onClick={() => navigate("/arena")}>
           Play Against AI
         </button>
       </div>
