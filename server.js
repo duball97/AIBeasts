@@ -7,6 +7,10 @@ dotenv.config();
 
 import trainingRouter from "./api/training.js"; // Training API route
 import authRouter from "./api/auth.js"; // Authentication API route
+import battleRouter from "./api/battle.js"; // Authentication API route
+import extractTraitOrAbilityRouter from "./api/extractTraitOrAbility.js"; // Authentication API route
+
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +22,9 @@ app.use(express.json()); // Parse incoming JSON request bodies
 // Routes
 app.use("/api/training", trainingRouter); // Mount the training API
 app.use("/api/auth", authRouter); // Mount the auth API
+app.use("/api/battle", battleRouter); // Mount the auth API
+app.use("/api/extractTraitOrAbility", extractTraitOrAbilityRouter); // Mount the auth API
+
 
 // Root Route for Testing
 app.get("/", (req, res) => {

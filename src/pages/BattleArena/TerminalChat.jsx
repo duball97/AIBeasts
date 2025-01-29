@@ -1,75 +1,62 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./TerminalChat.css"; // Ensure you have this file for styling
+import "./TerminalChat.css"; // Ensure this file exists
 
 const TerminalChat = ({ userBeast, aiBeast }) => {
   const chatEndRef = useRef(null);
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Scroll to the bottom when new messages are added
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   useEffect(() => {
-    // Start battle only if both beasts are loaded
     if (userBeast && aiBeast) {
-      setMessages([
-        { sender: "system", text: "⚔️ Battle Start! ⚔️" },
-        { sender: "system", text: `${userBeast.name} vs ${aiBeast.name}` },
-      ]);
       startBattle(userBeast, aiBeast);
     }
   }, [userBeast, aiBeast]);
 
-  const startBattle = (userBeast, aiBeast) => {
-    let userHP = 100;
-    let aiHP = 100;
-    let turn = 0;
-
-    const battleInterval = setInterval(() => {
-      if (userHP <= 0 || aiHP <= 0) {
-        clearInterval(battleInterval);
-        setMessages((prev) => [
-          ...prev,
-          { sender: "system", text: userHP > 0 ? `${userBeast.name} wins! 🎉` : `${aiBeast.name} wins! 🏆` },
-        ]);
-        return;
-      }
-
-      const attacker = turn % 2 === 0 ? userBeast : aiBeast;
-      const defender = turn % 2 === 0 ? aiBeast : userBeast;
-      const attackMove = attacker.abilities?.attack || "Basic Attack";
-      const damage = Math.floor(Math.random() * 15) + 5; // Random damage 5-15
-
-      if (turn % 2 === 0) {
-        aiHP -= damage;
-      } else {
-        userHP -= damage;
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        { sender: attacker.name, text: `${attacker.name} uses ${attackMove}! 🌀` },
-        { sender: "system", text: `${defender.name} takes ${damage} damage. HP: ${Math.max(0, turn % 2 === 0 ? aiHP : userHP)}` },
+  const startBattle = async (userBeast, aiBeast) => {
+    try {
+      setMessages([
+        { sender: "system", text: "⚔️ Battle Start! ⚔️" },
+        { sender: "system", text: `${userBeast.name} vs ${aiBeast.name}` },
+        { sender: "system", text: "Generating battle dialogue... 🤖" },
       ]);
 
-      turn++;
-    }, 2000);
+      const response = await fetch("/api/battle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userBeast, aiBeast }),
+      });
+
+      const data = await response.json();
+      if (!data.transcript) throw new Error("No battle response received.");
+
+      const battleLines = data.transcript.split("\n").filter(line => line.trim() !== "");
+
+      // Simulate AI turns in chat (adds messages gradually)
+      let turn = 0;
+      const interval = setInterval(() => {
+        if (turn >= battleLines.length) {
+          clearInterval(interval);
+          return;
+        }
+
+        setMessages(prev => [...prev, { sender: turn % 2 === 0 ? userBeast.name : aiBeast.name, text: battleLines[turn] }]);
+        turn++;
+      }, 3000); // Messages appear every 3 seconds
+    } catch (err) {
+      console.error("Error starting battle:", err.message);
+      setError("Failed to generate battle.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Placeholder message when data is loading
-  if (!userBeast || !aiBeast) {
-    return (
-      <div className="terminal-chat">
-        <h2>Battle Log</h2>
-        <div className="chat-window">
-          <div className="chat-message system">
-            <p>Loading beasts... 🕒</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="terminal-chat">Loading battle... 🕒</div>;
+  if (error) return <div className="terminal-chat error">{error}</div>;
 
   return (
     <div className="terminal-chat">
