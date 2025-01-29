@@ -115,7 +115,6 @@ const generateBasisPrompt = (character) => {
 };
 
 // Serverless Handler for /api/training
-// Serverless Handler for /api/training
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -150,11 +149,7 @@ export default async function handler(req, res) {
     }
 
     // Extract trait, type, and intent
-    const traitData = await extractTraitOrAbility(message);
-
-    if (!traitData) {
-      return res.status(400).json({ error: "Unable to interpret the message." });
-    }
+    const traitData = await extractTraitOrAbility(message, basisPrompt);
 
     const { traitType, trait, stopIntent } = traitData;
 
@@ -165,12 +160,28 @@ export default async function handler(req, res) {
       });
     }
 
-    // Update character with the new trait
+    // Handle general conversation
+    if (traitType === "conversation") {
+      const openaiResponse = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: basisPrompt },
+          { role: "user", content: message },
+        ],
+        temperature: 0.7,
+        max_tokens: 150,
+      });
+
+      const assistantReply = openaiResponse.choices[0].message.content.trim();
+
+      return res.status(200).json({ response: assistantReply });
+    }
+
+    // Handle trait updates
     const updatedTraits = {
       [traitType]: [...(character[traitType] || []), trait],
     };
 
-    // Update character in Supabase
     const { error: updateError } = await supabase
       .from("aibeasts_characters")
       .update(updatedTraits)
@@ -183,26 +194,14 @@ export default async function handler(req, res) {
     // Generate a follow-up question dynamically using the basis prompt
     const followUpQuestion = await generateFollowUpQuestion(traitType, trait, basisPrompt);
 
-    // Pass the basis prompt and user message to OpenAI for a response
-    const openaiResponse = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: basisPrompt },
-        { role: "user", content: message },
-      ],
-      temperature: 0.7,
-      max_tokens: 150,
-    });
-
-    const assistantReply = openaiResponse.choices[0].message.content.trim();
-
     // Send success response
     return res.status(200).json({
-      response: assistantReply + (followUpQuestion ? ` ${followUpQuestion}` : ""),
+      response: `Added "${trait}" as a new ${traitType}. ${followUpQuestion || ""}`,
     });
   } catch (error) {
     console.error("Error in /api/training:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 

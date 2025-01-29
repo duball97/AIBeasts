@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
+
 dotenv.config();
 
 import trainingRouter from "./api/training.js"; // Training API route
