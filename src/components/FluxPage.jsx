@@ -23,8 +23,9 @@ const FluxPage = () => {
         const reader = new FileReader();
         reader.onload = async () => {
           base64Image = reader.result;
+         
 
-          const response = await axios.post("http://localhost:3003/api/flux-generate", {
+          const response = await axios.post("/api/flux-generate", {
             prompt,
             imageUrl: base64Image,
           });
@@ -34,7 +35,7 @@ const FluxPage = () => {
         };
         reader.readAsDataURL(image);
       } else {
-        const response = await axios.post("http://localhost:3003/api/flux-generate", { prompt });
+        const response = await axios.post("/api/flux-generate", { prompt });
         setImageUrl(response.data.imageUrl);
         setLoading(false);
       }
