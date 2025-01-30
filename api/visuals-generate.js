@@ -8,7 +8,10 @@ const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
 
-// 2) Serverless route handler
+// 2) Define the base prompt for consistent style
+const BASE_PROMPT = "Create a vibrant and detailed 2D cartoon illustration in the style of Studio Ghibli."; // Customize as needed
+
+// 3) Serverless route handler
 export default async function handler(req, res) {
   // Allow only POST
   if (req.method !== "POST") {
@@ -26,7 +29,7 @@ export default async function handler(req, res) {
     console.log("[INFO] Received prompt:", prompt || "Using previous image for variation");
     console.log("[INFO] Aspect Ratio:", aspectRatio);
 
-    // 3) Prepare input for Flux Schnell
+    // 4) Prepare input for Flux Schnell
     const input = {
       aspect_ratio: aspectRatio,          // Pass aspect ratio
       disable_safety_checker: true,       // Disable safety checker if supported
@@ -40,25 +43,25 @@ export default async function handler(req, res) {
 
     if (imageUrl) {
       input.image = imageUrl;
-      input.prompt = "Generate a variation of this image"; // Default prompt for variation
+      input.prompt = `${BASE_PROMPT} Generate a variation of this image.`; // Enhanced variation prompt
     } else {
-      input.prompt = prompt;
+      input.prompt = `${BASE_PROMPT} ${prompt}`; // Combine base prompt with user prompt
     }
 
-    // 4) Call Flux Schnell with aspect ratio and variations
+    // 5) Call Flux Schnell with aspect ratio and variations
     console.log("[INFO] Generating image using flux-schnell...");
     const output = await replicate.run("black-forest-labs/flux-schnell", { input });
 
-    // 5) Validate that we got a ReadableStream or a direct URL
+    // 6) Validate that we got a ReadableStream or a direct URL
     if (!output || !Array.isArray(output) || output.length === 0) {
       console.error("[ERROR] Invalid output from flux-schnell");
       return res.status(500).json({ error: "Invalid output from flux-schnell" });
     }
 
-    // 6) Check if output[0] is a ReadableStream or a URL
+    // 7) Check if output[0] is a ReadableStream or a URL
     let imageUrlResponse = "";
     if (output[0] instanceof ReadableStream) {
-      // 6a) Read the ReadableStream and convert to base64
+      // 7a) Read the ReadableStream and convert to base64
       console.log("[INFO] Processing ReadableStream...");
       const readableStream = output[0];
       const reader = readableStream.getReader();
@@ -73,19 +76,19 @@ export default async function handler(req, res) {
         done = isDone;
       }
 
-      // 7a) Convert chunks to a base64 image
+      // 8a) Convert chunks to a base64 image
       console.log("[INFO] Combining chunks...");
       const imageBuffer = Buffer.concat(chunks);
       imageUrlResponse = `data:image/png;base64,${imageBuffer.toString("base64")}`;
     } else if (typeof output[0] === "string") {
-      // 6b) If output[0] is a URL string
+      // 7b) If output[0] is a URL string
       imageUrlResponse = output[0];
     } else {
       console.error("[ERROR] Unexpected output format from flux-schnell");
       return res.status(500).json({ error: "Unexpected output format from flux-schnell" });
     }
 
-    // 8) Return the image URL (base64 or direct URL)
+    // 9) Return the image URL (base64 or direct URL)
     console.log("[INFO] Flux image generation successful.");
     return res.status(200).json({
       imageUrl: imageUrlResponse, // Use data URL or direct URL

@@ -10,6 +10,7 @@ import authRouter from "./api/auth.js"; // Authentication API route
 import battleRouter from "./api/battle.js"; // Authentication API route
 import extractTraitOrAbilityRouter from "./api/extractTraitOrAbility.js"; // Authentication API route
 import fluxGenerateRouter from "./api/flux-generate.js";
+import visualGenerateRouter from "./api/visuals-generate.js";
 
 
 const app = express();
@@ -20,11 +21,12 @@ app.use(cors()); // Allow requests from any origin
 app.use(express.json()); // Parse incoming JSON request bodies
 
 // Routes
-app.use("/api/training", trainingRouter); // Mount the training API
-app.use("/api/auth", authRouter); // Mount the auth API
-app.use("/api/battle", battleRouter); // Mount the auth API
-app.use("/api/extractTraitOrAbility", extractTraitOrAbilityRouter); // Mount the auth API
-app.use("/api/flux-generate", fluxGenerateRouter); // Mount the auth API
+app.use("/api/training", trainingRouter); 
+app.use("/api/auth", authRouter); 
+app.use("/api/battle", battleRouter); 
+app.use("/api/extractTraitOrAbility", extractTraitOrAbilityRouter); 
+app.use("/api/flux-generate", fluxGenerateRouter); 
+app.use("/api/visuals-generate", visualGenerateRouter);
 
 
 // Root Route for Testing
