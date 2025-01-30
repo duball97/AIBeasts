@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./Visuals.css";
+import "./FluxPage.css";
 
 const FluxPage = () => {
   const [prompt, setPrompt] = useState("");
