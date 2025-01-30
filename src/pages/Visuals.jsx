@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./FluxPage.css";
+import "./Visuals.css";
 
-const FluxPage = () => {
+const Visuals = () => {
   const [prompt, setPrompt] = useState("");
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState("1:1"); // Default aspect ratio
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -18,23 +19,18 @@ const FluxPage = () => {
     setImageUrl(""); // Clear previous image
 
     try {
+      const requestData = { prompt, aspectRatio };
+
       if (image) {
-        // If user uploaded an image, convert it to base64 first
         const reader = new FileReader();
         reader.onload = async (event) => {
-          const base64Image = event.target.result;
-
-          const response = await axios.post("/api/flux-generate", {
-            prompt,
-            imageUrl: base64Image,
-          });
-
+          requestData.imageUrl = event.target.result;
+          const response = await axios.post("/api/flux-generate", requestData);
           handleResponse(response);
         };
         reader.readAsDataURL(image);
       } else {
-        // No image, just send prompt
-        const response = await axios.post("/api/flux-generate", { prompt });
+        const response = await axios.post("/api/flux-generate", requestData);
         handleResponse(response);
       }
     } catch (error) {
@@ -44,51 +40,38 @@ const FluxPage = () => {
     }
   };
 
-  /**
-   * Handle the server response, which can be:
-   * 1) { imageUrl: "https://some-url" }
-   * or
-   * 2) { imageUrl: { output: ["https://some-url"] } }
-   */
   const handleResponse = (response) => {
     setLoading(false);
-
     const { imageUrl: returnedValue } = response.data;
+
     if (!returnedValue) {
       alert("Error: No valid image URL received.");
       return;
     }
 
-    // If it's already a string (case #1):
     if (typeof returnedValue === "string") {
       setImageUrl(returnedValue);
-      return;
-    }
-
-    // If it's an object with an output array (case #2):
-    if (
+    } else if (
       typeof returnedValue === "object" &&
       returnedValue.output &&
       Array.isArray(returnedValue.output) &&
       returnedValue.output.length > 0
     ) {
       setImageUrl(returnedValue.output[0]);
-      return;
+    } else {
+      alert("Error: No valid image URL received.");
     }
-
-    // Otherwise, we have no valid image URL
-    alert("Error: No valid image URL received.");
   };
 
   return (
     <div className="flux-container">
       <div className="flux-wrapper">
-        
-      {imageUrl && (
-        <div>
-        <img src={imageUrl} alt="Generated" className="flux-image" />
-      </div>
-    )}
+        {imageUrl && (
+          <div>
+            <img src={imageUrl} alt="Generated" className="flux-image" />
+          </div>
+        )}
+
         <input
           type="text"
           value={prompt}
@@ -98,7 +81,7 @@ const FluxPage = () => {
         />
 
         <label className="flux-label">
-          
+          Upload Image (Optional):
           <input
             type="file"
             accept="image/*"
@@ -107,16 +90,27 @@ const FluxPage = () => {
           />
         </label>
 
+        <label className="flux-label">
+          Aspect Ratio:
+          <select
+            className="flux-select"
+            value={aspectRatio}
+            onChange={(e) => setAspectRatio(e.target.value)}
+          >
+            <option value="1:1">1:1 (Square)</option>
+            <option value="16:9">16:9 (Landscape)</option>
+            <option value="9:16">9:16 (Portrait)</option>
+            <option value="4:5">4:5</option>
+            <option value="3:2">3:2</option>
+          </select>
+        </label>
+
         <button onClick={handleGenerate} className="flux-button" disabled={loading}>
           {loading ? "Generating..." : "Generate Image"}
         </button>
-
       </div>
-
-     
-     
     </div>
   );
 };
 
-export default FluxPage;
+export default Visuals;

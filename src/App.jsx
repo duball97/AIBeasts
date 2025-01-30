@@ -6,6 +6,7 @@ import Hero from './pages/Hero';
 import SignIn from './pages/SignIn';
 import Matchmaking from './pages/Matchmaking';
 import AIBattle from './pages/AIBattle';
+import Visuals from './pages/Visuals';
 import OnlineMatch from './pages/OnlineMatch';
 import Train from './pages/Train';
 import Dashboard from './pages/Dashboard/Dashboard'; // Create this component next
@@ -21,6 +22,7 @@ function App() {
         <Route path="/" element={<Hero />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/arena" element={<BattleArena />} />
+        <Route path="/style" element={<Visuals />} />
         <Route path="/matchmaking" element={<Matchmaking />} />
         <Route path="/online-match" element={<OnlineMatch />} />
         <Route path="/aibattle" element={<AIBattle />} />

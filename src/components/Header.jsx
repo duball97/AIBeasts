@@ -20,7 +20,8 @@ const Header = () => {
           <li><Link to="/">Home</Link></li>
           <li><Link to="/dashboard">Dashboard</Link></li>
           <li><Link to="/arena">Train</Link></li>
-          <li><Link to="/flux">Looks</Link></li>
+          <li><Link to="/style">Style</Link></li>
+          <li><Link to="/flux">Flux</Link></li>
           <li><Link to="/arena">Arena</Link></li>
           {/* Add more navigation links as needed */}
         </ul>
