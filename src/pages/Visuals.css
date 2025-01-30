@@ -1,19 +1,15 @@
 /* 1) Reset full-page container for vertical/horizontal center */
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-  }
-  #root, .flux-container {
-    height: 100%;
+
+  /* Ensure the component is centered in its own space */
+.flux-container {
     display: flex;
-    flex-direction: column;
-    align-items: center; /* center horizontally */
-    justify-content: center; /* center vertically */
-   
+    justify-content: center; /* Horizontally center */
+    align-items: center; /* Vertically center */
+    min-height: 100vh; /* Ensure it takes up full screen height */
+    padding: 20px;
   }
   
-  /* 2) Main box styling */
+  /* Make sure the wrapper itself is centered */
   .flux-wrapper {
     background: white;
     padding: 30px;
@@ -21,9 +17,8 @@ html, body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     max-width: 500px;
     width: 90%;
-    text-align: center; /* center text inside box */
+    text-align: center; /* Center text inside box */
   }
-  
   /* Title */
   .flux-title {
     font-size: 24px;

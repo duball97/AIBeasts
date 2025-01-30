@@ -68,19 +68,12 @@ const Visuals = () => {
     // Join array elements into a description
     const description = physic.join(", ");
   
-
-// Define base prompt
-const basePrompt = (description) => ` ${description}.`;
-
-// Define style prompt
-const stylePrompt = "Create a detailed 2D cartoon illustration of a monster. Style: Studio Ghibli.";
-
-// Generate the full prompt dynamically
-const promptText = `${basePrompt(description)} ${stylePrompt}`;
-
-
+    // Generate a complete prompt with a fixed style
+    const promptText = `Create a detailed 2D cartoon illustration of a monster. It has ${description}. Style: Studio Ghibli.`;
+  
     setPrompt(promptText);
   };
+  
   
 
   const handleGenerate = async () => {
@@ -95,60 +88,66 @@ const promptText = `${basePrompt(description)} ${stylePrompt}`;
     try {
       const requestData = {
         aspectRatio,
-        prompt, // No variations, just use the prompt
+        prompt, // Only using the prompt, ignoring images
       };
   
-      if (monster.image_url) {
-        // If the user has an existing image, fetch and convert to base64
-        const response = await fetch(monster.image_url);
-        const blob = await response.blob();
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          requestData.imageUrl = reader.result;
+      console.log("🚀 Sending request to API:", requestData);
   
-          // Send request to API
-          const apiResponse = await axios.post("/api/visuals-generate", requestData);
-          handleResponse(apiResponse);
-        };
-        reader.readAsDataURL(blob);
-        return; // Exit early since request will be made in the callback
-      }
-  
-      // No existing image, just generate with prompt
+      // Send request to API
       const response = await axios.post("/api/visuals-generate", requestData);
       handleResponse(response);
     } catch (error) {
-      console.error("Error generating image:", error.message);
+      console.error("❌ Error generating image:", error.message);
       alert("Failed to generate the image. Please try again.");
       setLoading(false);
     }
   };
   
+  
 
-  const handleResponse = (response) => {
+  const handleResponse = async (response) => {
     setLoading(false);
     const { imageUrl: returnedValue } = response.data;
-
+  
     if (!returnedValue) {
       alert("Error: No valid image URL received.");
       return;
     }
-
+  
+    let finalImageUrl = "";
+  
     if (typeof returnedValue === "string") {
-      setImageUrl(returnedValue);
-      setLastGeneratedImage(returnedValue); // Store for variation
+      finalImageUrl = returnedValue;
     } else if (
       typeof returnedValue === "object" &&
       returnedValue.output &&
       Array.isArray(returnedValue.output) &&
       returnedValue.output.length > 0
     ) {
-      setImageUrl(returnedValue.output[0]);
-      setLastGeneratedImage(returnedValue.output[0]); // Store for variation
+      finalImageUrl = returnedValue.output[0];
     } else {
       alert("Error: No valid image URL received.");
+      return;
     }
+  
+    setImageUrl(finalImageUrl);
+  
+    // Save to Supabase
+    if (monster?.user_id) {
+      try {
+        const { error } = await supabase
+          .from("aibeasts_characters")
+          .update({ image_url: finalImageUrl }) // Update the image_url column
+          .eq("user_id", monster.user_id);
+  
+        if (error) throw new Error(error.message);
+        console.log("✅ Image URL saved to Supabase!");
+      } catch (error) {
+        console.error("❌ Failed to save image URL to Supabase:", error.message);
+      }
+    }   
   };
+  
 
   if (loading && !monster) {
     return (
