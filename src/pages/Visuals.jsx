@@ -9,7 +9,6 @@ const Visuals = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [aspectRatio, setAspectRatio] = useState("1:1"); // Default aspect ratio
-  const [lastGeneratedImage, setLastGeneratedImage] = useState(null); // Store last image for variation
   const [prompt, setPrompt] = useState(""); // Store the generated prompt
   const [error, setError] = useState(null); // Store any errors
 
@@ -69,9 +68,17 @@ const Visuals = () => {
     // Join array elements into a description
     const description = physic.join(", ");
   
-    // Generate a complete prompt with a fixed style
-    const promptText = `Create a detailed 2D cartoon illustration of a monster. It has ${description}. Style: Studio Ghibli.`;
-  
+
+// Define base prompt
+const basePrompt = (description) => ` ${description}.`;
+
+// Define style prompt
+const stylePrompt = "Create a detailed 2D cartoon illustration of a monster. Style: Studio Ghibli.";
+
+// Generate the full prompt dynamically
+const promptText = `${basePrompt(description)} ${stylePrompt}`;
+
+
     setPrompt(promptText);
   };
   
@@ -167,6 +174,13 @@ const Visuals = () => {
     <div className="flux-container">
       <div className="flux-wrapper">
         {/* Display Monster Details */}
+       
+        {/* Display Generated Image */}
+        {imageUrl && (
+          <div>
+            <img src={imageUrl} alt="Generated" className="flux-image" />
+          </div>
+        )}
         {monster && (
           <div className="monster-details">
             <h2>{monster.name}</h2>
@@ -189,12 +203,7 @@ const Visuals = () => {
           </div>
         )}
 
-        {/* Display Generated Image */}
-        {imageUrl && (
-          <div>
-            <img src={imageUrl} alt="Generated" className="flux-image" />
-          </div>
-        )}
+       
 
         {/* Aspect Ratio Selection */}
         <label className="flux-label">
