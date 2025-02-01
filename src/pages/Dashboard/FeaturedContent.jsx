@@ -9,8 +9,7 @@ const FeaturedContent = ({ featured }) => {
       <div className="featured-grid">
         {featured.map(item => (
           <div key={item.id} className="featured-item">
-            <img src={item.image} alt={item.title} className="featured-image" />
-            <div className="featured-info">
+              <div className="featured-info">
               <h4>{item.title}</h4>
               <p>{item.description}</p>
             </div>

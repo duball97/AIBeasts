@@ -1,57 +1,85 @@
 /* src/components/Hero.css */
 
-/* Load Custom Font */
-@font-face {
-  font-family: "Magic Retro";
-  src: url("../../assets/MagicRetro.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
+/* Fullscreen Hero Section */
 .hero {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, #000 100%);
+  background-image: url("/src/assets/hero-bg.jpg"); /* Add an epic background */
   background-size: cover;
   background-position: center;
-  padding: 0 20px;
   text-align: center;
-  color: #fff;
+  color: white;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Overlay for a Subtle Darkened Effect */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4); /* Slight dark overlay for text visibility */
+  backdrop-filter: blur(3px); /* Softens the background */
+}
+
+/* Hero Content */
 .hero-content {
   max-width: 800px;
+  z-index: 2;
 }
 
+/* Hero Title - Futuristic Bold */
 .hero-title {
-  font-family: "Magic Retro", sans-serif; /* Apply Magic Retro font */
-  font-size: 48px;
-  margin-bottom: 20px;
+  font-family: "Cinzel", serif; /* Epic fantasy style */
+  font-size: 50px;
+  color: #4eceb0;
+  text-shadow: 0 0 20px rgba(78, 206, 176, 0.8);
+  text-transform: uppercase;
+  margin-bottom: 0px;
 }
 
+/* Hero Subtitle */
 .hero-subtitle {
-  font-family: "Magic Retro", sans-serif; /* Apply Magic Retro to subtitle */
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 20px;
+  margin-top:0px;
+  color: #ddd;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  margin-bottom: 0px;
 }
 
+/* Hero Description */
 .hero-description {
   font-size: 18px;
-  margin-bottom: 30px;
+  line-height: 1.6;
+  color: #bbb;
+  max-width: 700px;
+  margin: 0 auto 30px;
 }
 
+/* Get Started Button - Metallic Glow */
 .btn {
-  padding: 15px 30px;
-  background-color: #ff5722;
+  padding: 15px 40px;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-family: 'Cinzel', serif;
   border: none;
-  border-radius: 30px;
-  color: #fff;
-  font-size: 18px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4eceb0, #2e8b75);
+  box-shadow: 0 0 10px rgba(78, 206, 176, 0.6);
+  color: black;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease-in-out;
 }
 
 .btn:hover {
-  background-color: #e64a19;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(78, 206, 176, 1);
 }
