@@ -9,54 +9,46 @@ const BattleArena = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchUserBeast = async () => {
+  // 🔥 Fetch user ID from localStorage
+  const getUserId = () => {
     try {
       const token = localStorage.getItem("aibeasts_token");
-  
-      if (!token) {
-        throw new Error("No token found. Please log in to view your beast.");
-      }
-  
+      if (!token) throw new Error("No token found.");
+
       const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decode JWT
-      const { id: userId } = decodedToken;
-  
-      console.log("🔍 Fetching from Supabase with user ID:", userId);
-  
-      const { data, error } = await supabase
-        .from("aibeasts_characters")
-        .select("*")  // Fetch ALL columns to avoid missing data
-        .eq("user_id", userId)
-        .single();
-  
-      console.log("📊 Supabase Response:", { data, error }); // ✅ LOG THIS
-  
-      if (error) throw new Error(error.message);
-      if (!data) throw new Error("No monster found for this user.");
-  
-      return data;
+      return decodedToken.id; // Ensure this matches the stored user ID
     } catch (err) {
-      console.error("❌ Error fetching user beast:", err.message);
-      throw err;
+      console.error("❌ Error extracting user ID:", err.message);
+      return null;
     }
   };
-  
-  
 
-  const fetchAiBeast = async () => {
+  const fetchBeast = async (userId) => {
+    if (!userId) {
+      throw new Error("User ID is undefined.");
+    }
+
     try {
       const { data, error } = await supabase
         .from("aibeasts_characters")
-        .select("*")
-        .eq("user_id", "46de16fa-1305-41de-97c4-e570d164c0b8") // AI Beast's hardcoded user_id
+        .select("name, personality, abilities, physic, image_url") // Ensure full data
+        .eq("user_id", userId)
         .single();
 
       if (error || !data) {
-        throw new Error("Failed to fetch AI beast from Supabase.");
+        throw new Error("Failed to fetch beast data.");
       }
 
-      return data;
+      console.log("✅ Beast Data:", data);
+
+      return {
+        ...data,
+        personality: Array.isArray(data.personality) ? data.personality : [],
+        abilities: Array.isArray(data.abilities) ? data.abilities : [],
+        physic: Array.isArray(data.physic) ? data.physic : [],
+      };
     } catch (err) {
-      console.error("Error fetching AI beast:", err.message);
+      console.error("❌ Error fetching beast:", err.message);
       throw err;
     }
   };
@@ -65,8 +57,11 @@ const BattleArena = () => {
     const loadBeasts = async () => {
       try {
         setLoading(true);
-        const userBeastData = await fetchUserBeast();
-        const aiBeastData = await fetchAiBeast();
+        const userId = getUserId();
+        if (!userId) throw new Error("User ID is missing.");
+
+        const userBeastData = await fetchBeast(userId);
+        const aiBeastData = await fetchBeast("46de16fa-1305-41de-97c4-e570d164c0b8"); // Hardcoded AI user ID
 
         setUserBeast(userBeastData);
         setAiBeast(aiBeastData);
@@ -80,13 +75,8 @@ const BattleArena = () => {
     loadBeasts();
   }, []);
 
-  if (loading) {
-    return <div className="battle-arena">Loading beasts... 🕒</div>;
-  }
-
-  if (error) {
-    return <div className="battle-arena error">{error}</div>;
-  }
+  if (loading) return <div className="battle-arena">Loading beasts... 🕒</div>;
+  if (error) return <div className="battle-arena error">{error}</div>;
 
   return (
     <div className="battle-arena">

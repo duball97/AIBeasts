@@ -13,61 +13,75 @@ export default async function handler(req, res) {
   }
 
   try {
-    // System Prompt: Define battle behavior
-    const systemPrompt = `
-      You are an AI referee overseeing a battle of reasoning between two beasts. 
-      Each turn, one beast makes a statement explaining why they are superior.
-      The other beast must respond with logic, strategy, or clever counterarguments.
-      The goal is NOT to attack, but to **outthink and outmaneuver** the opponent.
-      
-      **Rules:**
-      - Beasts must use their **abilities**, **personality**, and **physic** as arguments.
-      - No repeating arguments.
-      - The battle lasts until a winner is chosen by you.
-      - At the end, pick a **clear winner** based on who argued better.
+    let battleLog = [];
 
-      **Example:**
-      - Beast 1: "My fire breath is unstoppable, reducing everything to ashes!"
-      - Beast 2: "Foolish! My scales absorb heat and turn it into energy!"
-      - Beast 1: "Then I shall use my speed to attack before you can react!"
-      - Beast 2: "A clever move, but I anticipated that. My reflexes allow me to dodge!"
-
-      The battle ends with a **winner** based on the best reasoning.
+    const beast1Details = `
+      Name: ${userBeast.name}
+      Personality: ${userBeast.personality.join(", ")}
+      Abilities: ${userBeast.abilities.join(", ")}
+      Physic: ${userBeast.physic.join(", ")}
     `;
 
-    // Prepare Messages
-    const messages = [
-      { role: "system", content: systemPrompt },
-      {
-        role: "user",
-        content: `Beast 1 (Player): ${userBeast.name}
-        - Personality: ${JSON.stringify(userBeast.personality)}
-        - Abilities: ${JSON.stringify(userBeast.abilities)}
-        - Physic: ${JSON.stringify(userBeast.physic)}
+    const beast2Details = `
+      Name: ${aiBeast.name}
+      Personality: ${aiBeast.personality.join(", ")}
+      Abilities: ${aiBeast.abilities.join(", ")}
+      Physic: ${aiBeast.physic.join(", ")}
+    `;
 
-        Beast 2 (AI Opponent): ${aiBeast.name}
-        - Personality: ${JSON.stringify(aiBeast.personality)}
-        - Abilities: ${JSON.stringify(aiBeast.abilities)}
-        - Physic: ${JSON.stringify(aiBeast.physic)}
+    for (let round = 1; round <= 5; round++) {
+      // 🧠 AI 1 (User's Beast)
+      const responseAI1 = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          { role: "system", content: `You are ${userBeast.name}, a beast fighting against other beast with the goal to win the battle. Max 1 sentence. You can use abilities, personality, and physique to win the battle. You MUST NOT say the name of the opponent.` },
+          { role: "user", content: `Opponent: ${aiBeast.name}. Fight back and win the game!\n\n${beast1Details}` },
+          ...battleLog.map(line => ({ role: "user", content: line }))
+        ],
+        temperature: 0.7,
+        max_tokens: 50, // ⏳ Keep arguments short
+      });
 
-        Begin the battle!`,
-      },
-    ];
+      let ai1Message = responseAI1.choices[0].message.content.trim();
+      ai1Message = ai1Message.replace(new RegExp(`^${userBeast.name}:?`, "i"), "").trim(); // 🛠️ Remove redundant name
+      battleLog.push(`${userBeast.name}: ${ai1Message}`);
 
-    // Call OpenAI
-    const completion = await openai.chat.completions.create({
+      // 🤖 AI 2 (Opponent's Beast)
+      const responseAI2 = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          { role: "system", content: `You are ${userBeast.name}, a beast fighting against other beast with the goal to win the battle. Max 1 sentence. You can use abilities, personality, and physique to win the battle. You MUST NOT say the name of the opponent.` },
+          { role: "user", content: `Opponent said: "${ai1Message}". Fight back and win the game\n\n${beast2Details}` },
+          ...battleLog.map(line => ({ role: "user", content: line }))
+        ],
+        temperature: 0.7,
+        max_tokens: 50, // ⏳ Keep responses short
+      });
+
+      let ai2Message = responseAI2.choices[0].message.content.trim();
+      ai2Message = ai2Message.replace(new RegExp(`^${aiBeast.name}:?`, "i"), "").trim(); // 🛠️ Remove redundant name
+      battleLog.push(`${aiBeast.name}: ${ai2Message}`);
+    }
+
+    // 🎤 AI Referee Judges the Battle
+    const responseReferee = await openai.chat.completions.create({
       model: "gpt-4",
-      messages,
-      temperature: 0.8,
-      max_tokens: 500,
+      messages: [
+        { role: "system", content: `You are an impartial AI referee judging a logic battle. Analyze which beast used its abilities, personality, and physique most effectively. Provide a 2-3 sentence summary before declaring a winner.Declare the winner.` },
+        { role: "user", content: `Battle log:\n\n${battleLog.join("\n")}\n\nWho wins? Explain why before naming the winner.` }
+      ],
+      temperature: 0.3,
+      max_tokens: 200,
     });
 
-    const battleTranscript = completion.choices[0].message.content.trim();
+    const refereeDecision = responseReferee.choices[0].message.content.trim();
 
-    // Return battle transcript to frontend
-    res.status(200).json({ transcript: battleTranscript });
+    res.status(200).json({
+      transcript: battleLog.join("\n"),
+      winnerExplanation: refereeDecision, // 🎤 Referee explains before declaring a winner
+    });
   } catch (error) {
     console.error("Error generating battle:", error);
     res.status(500).json({ error: "Failed to generate battle." });
   }
-}
+};

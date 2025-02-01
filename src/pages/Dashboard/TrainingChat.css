@@ -1,52 +1,126 @@
-/* TrainingChat.css */
+/* src/components/Dashboard/TrainingChat.css */
 
+/* Main Chat Container */
 .training-chat {
-  background-color: #333;
-  padding: 10px;
-  border-radius: 8px;
+  background: linear-gradient(145deg, #1b1b1b, #292929); /* Dark metallic */
+  border: 2px solid #4eceb0; /* Neon accent */
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 700px;
+  margin: 20px auto;
+  box-shadow: 
+      inset 0 0 8px rgba(255, 255, 255, 0.1),
+      0 2px 6px rgba(0, 0, 0, 0.8);
+  color: #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* Chat Title */
 .training-chat-title {
-  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  color: #4eceb0;
+  text-transform: uppercase;
+  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
+/* Chat Window */
 .training-chat-window {
-  background-color: #222;
-  min-height: 150px;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 10px;
+  width: 100%;
+  height: 300px;
   overflow-y: auto;
-  max-height: 300px;
+  background: #121212;
+  border: 1px solid #4eceb0;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
+/* Chat Messages */
 .training-chat-message {
-  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  width: fit-content;
+  max-width: 90%;
 }
 
+/* User Message */
 .training-chat-message-user {
-  color: #ffd700; /* Gold for user messages */
+  align-self: flex-end;
+  background: linear-gradient(135deg, #4eceb0, #2e8b75);
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
 }
 
+/* AI Message */
 .training-chat-message-ai {
-  color: #fff; /* White for AI messages */
+  align-self: flex-start;
+  background: linear-gradient(135deg, #1b1b1b, #292929);
+  color: #4eceb0;
+  border-left: 3px solid #4eceb0;
+  font-weight: bold;
 }
 
+/* Input Section */
+.training-chat-input-container {
+  display: flex;
+  width: 100%;
+  margin-top: 15px;
+}
+
+/* Input Field */
 .training-chat-input {
-  width: 80%;
-  padding: 8px;
-  margin-right: 5px;
+  flex-grow: 1;
+  background: #121212;
+  border: 2px solid #4eceb0;
+  padding: 10px;
+  font-size: 16px;
+  color: #4eceb0;
+  border-radius: 8px 0 0 8px;
+  outline: none;
 }
 
+/* Send Button */
 .training-chat-send-button {
-  padding: 8px 15px;
-  background-color: #555;
-  color: white;
+  background: linear-gradient(135deg, #4eceb0, #2e8b75);
   border: none;
-  border-radius: 4px;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
+  border-radius: 0 8px 8px 0;
   cursor: pointer;
+  transition: transform 0.2s ease-in-out;
 }
 
+/* Send Button Hover Effect */
 .training-chat-send-button:hover {
-  background-color: #777;
+  transform: scale(1.05);
+}
+
+/* Scrollbar Customization */
+.training-chat-window::-webkit-scrollbar {
+  width: 6px;
+}
+
+.training-chat-window::-webkit-scrollbar-track {
+  background: #1b1b1b;
+}
+
+.training-chat-window::-webkit-scrollbar-thumb {
+  background: #4eceb0;
+  border-radius: 3px;
 }

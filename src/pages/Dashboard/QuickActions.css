@@ -1,34 +1,74 @@
-/* src/components/Dashboard/QuickActions.css */
-
+/* Quick Actions Main Container */
 .quick-actions {
-    background-color: #2e2e2e;
-    padding: 15px;
-    border-radius: 8px;
-  }
-  
-  .quick-actions h3 {
-    margin-bottom: 10px;
-  }
-  
-  .actions-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .action-button {
-    flex: 1 1 45%;
-    padding: 10px;
-    background-color: #ffcc00;
-    color: #1e1e1e;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-  }
-  
-  .action-button:hover {
-    background-color: #e6b800;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #1b1b1b, #292929); /* Dark metal */
+  border: 1px solid #4eceb0; /* Mystic accent */
+  border-radius: 12px;
+  padding: 15px;
+  width: 80%;
+  max-width: 700px;
+  margin: 20px auto;
+  box-shadow: 
+      inset 0 0 8px rgba(255, 255, 255, 0.1),
+      0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* Title - Epic Header */
+.quick-actions h3 {
+  font-family: 'Cinzel', serif; /* Medieval fantasy feel */
+  font-size: 22px;
+  color: #4eceb0;
+  text-transform: uppercase;
+  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Actions Grid Layout */
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Responsive */
+  gap: 12px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Individual Action Button - Metallic with blue-green */
+.action-button {
+  font-family: 'Cinzel', serif; /* Keep the epic fantasy font */
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: black;
+  background: linear-gradient(135deg, #4eceb0, #2e8b75); /* Metallic blue-green */
+  border: 2px solid #4eceb0;
+  border-radius: 8px;
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 
+      inset 0 0 10px rgba(255, 255, 255, 0.1),
+      0 3px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Hover Effect */
+.action-button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #2e8b75, #4eceb0);
+  border-color: #4eceb0;
+  color: black;
+  box-shadow: 
+      0 0 15px rgba(78, 206, 176, 0.9),
+      0 5px 12px rgba(0, 0, 0, 0.8);
+}
+
+/* Remove Focus Outline */
+.action-button:focus {
+  outline: none;
+}

@@ -11,23 +11,18 @@ const QuickActions = () => {
       <h3>Quick Actions</h3>
       <div className="actions-grid">
         <button className="action-button" onClick={() => navigate("/matchmaking")}>
-          Start a Battle
+          Battle
         </button>
         <button className="action-button" onClick={() => navigate("/train")}>
-          Train a Monster
+          Train
         </button>
         <button
           className="action-button"
           onClick={() => alert("Visit Marketplace clicked!")}
         >
-          Visit Marketplace
+          Marketplace
         </button>
-        <button
-          className="action-button"
-          onClick={() => alert("Join a Tournament clicked!")}
-        >
-          Join a Tournament
-        </button>
+      
         {/* Add more actions as needed */}
       </div>
     </div>

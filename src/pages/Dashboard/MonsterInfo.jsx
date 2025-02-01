@@ -14,7 +14,6 @@ const MonsterInfo = () => {
         setLoading(true);
 
         const token = localStorage.getItem("aibeasts_token");
-
         if (!token) {
           console.error("No token found in localStorage.");
           setError("You are not logged in. Please log in to view your monster.");
@@ -22,58 +21,46 @@ const MonsterInfo = () => {
           return;
         }
 
-        const decodedToken = token ? JSON.parse(atob(token.split(".")[1])) : {};
-        const { id } = decodedToken;
-
-        console.log("Decoded token:", decodedToken);
-        console.log("User ID extracted from token:", id);
-
-        if (!id) {
+        const decodedToken = JSON.parse(atob(token.split(".")[1]));
+        const { id: userId } = decodedToken;
+        if (!userId) {
           console.error("Invalid token. Could not extract user ID.");
           setError("Invalid token. Unable to fetch monster data.");
           setLoading(false);
           return;
         }
 
-        console.log("Fetching monster data from Supabase for user ID:", id);
+        console.log("Fetching monster data from Supabase for user ID:", userId);
         const { data, error } = await supabase
           .from("aibeasts_characters")
-          .select("name, image_url, abilities, personality")
-          .eq("user_id", id)
+          .select("name, image_url, abilities, personality, physic")
+          .eq("user_id", userId)
           .single();
 
-        console.log("Supabase Response:", { data, error });
+        console.log("🔍 Supabase Response:", data);
 
         if (error || !data) {
-          console.error("Error fetching monster data:", error?.message);
+          console.error("❌ Error fetching monster data:", error?.message);
           setError("Failed to fetch monster data.");
         } else {
-          // Safely parse `personality` if it is a string
-          let parsedPersonality = [];
-          if (typeof data.personality === "string") {
-            try {
-              parsedPersonality = JSON.parse(data.personality);
-              if (!Array.isArray(parsedPersonality)) {
-                console.warn("Parsed personality is not an array. Defaulting to empty array.");
-                parsedPersonality = [];
-              }
-            } catch (parseError) {
-              console.error("Error parsing personality:", parseError.message);
-              parsedPersonality = [];
-            }
-          }
-
           setMonster({
             name: data.name,
             image: data.image_url || "/default-monster.png",
-            personality: parsedPersonality.length > 0 ? parsedPersonality.join(", ") : "No personality traits yet",
-            abilities: data.abilities || [],
+            personality: Array.isArray(data.personality) && data.personality.length > 0
+              ? data.personality.join(", ")
+              : "No personality traits yet",
+            abilities: Array.isArray(data.abilities) && data.abilities.length > 0
+              ? data.abilities.join(", ")
+              : "No abilities yet",
+            physic: Array.isArray(data.physic) && data.physic.length > 0
+              ? data.physic.join(", ")
+              : "No physical traits yet",
           });
 
-          console.log("Monster data retrieved successfully:", data);
+          console.log("✅ Monster data successfully retrieved:", data);
         }
       } catch (err) {
-        console.error("Unexpected error during fetch:", err.message);
+        console.error("❌ Unexpected error during fetch:", err.message);
         setError("An unexpected error occurred while fetching data.");
       } finally {
         setLoading(false);
@@ -97,7 +84,8 @@ const MonsterInfo = () => {
       <div className="info">
         <h2>{monster.name}</h2>
         <p><strong>Personality:</strong> {monster.personality}</p>
-        <p><strong>Abilities:</strong> {monster.abilities.length > 0 ? monster.abilities.join(", ") : "None"}</p>
+        <p><strong>Abilities:</strong> {monster.abilities}</p>
+        <p><strong>Physic:</strong> {monster.physic}</p>
       </div>
     </div>
   );

@@ -13,13 +13,13 @@ const Header = () => {
   return (
     <header className="header">
       <div className="logo">
-        <img src="/logo.png" alt="AI Beasts Logo" />
+        <img src="src\assets\logo.png" alt="AIBeasts Logo"/>
       </div>
       <nav className={`nav ${isMobileMenuOpen ? 'active' : ''}`}>
         <ul>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/dashboard">Dashboard</Link></li>
-          <li><Link to="/arena">Train</Link></li>
+          <li><Link to="/train">Train</Link></li>
           <li><Link to="/style">Style</Link></li>
           <li><Link to="/flux">Flux</Link></li>
           <li><Link to="/arena">Arena</Link></li>

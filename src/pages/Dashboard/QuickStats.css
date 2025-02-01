@@ -1,38 +1,74 @@
 /* src/components/Dashboard/QuickStats.css */
 
+/* Quick Stats Main Container */
 .quick-stats {
-    background-color: #2e2e2e;
-    padding: 15px;
-    border-radius: 8px;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #1b1b1b, #292929); /* Dark metal */
+  border: 1px solid #4eceb0; /* Mystic accent */
+  border-radius: 12px;
+  padding: 15px;
+  width: 80%;
+  max-width: 700px;
+  margin: 20px auto;
+  box-shadow: 
+      inset 0 0 8px rgba(255, 255, 255, 0.1),
+      0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* Title - Epic Header */
+.quick-stats h3 {
+  font-family: 'Cinzel', serif; /* Fantasy/Medieval vibe */
+  font-size: 22px;
+  color: #4eceb0;
+  text-transform: uppercase;
+  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Stats Grid Layout */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive */
+  gap: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Individual Stat Item */
+.stat-item {
+  background: linear-gradient(135deg, #1b1b1b, #222222);
+  border: 1px solid #4eceb0;
+  border-radius: 8px;
+  padding: 20px 8px; /* Reduced top/bottom padding */
+  box-shadow: 
+      inset 0 0 6px rgba(255, 255, 255, 0.08),
+      0 2px 6px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Hover Effect */
+.stat-item:hover {
+  transform: scale(1.05);
+}
+
+/* Stat Name */
+.stat-item p {
+  font-size: 20px; /* Slightly smaller to tighten spacing */
+  font-weight: bold;
+  color: #ddd;
+  margin-bottom: 2px; /* Reduced margin to bring elements closer */
+}
+
+/* Stat Value */
+.stat-item span {
+  font-size: 27px; /* Slightly smaller */
+  font-weight: bold;
+  color: #4eceb0;
   
-  .quick-stats h3 {
-    margin-bottom: 10px;
-  }
-  
-  .stats-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .stat-item {
-    flex: 1 1 45%;
-    background-color: #3e3e3e;
-    padding: 10px;
-    border-radius: 6px;
-    text-align: center;
-  }
-  
-  .stat-item p {
-    margin: 0;
-    font-weight: bold;
-  }
-  
-  .stat-item span {
-    display: block;
-    margin-top: 5px;
-    font-size: 1.2em;
-    color: #ffcc00;
-  }
-  
+}

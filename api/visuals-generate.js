@@ -9,7 +9,7 @@ const replicate = new Replicate({
 });
 
 // 2) Define the base prompt for consistent style
-const BASE_PROMPT = "Create a vibrant and detailed 2D cartoon illustration in the style of Studio Ghibli."; // Customize as needed
+const BASE_PROMPT = "Create a vibrant and detailed 2D cartoon illustration in the style of Studio Ghibli, epic 2d game background"; // Customize as needed
 
 // 3) Serverless route handler
 export default async function handler(req, res) {

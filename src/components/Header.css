@@ -7,7 +7,7 @@
   padding: 0 20px; /* Added horizontal padding for proper spacing */
  
   color: #fff;
-  position: fixed;
+ 
   width: 100%; /* Ensure the header spans the full width of the page */
   top: 0;
   z-index: 1000;
@@ -15,7 +15,7 @@
 }
 
 .logo img {
-  height: 50px;
+  height: 70px;
 }
 
 .nav ul {

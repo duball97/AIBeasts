@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./TerminalChat.css"; // Ensure this file exists
+import "./TerminalChat.css";
 
 const TerminalChat = ({ userBeast, aiBeast }) => {
   const chatEndRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [winnerExplanation, setWinnerExplanation] = useState(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -36,17 +37,21 @@ const TerminalChat = ({ userBeast, aiBeast }) => {
 
       const battleLines = data.transcript.split("\n").filter(line => line.trim() !== "");
 
-      // Simulate AI turns in chat (adds messages gradually)
       let turn = 0;
       const interval = setInterval(() => {
         if (turn >= battleLines.length) {
           clearInterval(interval);
+          setWinnerExplanation(data.winnerExplanation); // 🏆 Show Referee's Explanation
           return;
         }
 
-        setMessages(prev => [...prev, { sender: turn % 2 === 0 ? userBeast.name : aiBeast.name, text: battleLines[turn] }]);
+        setMessages(prev => [
+          ...prev,
+          { sender: turn % 2 === 0 ? userBeast.name : aiBeast.name, text: battleLines[turn] }
+        ]);
+
         turn++;
-      }, 3000); // Messages appear every 3 seconds
+      }, 3000);
     } catch (err) {
       console.error("Error starting battle:", err.message);
       setError("Failed to generate battle.");
@@ -69,6 +74,11 @@ const TerminalChat = ({ userBeast, aiBeast }) => {
         ))}
         <div ref={chatEndRef} />
       </div>
+      {winnerExplanation && (
+        <div className="winner">
+          🏆 <strong>Battle Result:</strong> {winnerExplanation}
+        </div>
+      )}
     </div>
   );
 };

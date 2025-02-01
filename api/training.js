@@ -101,6 +101,8 @@
   
   
 
+
+  
 // Function to generate the basis prompt for AI context
 const generateBasisPrompt = (character) => {
   const { name, abilities, personality, physic } = character;
