@@ -87,7 +87,7 @@ const TrainingChat = () => {
   return (
     <div className="training-chat">
       <div className="training-chat-header">
-        ⚔️ <span>Beast Training</span>
+        ⚔️ <span>BEAST TRAINING</span>
       </div>
       <div className="training-chat-window">
         {messages.map((m, i) => (

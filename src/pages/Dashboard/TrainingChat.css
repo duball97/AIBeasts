@@ -1,80 +1,79 @@
 /* src/components/Dashboard/TrainingChat.css */
 
-/* Main Chat Container */
+/* Full-Width Training Panel */
 .training-chat {
-  background: linear-gradient(145deg, #1b1b1b, #292929); /* Dark metallic */
-  border: 2px solid #4eceb0; /* Neon accent */
+  width: 100%;
+  background: linear-gradient(145deg, #0f0f0f, #232323);
+  border: 1px solid #4eceb0; /* Mystic accent */
   border-radius: 12px;
   padding: 20px;
-  width: 90%;
-  max-width: 700px;
-  margin: 20px auto;
-  box-shadow: 
-      inset 0 0 8px rgba(255, 255, 255, 0.1),
-      0 2px 6px rgba(0, 0, 0, 0.8);
-  color: #ddd;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  box-shadow: 0 0 15px rgba(78, 206, 176, 0.3);
 }
 
-/* Chat Title */
-.training-chat-title {
-  font-family: 'Cinzel', serif;
-  font-size: 22px;
-  color: #4eceb0;
-  text-transform: uppercase;
-  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
-  padding-bottom: 5px;
-  margin-bottom: 15px;
+/* Header */
+.training-chat-header {
+  font-size: 20px;
+  font-weight: bold;
   text-align: center;
+  color: #4eceb0;
+  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 /* Chat Window */
 .training-chat-window {
-  width: 100%;
+  width: 98%;
+
   height: 300px;
   overflow-y: auto;
-  background: #121212;
-  border: 1px solid #4eceb0;
+ 
+  
   padding: 15px;
   border-radius: 8px;
-  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.08);
+
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  
 }
 
 /* Chat Messages */
 .training-chat-message {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
+  padding: 10px;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 16px;
   width: fit-content;
   max-width: 90%;
+  transition: transform 0.2s ease-in-out;
 }
 
-/* User Message */
-.training-chat-message-user {
+/* Player Messages */
+.training-chat-message.player {
   align-self: flex-end;
   background: linear-gradient(135deg, #4eceb0, #2e8b75);
-  color: #000;
+  color: black;
   font-weight: bold;
-  text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(78, 206, 176, 0.5);
 }
 
-/* AI Message */
-.training-chat-message-ai {
+/* Beast Messages */
+.training-chat-message.beast {
   align-self: flex-start;
   background: linear-gradient(135deg, #1b1b1b, #292929);
   color: #4eceb0;
-  border-left: 3px solid #4eceb0;
-  font-weight: bold;
+  border-left: 4px solid #4eceb0;
 }
 
-/* Input Section */
+/* System Messages */
+.training-chat-message.system {
+  align-self: center;
+  color: #aaa;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Input Area */
 .training-chat-input-container {
   display: flex;
   width: 100%;
@@ -94,7 +93,9 @@
 }
 
 /* Send Button */
+/* Send Button */
 .training-chat-send-button {
+  font-family: 'Cinzel', serif; /* Ensuring the font matches the rest */
   background: linear-gradient(135deg, #4eceb0, #2e8b75);
   border: none;
   padding: 10px 15px;
@@ -106,14 +107,14 @@
   transition: transform 0.2s ease-in-out;
 }
 
-/* Send Button Hover Effect */
+/* Send Button Hover */
 .training-chat-send-button:hover {
   transform: scale(1.05);
 }
 
-/* Scrollbar Customization */
+/* Custom Scrollbar */
 .training-chat-window::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .training-chat-window::-webkit-scrollbar-track {
@@ -122,5 +123,5 @@
 
 .training-chat-window::-webkit-scrollbar-thumb {
   background: #4eceb0;
-  border-radius: 3px;
+  border-radius: 4px;
 }
