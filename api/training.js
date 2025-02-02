@@ -181,8 +181,9 @@ export default async function handler(req, res) {
 
     // Handle trait updates
     const updatedTraits = {
-      [traitType]: [...(character[traitType] || []), trait],
+      [traitType]: [...(Array.isArray(character[traitType]) ? character[traitType] : []), trait],
     };
+    
 
     const { error: updateError } = await supabase
       .from("aibeasts_characters")

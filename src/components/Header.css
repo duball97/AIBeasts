@@ -1,50 +1,90 @@
 /* src/components/Header.css */
 
+/* Main Header */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px; /* Added horizontal padding for proper spacing */
- 
-  color: #fff;
- 
-  width: 100%; /* Ensure the header spans the full width of the page */
+  width: 100%; /* Decreased width from 100% to 90% */
+  margin: 0 auto; /* Centers the header */
+  padding: 10px 20px;
+  width: 1500px;
+  position: relative;
   top: 0;
+  left: 50%;
+  transform: translateX(-50%); /* Ensures it's centered */
   z-index: 1000;
-  box-sizing: border-box; /* Ensures padding is included within width */
+}
+
+/* Logo Section (25% Width) */
+.logo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .logo img {
-  height: 70px;
+  height: 90px;
+  max-width: 100%;
+}
+
+/* Navigation Menu (Centered, 50% Width) */
+.nav {
+  flex: 2;
+  display: flex;
+  justify-content: center;
 }
 
 .nav ul {
-  list-style: none;
   display: flex;
-  gap: 20px;
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
+  gap: 35px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .nav ul li a {
-  color: #fff;
+  color: white;  
   text-decoration: none;
-  font-size: 18px;
+  font-size: 22px;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
 }
 
+.nav ul li a:hover {
+  color: #4eceb0;
+  text-shadow: 0 0 5px #4eceb0;
+}
+
+/* Start Button (Properly Aligned) */
 .start-button {
-  margin-left: auto; /* Pushes the button to the far right */
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .start-button .btn {
-  padding: 10px 20px;
-  background-color: #ff5722;
+  padding: 10px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
   border: none;
-  border-radius: 5px;
-  color: #fff;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #4eceb0, #2e8b75);
+  box-shadow: 0 0 10px rgba(78, 206, 176, 0.7);
+  color: black;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
 }
 
+.start-button .btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(78, 206, 176, 1);
+}
+
+/* Mobile Menu (Hidden by Default on Desktop) */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -52,35 +92,38 @@
 }
 
 .bar {
-  width: 25px;
+  width: 30px;
   height: 3px;
-  background-color: #fff;
-  margin: 4px 0;
+  background-color: white;
+  margin: 5px 0;
   transition: 0.4s;
 }
 
-/* Hamburger animation when active */
+/* Hamburger Animation */
 .change:nth-child(1) {
   transform: rotate(-45deg) translate(-5px, 6px);
 }
-
 .change:nth-child(2) {
   opacity: 0;
 }
-
 .change:nth-child(3) {
   transform: rotate(45deg) translate(-5px, -6px);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .header {
+    width: 100%; /* Full width on mobile */
+    padding: 10px 15px;
+  }
+
   .nav {
     position: absolute;
     top: 80px;
     left: -100%;
     width: 100%;
     height: calc(100vh - 80px);
-    background-color: #1e1e1e;
+    background-color: black;
     flex-direction: column;
     align-items: center;
     transition: 0.5s;
@@ -92,7 +135,7 @@
 
   .nav ul {
     flex-direction: column;
-    gap: 40px;
+    gap: 25px;
   }
 
   .hamburger {
@@ -100,6 +143,6 @@
   }
 
   .start-button {
-    margin-left: 0; /* Prevents shifting of the button in mobile view */
+    display: none; /* Hide start button on mobile */
   }
 }

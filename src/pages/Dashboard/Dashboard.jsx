@@ -13,8 +13,8 @@ import TrainingChat from "./TrainingChat";
 
 const Dashboard = () => {
   const quickStats = {
-    totalMonsters: 10,
-    battlesParticipated: 25,
+    totalMonsters: 1,
+    battlesParticipated: 15,
     wins: 15,
     losses: 10,
     cryptoBalance: "2 ETH",

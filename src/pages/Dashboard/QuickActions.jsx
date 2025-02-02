@@ -8,7 +8,7 @@ const QuickActions = () => {
 
   return (
     <div className="quick-actions">
-      <h3>Quick Actions</h3>
+      <h3>Actions</h3>
       <div className="actions-grid">
         <button className="action-button" onClick={() => navigate("/matchmaking")}>
           Battle

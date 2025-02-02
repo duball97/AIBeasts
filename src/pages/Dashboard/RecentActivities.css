@@ -18,7 +18,7 @@
 /* Title - Epic Header */
 .recent-activities h3 {
   font-family: 'Cinzel', serif; /* Use a medieval fantasy font */
-  font-size: 22px;
+  font-size: 30px;
   color: #4eceb0;
   text-transform: uppercase;
   border-bottom: 2px solid rgba(78, 206, 176, 0.5);
@@ -55,7 +55,7 @@
 
 /* Activity Type - Bold and colored */
 .activity-type {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: bold;
   color: #4eceb0;
   margin-right: 10px;
@@ -64,14 +64,14 @@
 /* Activity Description */
 .activity-description {
   flex: 1;
-  font-size: 15px;
+  font-size: 20px;
   color: #ddd;
   text-align: left;
 }
 
 /* Activity Time - Smaller and subdued */
 .activity-time {
-  font-size: 14px;
+  font-size: 18px;
   color: #aaa;
   font-weight: bold;
 }

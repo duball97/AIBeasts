@@ -12,7 +12,7 @@
 
 /* Header */
 .training-chat-header {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
   text-align: center;
   color: #4eceb0;
@@ -41,7 +41,7 @@
 .training-chat-message {
   padding: 10px;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 20px;
   width: fit-content;
   max-width: 90%;
   transition: transform 0.2s ease-in-out;
@@ -70,7 +70,7 @@
   align-self: center;
   color: #aaa;
   font-style: italic;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 /* Input Area */
@@ -86,7 +86,7 @@
   background: #121212;
   border: 2px solid #4eceb0;
   padding: 10px;
-  font-size: 16px;
+  font-size: 20px;
   color: #4eceb0;
   border-radius: 8px 0 0 8px;
   outline: none;

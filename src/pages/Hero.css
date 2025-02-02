@@ -31,23 +31,23 @@
 
 /* Hero Content */
 .hero-content {
-  max-width: 800px;
+  max-width: 1200px;
   z-index: 2;
 }
 
 /* Hero Title - Futuristic Bold */
 .hero-title {
   font-family: "Cinzel", serif; /* Epic fantasy style */
-  font-size: 50px;
+  font-size: 40px;
   color: #4eceb0;
-  text-shadow: 0 0 20px rgba(78, 206, 176, 0.8);
+  text-shadow: 0 0 16px rgba(78, 206, 176, 0.8);
   text-transform: uppercase;
   margin-bottom: 0px;
 }
 
 /* Hero Subtitle */
 .hero-subtitle {
-  font-size: 20px;
+  font-size: 30px;
   margin-top:0px;
   color: #ddd;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
@@ -56,10 +56,11 @@
 
 /* Hero Description */
 .hero-description {
-  font-size: 18px;
+  font-size: 22px;
+  font-weight: 500;
   line-height: 1.6;
-  color: #bbb;
-  max-width: 700px;
+  color: #ffffff;
+  max-width: 1000px;
   margin: 0 auto 30px;
 }
 

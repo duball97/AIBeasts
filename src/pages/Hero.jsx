@@ -17,10 +17,10 @@ const Hero = () => {
   return (
     <section className="hero">
       <div className="hero-content">
-        <h1 className="hero-title">Welcome to AI Beasts</h1>
-        <h2 className="hero-subtitle">Unleash Your Imagination in Chaotic Monster Battles</h2>
+        <h1 className="hero-title">There are no limits to what you can imagine</h1>
+       
         <p className="hero-description">
-          Create unique monsters, engage in dynamic battles, and watch your beasts evolve through thrilling encounters. Join the revolution of AI-driven gameplay where creativity meets strategy.
+          Create unique monsters, engage in dynamic battles, and watch your beasts evolve through thrilling encounters.
         </p>
         <button
           className="btn"

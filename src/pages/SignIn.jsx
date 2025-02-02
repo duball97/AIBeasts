@@ -4,7 +4,6 @@ import "./SignIn.css";
 
 function SignIn() {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ function SignIn() {
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, password }), // Removed email
       });
 
       const data = await response.json();
@@ -53,17 +52,6 @@ function SignIn() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your username"
-              required
-            />
-          </label>
-
-          <label>
-            <span>Email:</span>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
               required
             />
           </label>
