@@ -1,0 +1,171 @@
+/* Modal overlay background */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Slightly darker for contrast */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* Centered card with rounded corners and gradient background */
+  .modal-content {
+    position: relative;
+    background: linear-gradient(135deg, #333333, #1a1a1a);
+    border-radius: 20px;
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80%;
+    overflow-y: auto;
+    color: #f5f5f5;
+    border: 2px solid #00ff99;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+    padding: 20px;
+  }
+  
+  /* Button styles for connecting wallets */
+  .connect-button {
+    background-color: #00ff99;
+    color: #000;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .connect-button:hover {
+    background-color: #00ff99;
+    transform: scale(1.05);
+  }
+  
+  /* Close button inside the modal */
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color:#00ff99;
+  }
+  
+  .close-button:hover {
+    color: #fff;
+  }
+  
+  /* Wallet buttons for selecting options */
+  .wallet-button {
+    background-color: #1a1a1a;
+    color: #00ff99;
+    border: 1px solid #00ff99;
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin: 10px auto;
+    width: 100%;
+    max-width: 300px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .wallet-button:hover {
+    background-color: #00ff99;
+    color: #000;
+    transform: scale(1.05);
+  }
+  
+  /* Wallet information section */
+  .wallet-info2 {
+    margin-top: 20px;
+    color: #f5f5f5;
+  }
+  
+
+  
+  /* Copy button styling */
+  .copy-button {
+    background-color: #333333;
+    color: #00ff99;
+    border: 1px solid #00ff99;
+    padding: 5px 10px;
+    margin-left: 10px;
+    font-size: 0.9rem;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  
+  .copy-button:hover {
+    background-color: gold;
+    color: #000;
+  }
+  
+  /* Chain buttons section */
+  .chain-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .wallet-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .chain-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .vortex-title {color:white;}
+
+  @media screen and (max-width: 768px) {
+    /* Center the modal contents on mobile */
+    .modal {
+      display: flex;
+      justify-content: center; /* Horizontally center */
+      align-items: center; /* Vertically center */
+    }
+  
+    /* Ensure the modal content adapts to mobile */
+    .modal-content {
+      width: 90%; /* Take up most of the screen width */
+      max-width: 400px; /* Limit the max width for small screens */
+      padding: 20px;
+    }
+  
+    /* Center the Connect Wallet button */
+    .connect-button {
+      display: flex;
+      margin: 0 auto; /* Center horizontally inside the modal content */
+      justify-content: center; /* Center content inside the button */
+      align-items: center; /* Center text inside the button */
+      padding: 10px 20px;
+      border-radius: 20px;
+      background-color: #00ff99;
+      color: #000;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+  
+    .connect-button:hover {
+      background-color: #ffffff;
+      transform: scale(1.05);
+    }
+  }
+  

@@ -1,108 +1,103 @@
-  import dotenv from "dotenv";
-  dotenv.config();
+import dotenv from "dotenv";
+dotenv.config();
 
-  import jwt from "jsonwebtoken"; // For JWT validation
-  import openai from "../openaiClient.js"; // Import OpenAI client
-  import { supabase } from "../supabaseClient.js"; // Import Supabase client
-  import extractTraitOrAbility from "./extractTraitOrAbility.js"; // [NEW CODE] Our custom parser function
+import jwt from "jsonwebtoken"; // For JWT validation
+import openai from "../openaiClient.js"; // Import OpenAI client
+import { supabase } from "../supabaseClient.js"; // Import Supabase client
+import extractTraitOrAbility from "./extractTraitOrAbility.js"; // Our custom parser function
 
-  // Helper Function: Retrieve or Create AI Beast (Character)
-  const getOrCreateCharacter = async (user_id, character_name = null) => {
-    const { data, error } = await supabase
+// Helper Function: Retrieve or Create AI Beast (Character)
+const getOrCreateCharacter = async (user_id, character_name = null) => {
+  const { data, error } = await supabase
+    .from("aibeasts_characters")
+    .select("*")
+    .eq("user_id", user_id)
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    throw error;
+  }
+
+  if (data) {
+    return data; // Return existing character
+  } else if (character_name) {
+    // Create a new character if a name is provided
+    const { data: newCharacter, error: insertError } = await supabase
       .from("aibeasts_characters")
-      .select("*")
-      .eq("user_id", user_id)
+      .insert([
+        {
+          user_id,
+          name: character_name,
+          image_url: "",
+          abilities: [],
+          personality: [],
+          physic: [],
+          wins: 0,
+          games_played: 0,
+          experience: 0,
+        },
+      ])
+      .select()
       .single();
 
-    if (error && error.code !== "PGRST116") {
-      throw error;
+    if (insertError) {
+      throw insertError;
     }
 
-    if (data) {
-      return data; // Return existing character
-    } else if (character_name) {
-      // Create a new character if a name is provided
-      const { data: newCharacter, error: insertError } = await supabase
-        .from("aibeasts_characters")
-        .insert([
-          {
-            user_id,
-            name: character_name,
-            image_url: "",
-            abilities: [],
-            personality: [],
-            physic:[],
-            wins: 0,
-            games_played: 0,
-            experience: 0,
-          },
-        ])
-        .select()
-        .single();
+    return newCharacter;
+  }
 
-      if (insertError) {
-        throw insertError;
+  // If no character exists and no name is provided
+  return null;
+};
+
+const generateFollowUpQuestion = async (traitType, trait, basisPrompt) => {
+  const systemPrompt = {
+    role: "system",
+    content: `
+      ${basisPrompt}
+      Based on the trait type and trait provided, generate a relevant follow-up question if necessary.
+
+      Examples:
+      - Trait Type: "physic", Trait: "big wings"
+        Question: "What color should the big wings be?"
+      - Trait Type: "abilities", Trait: "fire breath"
+        Question: "How does the fire breath work in combat?"
+      - Trait Type: "personality", Trait: "brave"
+        Question: "Can you describe a situation where being brave would be helpful?"
+
+      If no follow-up question is needed, respond with: "No follow-up needed."
+
+      Respond in this JSON format:
+      {
+        "question": "<follow-up question or 'No follow-up needed'>"
       }
-
-      return newCharacter;
-    }
-
-    // If no character exists and no name is provided
-    return null;
+    `,
   };
 
-  const generateFollowUpQuestion = async (traitType, trait, basisPrompt) => {
-    const systemPrompt = {
-      role: "system",
-      content: `
-        ${basisPrompt}
-        Based on the trait type and trait provided, generate a relevant follow-up question if necessary.
-  
-        Examples:
-        - Trait Type: "physic", Trait: "big wings"
-          Question: "What color should the big wings be?"
-        - Trait Type: "abilities", Trait: "fire breath"
-          Question: "How does the fire breath work in combat?"
-        - Trait Type: "personality", Trait: "brave"
-          Question: "Can you describe a situation where being brave would be helpful?"
-  
-        If no follow-up question is needed, respond with: "No follow-up needed."
-  
-        Respond in this JSON format:
-        {
-          "question": "<follow-up question or 'No follow-up needed'>"
-        }
-      `,
-    };
-  
-    const userPrompt = {
-      role: "user",
-      content: `Trait Type: "${traitType}", Trait: "${trait}"`,
-    };
-  
-    try {
-      const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [systemPrompt, userPrompt],
-        temperature: 0.5,
-        max_tokens: 60,
-      });
-  
-      const response = completion.choices[0].message.content.trim();
-      const parsed = JSON.parse(response);
-  
-      return parsed.question !== "No follow-up needed" ? parsed.question : null;
-    } catch (error) {
-      console.error("Error generating follow-up question:", error.message);
-      return null; // Default to no follow-up if there's an error
-    }
+  const userPrompt = {
+    role: "user",
+    content: `Trait Type: "${traitType}", Trait: "${trait}"`,
   };
-  
-  
-  
 
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [systemPrompt, userPrompt],
+      temperature: 0.5,
+      max_tokens: 60,
+    });
 
-  
+    const response = completion.choices[0].message.content.trim();
+    const parsed = JSON.parse(response);
+
+    return parsed.question !== "No follow-up needed" ? parsed.question : null;
+  } catch (error) {
+    console.error("Error generating follow-up question:", error.message);
+    return null; // Default to no follow-up if there's an error
+  }
+};
+
 // Function to generate the basis prompt for AI context
 const generateBasisPrompt = (character) => {
   const { name, abilities, personality, physic } = character;
@@ -117,6 +112,8 @@ const generateBasisPrompt = (character) => {
 };
 
 // Serverless Handler for /api/training
+// ... (previous imports and helper functions remain unchanged)
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -136,12 +133,12 @@ export default async function handler(req, res) {
     const user_id = decoded.id;
 
     // Retrieve or create character
-    const character = await getOrCreateCharacter(user_id);
+    let character = await getOrCreateCharacter(user_id);
 
     // Generate the basis prompt
-    const basisPrompt = generateBasisPrompt(character);
+    let basisPrompt = generateBasisPrompt(character);
 
-    // Greet if no message
+    // Greet if no message is provided
     if (!message) {
       return res.status(200).json({
         response: character
@@ -152,7 +149,6 @@ export default async function handler(req, res) {
 
     // Extract trait, type, and intent
     const traitData = await extractTraitOrAbility(message, basisPrompt);
-
     const { traitType, trait, stopIntent } = traitData;
 
     // Handle stop intent
@@ -175,15 +171,79 @@ export default async function handler(req, res) {
       });
 
       const assistantReply = openaiResponse.choices[0].message.content.trim();
-
       return res.status(200).json({ response: assistantReply });
     }
 
-    // Handle trait updates
+    // Handle name update separately
+    if (traitType === "name") {
+      const { error: updateError } = await supabase
+        .from("aibeasts_characters")
+        .update({ name: trait })
+        .eq("id", character.id);
+
+      if (updateError) {
+        throw new Error("Error updating character name in Supabase: " + updateError.message);
+      }
+
+      // Update the local character object so the new basis prompt reflects the updated name
+      character.name = trait;
+      basisPrompt = generateBasisPrompt(character);
+
+      return res.status(200).json({
+        response: `Your beast's name has been updated to "${trait}".`
+      });
+    }
+
+    // Handle removal of personality traits with fuzzy matching
+    if (traitType === "remove_personality") {
+      const currentTraits = Array.isArray(character.personality) ? character.personality : [];
+      const lowerRequested = trait.toLowerCase();
+      
+      // Find personality traits that include the removal request (fuzzy match)
+      const matchingTraits = currentTraits.filter(item =>
+        item.toLowerCase().includes(lowerRequested)
+      );
+      
+      if (matchingTraits.length === 0) {
+        return res.status(200).json({
+          response: `No personality trait similar to "${trait}" was found in your beast's personality.`
+        });
+      } else if (matchingTraits.length === 1) {
+        const updatedPersonality = currentTraits.filter(item =>
+          item.toLowerCase() !== matchingTraits[0].toLowerCase()
+        );
+
+        const { error: updateError } = await supabase
+          .from("aibeasts_characters")
+          .update({ personality: updatedPersonality })
+          .eq("id", character.id);
+
+        if (updateError) {
+          throw new Error("Error removing personality trait in Supabase: " + updateError.message);
+        }
+
+        // Update the local character object
+        character.personality = updatedPersonality;
+        basisPrompt = generateBasisPrompt(character);
+
+        return res.status(200).json({
+          response: `Removed "${matchingTraits[0]}" from your beast's personality.`,
+        });
+      } else {
+        // Multiple possible matches found; ask the user for clarification
+        return res.status(200).json({
+          response: `Multiple personality traits match your request: ${matchingTraits.join(", ")}. Please specify which one you want to remove.`
+        });
+      }
+    }
+
+    // Handle trait updates for abilities, personality, or physic (adding new traits)
     const updatedTraits = {
-      [traitType]: [...(Array.isArray(character[traitType]) ? character[traitType] : []), trait],
+      [traitType]: [
+        ...(Array.isArray(character[traitType]) ? character[traitType] : []),
+        trait,
+      ],
     };
-    
 
     const { error: updateError } = await supabase
       .from("aibeasts_characters")
@@ -197,7 +257,6 @@ export default async function handler(req, res) {
     // Generate a follow-up question dynamically using the basis prompt
     const followUpQuestion = await generateFollowUpQuestion(traitType, trait, basisPrompt);
 
-    // Send success response
     return res.status(200).json({
       response: `Added "${trait}" as a new ${traitType}. ${followUpQuestion || ""}`,
     });
@@ -206,5 +265,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
 

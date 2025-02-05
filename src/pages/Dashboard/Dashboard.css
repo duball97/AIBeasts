@@ -1,14 +1,13 @@
 /* src/components/Dashboard/Dashboard.css */
 
 .dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  /* Optional: add some padding */
   padding: 20px;
-  margin-top:30px;
-  background-color: #000000;
-  color: #ffffff;
 }
+
 
 /* Responsive Layout */
 @media (min-width: 768px) {

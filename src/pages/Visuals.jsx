@@ -69,7 +69,7 @@ const Visuals = () => {
     const description = physic.join(", ");
   
     // Generate a complete prompt with a fixed style
-    const promptText = `Create a detailed 2D cartoon illustration of a monster. It has ${description}. Style: Studio Ghibli.`;
+    const promptText = `Create a detailed 2D cartoon illustration of a monster. It has ${description}. Style: 2d Studio Ghibli. Cartoon. Dragon Ball. Family Guy.`;
   
     setPrompt(promptText);
   };

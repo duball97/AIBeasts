@@ -12,10 +12,12 @@ import Train from './pages/Train';
 import Dashboard from './pages/Dashboard/Dashboard'; // Create this component next
 import BattleArena from './pages/BattleArena/BattleArena';
 import FluxPage from './components/FluxPage'; // Create this component next
+import { VortexConnectProvider } from "./VortexConnectContext";
 
 
 function App() {
   return (
+    <VortexConnectProvider>
     <Router>
       <Header />
       <Routes>
@@ -32,6 +34,7 @@ function App() {
         {/* Add more routes as needed */}
       </Routes>
     </Router>
+    </VortexConnectProvider>
   );
 }
 
