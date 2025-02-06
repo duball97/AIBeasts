@@ -3,7 +3,7 @@ import {
   loadFixture,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers.js";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs.js";
-import chai from "chai";
+import chai from "chaim";
 
 const { expect } = chai;
 
