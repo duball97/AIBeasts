@@ -1,85 +1,99 @@
+/* Sign-In Page Container */
+.sign-in-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(145deg, #1b1b1b, #292929);
+}
 
-  
-  @keyframes gradientAnimation {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-  
-  .sign-in-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .sign-in-box {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    width: 300px;
-    text-align: center;
-  }
-  
-  .sign-in-box h1 {
-    color: #ffffff;
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-  }
-  
-  .sign-in-box label {
-    display: block;
-    text-align: left;
-    margin-bottom: 15px;
-  }
-  
-  .sign-in-box label span {
-    color: #ffffff;
-    font-weight: 500;
-  }
-  
-  .sign-in-box input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #555;
-    border-radius: 8px;
-    background: #1c1c1c;
-    color: #ffffff;
-  }
-  
-  .sign-in-box input:focus {
-    outline: none;
-    border-color: #42a5f5;
-    box-shadow: 0 0 5px #42a5f5;
-  }
-  
-  .submit-button {
-    background: linear-gradient(45deg, #ec407a, #42a5f5);
-    color: #ffffff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    margin-top: 15px;
-    transition: background 0.3s ease, transform 0.3s ease;
-  }
-  
-  .submit-button:hover {
-    background: linear-gradient(45deg, #673ab7, #42a5f5);
-    transform: translateY(-3px);
-  }
-  
-  .error-message {
-    color: #ff6b6b;
-    margin-top: 15px;
-    font-size: 0.9rem;
-  }
-  
+/* Sign-In Box */
+.sign-in-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #1b1b1b, #292929);
+  border: 1px solid #4eceb0;
+  border-radius: 12px;
+  padding: 50px;
+  width: 450px;
+  box-shadow: 
+      inset 0 0 8px rgba(255, 255, 255, 0.1),
+      0 2px 6px rgba(0, 0, 0, 0.8);
+  text-align: center;
+}
+
+/* Sign-In Title */
+.sign-in-box h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 36px;
+  color: #4eceb0;
+  text-transform: uppercase;
+  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  padding-bottom: 5px;
+  margin-bottom: 20px;
+}
+
+/* Form Styling */
+.sign-in-box form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Labels */
+.sign-in-box label {
+  font-size: 18px;
+  color: #ddd;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+/* Input Fields */
+.sign-in-box input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #4eceb0;
+  background: #121212;
+  color: #fff;
+  box-shadow: inset 0 0 6px rgba(78, 206, 176, 0.4);
+  outline: none;
+}
+
+.sign-in-box input::placeholder {
+  color: #aaa;
+}
+
+/* Submit Button */
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #121212;
+  background: #4eceb0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.submit-button:hover {
+  background: #3bb092;
+  transform: scale(1.05);
+}
+
+/* Error Message */
+.error-message {
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ff4d4d;
+}
