@@ -5,16 +5,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%; /* Decreased width from 100% to 90% */
+  width: 90%; /* Keeps it responsive */
+  max-width: 1500px; /* Ensures it doesn't exceed 1500px */
   margin: 0 auto; /* Centers the header */
   padding: 10px 20px;
-  width: 1000px;
   position: relative;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%); /* Ensures it's centered */
   z-index: 1000;
 }
+
 
 /* Logo Section (25% Width) */
 .logo {
