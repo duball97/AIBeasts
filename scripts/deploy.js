@@ -7,7 +7,7 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const feeReceiver = "0xdc28630221B2d58B8E249Df6d96c928f57bed952";
+  const feeReceiver = "";
 
   const MyAdManager = await ethers.getContractFactory("AdManager");
   const MyAdManagerDeployment = await MyAdManager.deploy(feeReceiver);
