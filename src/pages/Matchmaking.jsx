@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./Matchmaking.css"; // Make sure to update the CSS file accordingly
+import "./Matchmaking.css"; 
 
 const Matchmaking = () => {
   const navigate = useNavigate();

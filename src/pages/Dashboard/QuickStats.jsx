@@ -2,7 +2,7 @@
 import React from 'react';
 import './QuickStats.css'; // Ensure this CSS file exists
 
-const QuickStats = ({ stats }) => {
+const QuickStats = ({ stats }) => { 
   return (
     <div className="quick-stats">
       <h3>Stats</h3>
