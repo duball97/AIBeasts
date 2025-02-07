@@ -1,39 +1,20 @@
-import React, { useState } from "react";
-import { ethers } from "ethers";
-
-const ConnectWallet = () => {
-  const [walletAddress, setWalletAddress] = useState("");
-
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert(
-        "MetaMask is not installed. Please install it to use this feature!"
-      );
-      return;
-    }
-
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const accounts = await provider.send("eth_requestAccounts", []);
-      setWalletAddress(accounts[0]);
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-    }
-  };
-
+import React from "react";
+import VortexConnect from "./VortexConnect"; // Same component as in Header
+import "./ConnectWallet.css";
+function Connect() {
   return (
-    <div className="connect-wallet">
-      {walletAddress ? (
-        <span className="wallet-address">
-          Connected: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-        </span>
-      ) : (
-        <button onClick={connectWallet} className="connect-button">
-          Connect Wallet
-        </button>
-      )}
+    <div className="sign-in-page">
+      <div className="sign-in-box">
+        <h1>Connect Your EVM Wallet</h1>
+
+        {/* 
+          We remove the form with email/password
+          and simply show the wallet connect button 
+        */}
+        <VortexConnect />
+      </div>
     </div>
   );
-};
+}
 
-export default ConnectWallet;
+export default Connect;

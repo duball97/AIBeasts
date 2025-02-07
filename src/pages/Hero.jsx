@@ -17,11 +17,10 @@ const Hero = () => {
   return (
     <section className="hero">
       <div className="hero-content">
-        <h1 className="hero-title">There are no limits to what you can imagine</h1>
+        <h1 className="hero-title">Shape your beast, train it, fight wars, win rewards.</h1>
        
         <p className="hero-description">
-          Create unique monsters, engage in dynamic battles, and watch your beasts evolve through thrilling encounters.
-        </p>
+          AIBeasts, a strategy online game.        </p>
         <button
           className="btn"
           onClick={handleGetStarted} // Call the logic to handle navigation

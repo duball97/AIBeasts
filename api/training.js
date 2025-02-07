@@ -128,38 +128,40 @@ export default async function handler(req, res) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user_id = decoded.id;
 
-    // Retrieve or create character using maybeSingle()
+    // Try to retrieve an existing beast
     let character = await getOrCreateCharacter(user_id);
 
-    // Greet if no message is provided
-    if (!message) {
-      return res.status(200).json({
-        response: character
-          ? `I' am ${character.name}. Please teach me something, change my appearance or my personality.`
-          : "Welcome to AIBeasts Game. What do you want to call your new beast?",
-      });
-    }
-
-    // If a message is provided but no character exists, return an error
+    // If no beast exists yet...
     if (!character) {
-      return res.status(400).json({ error: "You must create your beast before training." });
+      if (!message) {
+        // No message provided; prompt for a name.
+        return res.status(200).json({
+          response: "Welcome to AIBeasts Game. What do you want to call your new beast?"
+        });
+      } else {
+        // A message is provided; assume it's the beast's name and create it.
+        character = await getOrCreateCharacter(user_id, message);
+        return res.status(200).json({
+          response: `I am ${character.name}. Please teach me something, change my appearance or my personality.`
+        });
+      }
     }
 
-    // Generate the basis prompt
+    // At this point, a beast exists so continue with training.
     let basisPrompt = generateBasisPrompt(character);
 
-    // Extract trait, type, and intent
+    // Extract trait, type, and intent from the message.
     const traitData = await extractTraitOrAbility(message, basisPrompt);
     const { traitType, trait, stopIntent } = traitData;
 
-    // Handle stop intent
+    // Handle stop intent.
     if (stopIntent) {
       return res.status(200).json({
         response: "Alright, let me know if you want to train your beast further!",
       });
     }
 
-    // Handle general conversation
+    // Handle general conversation.
     if (traitType === "conversation") {
       const openaiResponse = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
@@ -175,7 +177,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ response: assistantReply });
     }
 
-    // Handle name update separately
+    // Handle name update separately.
     if (traitType === "name") {
       const { error: updateError } = await supabase
         .from("aibeasts_characters")
@@ -186,7 +188,7 @@ export default async function handler(req, res) {
         throw new Error("Error updating character name in Supabase: " + updateError.message);
       }
 
-      // Update the local character object so the new basis prompt reflects the updated name
+      // Update the local character object so the new basis prompt reflects the updated name.
       character.name = trait;
       basisPrompt = generateBasisPrompt(character);
 
@@ -195,16 +197,16 @@ export default async function handler(req, res) {
       });
     }
 
-    // Handle removal of personality traits with fuzzy matching
+    // Handle removal of personality traits with fuzzy matching.
     if (traitType === "remove_personality") {
       const currentTraits = Array.isArray(character.personality) ? character.personality : [];
       const lowerRequested = trait.toLowerCase();
-      
-      // Find personality traits that include the removal request (fuzzy match)
+
+      // Find personality traits that include the removal request (fuzzy match).
       const matchingTraits = currentTraits.filter(item =>
         item.toLowerCase().includes(lowerRequested)
       );
-      
+
       if (matchingTraits.length === 0) {
         return res.status(200).json({
           response: `No personality trait similar to "${trait}" was found in your beast's personality.`
@@ -223,7 +225,7 @@ export default async function handler(req, res) {
           throw new Error("Error removing personality trait in Supabase: " + updateError.message);
         }
 
-        // Update the local character object
+        // Update the local character object.
         character.personality = updatedPersonality;
         basisPrompt = generateBasisPrompt(character);
 
@@ -231,14 +233,14 @@ export default async function handler(req, res) {
           response: `Removed "${matchingTraits[0]}" from your beast's personality.`,
         });
       } else {
-        // Multiple possible matches found; ask the user for clarification
+        // Multiple possible matches found; ask the user for clarification.
         return res.status(200).json({
           response: `Multiple personality traits match your request: ${matchingTraits.join(", ")}. Please specify which one you want to remove.`
         });
       }
     }
 
-    // Handle trait updates for abilities, personality, or physic (adding new traits)
+    // Handle trait updates for abilities, personality, or physic (adding new traits).
     const updatedTraits = {
       [traitType]: [
         ...(Array.isArray(character[traitType]) ? character[traitType] : []),
@@ -255,7 +257,7 @@ export default async function handler(req, res) {
       throw new Error("Error updating character in Supabase: " + updateError.message);
     }
 
-    // Generate a follow-up question dynamically using the basis prompt
+    // Generate a follow-up question dynamically using the basis prompt.
     const followUpQuestion = await generateFollowUpQuestion(traitType, trait, basisPrompt);
 
     return res.status(200).json({

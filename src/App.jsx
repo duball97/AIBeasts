@@ -11,6 +11,7 @@ import Visuals from './pages/Visuals';
 import OnlineMatch from './pages/OnlineMatch';
 import Train from './pages/Train';
 import Dashboard from './pages/Dashboard/Dashboard'; 
+import Connect from './components/ConnectWallet';
 import BattleArena from './pages/BattleArena/BattleArena';
 import FluxPage from './components/FluxPage'; 
 import { VortexConnectProvider } from "./VortexConnectContext";
@@ -24,6 +25,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Hero />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/connect" element={<Connect />} />
         <Route path="/arena" element={<BattleArena />} />
         <Route path="/style" element={<Visuals />} />
         <Route path="/matchmaking" element={<Matchmaking />} />

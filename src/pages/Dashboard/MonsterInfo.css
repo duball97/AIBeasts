@@ -65,6 +65,14 @@
   font-family: 'Cinzel', serif;
 }
 
+.monster-info.error {
+  color: #ffffff; /* White text */
+  font-family: 'Cinzel', serif; /* Use Cinzel font */
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 20px;
+}
+
 /* Strong Labels */
 .monster-details p strong {
   margin-top:-5px;
