@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
 
-function SignIn() {
+function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -78,4 +78,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default SignUp;
