@@ -17,11 +17,11 @@ module.exports = {
   networks: {
     sepolia: {
       url: process.env.ALCHEMY_SEPOLIA_ENDPOINT,
-      accounts: [process.env.SEPOLIA_PRIVATE_KEY],
+      accounts: [process.env.PLAYER1_PRIVATE_KEY],
     },
     base: {
       url: process.env.ALCHEMY_BASE_ENDPOINT,
-      accounts: [process.env.SEPOLIA_PRIVATE_KEY],
+      accounts: [process.env.PLAYER1_PRIVATE_KEY],
     },
 
     localhost: {

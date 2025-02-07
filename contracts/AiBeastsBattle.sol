@@ -53,13 +53,10 @@ contract BattleBet {
 
     // Declare the winner after the off-chain logic concludes
     function declareWinner(uint256 _battleId, address _winner) external {
-        // Optional: Add access control so only your game server or 
-        // a verified mechanism can call it. For example:
-        // require(msg.sender == owner, "Only game server can call");
 
         Battle storage b = battles[_battleId];
         require(b.player1Staked && b.player2Staked, "Both players must stake");
-        require(!b.finished, "Battle already finished");
+        //require(!b.finished, "Battle already finished");
         require(_winner == b.player1 || _winner == b.player2, "Invalid winner");
 
         b.winner = _winner;

@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "C:\\Users\\Utilizador\\Desktop\\AIBeasts\\contracts\\AiBeastsBattle.sol": {
-      "lastModificationDate": 1738951417787,
-      "contentHash": "1c1cca29f167482e861dc5aa75dd423a",
+      "lastModificationDate": 1738955434061,
+      "contentHash": "53cb74b7ad0f00865ec81fc9bdbe9a00",
       "sourceName": "contracts/AiBeastsBattle.sol",
       "solcConfig": {
         "version": "0.8.24",

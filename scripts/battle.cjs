@@ -1,8 +1,8 @@
-// battle.js
+require("dotenv").config(); // Load env variables
 const { ethers } = require("hardhat");
 
+// Contract ABI
 const ABI = [
-  // createBattle(address,uint256) returns (uint256)
   {
     inputs: [
       { internalType: "address", name: "_player2", type: "address" },
@@ -13,7 +13,6 @@ const ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-  // joinBattle(uint256)
   {
     inputs: [{ internalType: "uint256", name: "_battleId", type: "uint256" }],
     name: "joinBattle",
@@ -21,7 +20,6 @@ const ABI = [
     stateMutability: "payable",
     type: "function",
   },
-  // battleCounter()
   {
     inputs: [],
     name: "battleCounter",
@@ -29,53 +27,84 @@ const ABI = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    inputs: [
+      { internalType: "uint256", name: "_battleId", type: "uint256" },
+      { internalType: "address", name: "_winner", type: "address" },
+    ],
+    name: "declareWinner",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ];
 
 async function main() {
-  // 2. Set up your provider and signer for Base
-  //    - Replace with your actual RPC URL for Base (mainnet or testnet).
+  const provider = new ethers.JsonRpcProvider(
+    process.env.ALCHEMY_SEPOLIA_ENDPOINT
+  );
 
-  const [deployer] = await ethers.getSigners();
+  // Load both wallets from .env
+  const player1 = new ethers.Wallet(process.env.PLAYER1_PRIVATE_KEY, provider);
+  const player2 = new ethers.Wallet(process.env.PLAYER2_PRIVATE_KEY, provider);
 
-  //const provider = new ethers.BrowserProvider(process.env.SEPLOIA_);
-
-  // 4. Create a contract instance
-  //    - Replace with your actual deployed contract address on Base.
+  // Contract details
   const contractAddress = "0x28Cd3c3CB8C10b3Cb94E0a358898C4913CE2097e";
-  const contract = new ethers.Contract(contractAddress, ABI, deployer);
+  const contractPlayer1 = new ethers.Contract(contractAddress, ABI, player1);
+  const contractPlayer2 = new ethers.Contract(contractAddress, ABI, player2);
 
-  // 5. Define the second player's address and your desired stake in wei
-  //    - For 0.0001 ETH, that's 0.0001 * 1e18 = 100000000000000 (1e14).
-  const player2 = "0xdc28630221B2d58B8E249Df6d96c928f57bed952";
   const stakeWei = ethers.parseEther("0.0001"); // 1e14
 
-  // --- Step A: Create a new battle ---
-  console.log("Creating battle...");
-  const createTx = await contract.createBattle(player2, stakeWei, {
-    gasLimit: 30000, // This attaches 0.0001 ETH as the bet
-  });
-  const createReceipt = await createTx.wait();
+  // --- Step 1: Player1 Creates the Battle ---
+  console.log(`Player1 (${player1.address}) creating a battle...`);
 
-  // The contract’s createBattle returns an ID, but in ethers.js
-  // you only get the transaction data. We can read the current `battleCounter`
-  // after it’s mined to figure out the newly created battle ID.
+  const createTx = await contractPlayer1.createBattle(
+    player2.address,
+    stakeWei
+  );
+  await createTx.wait();
+  console.log("Battle created!");
 
-  const currentBattleId = await contract.battleCounter();
+  // Get the latest battle ID
+  const currentBattleId = await contractPlayer1.battleCounter();
   console.log("Current Battle ID:", currentBattleId.toString());
 
-  // The newly created battle should have ID = currentBattleId.
+  // --- Step 2: Player1 Joins the Battle ---
+  console.log(
+    `Player1 (${player1.address}) joining battle #${currentBattleId}...`
+  );
 
-  // --- Step B: Join the battle (assume you are player1 or player2) ---
-  // Send 0.0001 ETH in the transaction to cover your stake.
-  console.log(`Joining battle #${currentBattleId} with 0.0001 ETH...`);
-  const joinTx = await contract.joinBattle(currentBattleId, {
+  const joinTx = await contractPlayer1.joinBattle(currentBattleId, {
     value: stakeWei,
-    gasLimit: 30000, // This attaches 0.0001 ETH as the bet
   });
-  const joinReceipt = await joinTx.wait();
-  console.log("Joined battle, tx hash:", joinReceipt.transactionHash);
+  await joinTx.wait();
 
-  console.log("Done!");
+  console.log(`Player1 joined battle #${currentBattleId}!`);
+
+  // --- Step 2: Player2 Joins the Battle ---
+  console.log(
+    `Player2 (${player2.address}) joining battle #${currentBattleId}...`
+  );
+
+  const join2Tx = await contractPlayer2.joinBattle(currentBattleId, {
+    value: stakeWei,
+  });
+  await join2Tx.wait();
+
+  console.log(`Player2 joined battle #${currentBattleId}!`);
+
+  // --- Step 3: Battle Winner ---
+  console.log("Declaring winner...");
+
+  const battleWinner = player1.address;
+
+  const winnerTx = await contractPlayer1.declareWinner(
+    currentBattleId,
+    battleWinner
+  );
+  await winnerTx.wait();
+
+  console.log("Battle winner is player 1!");
 }
 
 main().catch((error) => {
