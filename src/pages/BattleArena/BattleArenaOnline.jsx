@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import TerminalChat from "./TerminalChat";
+import TerminalChatTest from "./TerminalChatTest";
+import VisualArena from "./VisualArena";
 import { supabase } from "../../supabaseClient";
-import "./BattleArena.css"; // Optional: You can use your existing BattleArena.css or create a new one
+import "./BattleArenaOnline.css";
 
-// Helper hook to get query parameters
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -100,12 +101,26 @@ const BattleArenaOnline = () => {
     loadData();
   }, [lobbyId]);
 
-  if (loading) return <div className="battle-arena-online">Loading online battle... 🕒</div>;
-  if (error) return <div className="battle-arena-online error">{error}</div>;
+  if (loading)
+    return <div className="battle-arena-online">Loading online battle... 🕒</div>;
+  if (error)
+    return <div className="battle-arena-online error">{error}</div>;
 
   return (
     <div className="battle-arena-online">
-      
+    
+      <div className="battle-arena-content">
+        <div className="terminal-column">
+          <TerminalChatTest userBeast={userBeast} aiBeast={opponentBeast} />
+        </div>
+        <div className="visual-column">
+        <VisualArena 
+      messages={[]} 
+      userBeast={userBeast} 
+      opponentBeast={opponentBeast} 
+    />
+        </div>
+      </div>
       {lobbyDetails && (
         <div className="lobby-details">
           <p>
@@ -116,7 +131,6 @@ const BattleArenaOnline = () => {
           </p>
         </div>
       )}
-      <TerminalChat userBeast={userBeast} aiBeast={opponentBeast} />
     </div>
   );
 };

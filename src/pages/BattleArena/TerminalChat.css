@@ -13,6 +13,7 @@
   .terminal-chat h2 {
     margin-bottom: 10px;
     text-align: center;
+    font-family: "Cinzel", serif;
   }
   
   .chat-window {
@@ -21,7 +22,7 @@
     background-color: #000000;
     padding: 10px;
     border-radius: 6px;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: "Cinzel", serif;
   }
   
   .chat-message.user p {

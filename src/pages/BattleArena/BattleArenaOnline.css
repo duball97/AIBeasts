@@ -1,0 +1,57 @@
+/* src/pages/BattleArenaOnline.css */
+
+.battle-arena-online {
+    
+    max-width: 1400px;
+    margin: 40px auto;
+    background: linear-gradient(145deg, #0f0f0f, #232323);
+    border: 1px solid #ae090073;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 15px #ae09006f;
+    color: #fff;
+    font-family: 'Cinzel', serif;
+  }
+  
+  .lobby-details {
+    background: #1b1b1b;
+    border: 1px solid #ae090073;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    margin-top:50px;
+    text-align: center;
+  }
+  
+  .lobby-details p {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #fff;
+  }
+  
+  .lobby-details strong {
+    color: #ae0900;
+  }
+  
+  /* Two-column layout for battle arena content */
+  .battle-arena-content {
+    display: flex;
+    gap: 20px;
+  }
+  
+  /* Terminal Chat Column */
+  .terminal-column {
+    flex: 1;
+    background: #121212;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  /* Visual Arena Column */
+  .visual-column {
+    flex: 1;
+    background: #121212;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  

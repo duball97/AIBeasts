@@ -1,13 +1,15 @@
 // src/components/VisualArena.jsx
 import React, { useEffect, useState } from 'react';
 import './VisualArena.css';
-import monster1Img from '../../assets/monster1.png';
-import monster2Img from '../../assets/monster2.png';
+// Optional fallback images if beast.image_url is missing
+import fallbackMonster1 from '../../assets/monster1.png';
+import fallbackMonster2 from '../../assets/monster2.png';
 
-const VisualArena = ({ messages }) => {
+const VisualArena = ({ messages, userBeast, opponentBeast }) => {
   const [environment, setEnvironment] = useState('forest');
   const [effects, setEffects] = useState([]);
 
+  // Listen to messages to update the environment or add attack effects
   useEffect(() => {
     messages.forEach((msg) => {
       if (msg.text.includes('environment changes to')) {
@@ -20,7 +22,7 @@ const VisualArena = ({ messages }) => {
     });
   }, [messages]);
 
-  // Placeholder for dynamic background images based on environment
+  // Map environments to background images
   const environmentImages = {
     forest: '/environments/forest.png',
     desert: '/environments/desert.png',
@@ -35,13 +37,20 @@ const VisualArena = ({ messages }) => {
         backgroundImage: `url(${environmentImages[environment] || environmentImages['forest']})`,
       }}
     >
-      {/* Monster 1 */}
-      <img src={monster1Img} alt="Monster 1" className="monster monster1" />
-      
-      {/* Monster 2 */}
-      <img src={monster2Img} alt="Monster 2" className="monster monster2" />
+      {/* Display the joiner's beast (userBeast) on the left */}
+      <img
+        src={userBeast?.image_url || fallbackMonster1}
+        alt={userBeast?.name || "Monster 1"}
+        className="monster monster1"
+      />
+      {/* Display the opponent's beast on the right */}
+      <img
+        src={opponentBeast?.image_url || fallbackMonster2}
+        alt={opponentBeast?.name || "Monster 2"}
+        className="monster monster2"
+      />
 
-      {/* Attack Effects */}
+      {/* Render any attack effects */}
       {effects.map((action, index) => (
         <div key={index} className="attack-effect">
           {action === 'FireBreath' && <div className="fire-breath"></div>}
