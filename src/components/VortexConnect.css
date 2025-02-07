@@ -18,32 +18,34 @@
     background: linear-gradient(135deg, #333333, #1a1a1a);
     border-radius: 20px;
     text-align: center;
+    font-family: 'Cinzel', serif;
     width: 90%;
     max-width: 500px;
     max-height: 80%;
     overflow-y: auto;
     color: #f5f5f5;
-    border: 2px solid #00ff99;
+    border: 1px solid #790000;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
     padding: 20px;
   }
   
   /* Button styles for connecting wallets */
   .connect-button {
-    background-color: #00ff99;
-    color: #000;
+    background-color: #790000;
+    font-family: 'Cinzel', serif;
+    color: white;
     border: none;
     border-radius: 20px;
     padding: 10px 20px;
-    font-size: 1rem;
+    font-size: 20px;
     font-weight: bold;
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
   }
   
   .connect-button:hover {
-    background-color: #00ff99;
-    transform: scale(1.05);
+    background-color: #a80000;
+    transform: scale(1.02);
   }
   
   /* Close button inside the modal */
@@ -55,7 +57,7 @@
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color:#00ff99;
+    color: #db0b00;
   }
   
   .close-button:hover {
@@ -64,9 +66,10 @@
   
   /* Wallet buttons for selecting options */
   .wallet-button {
-    background-color: #1a1a1a;
-    color: #00ff99;
-    border: 1px solid #00ff99;
+    background: linear-gradient(135deg, #790000, #ae0900); 
+    color: white;
+    border: 1px solid #790000;
+    font-family: 'Cinzel', serif;
     border-radius: 20px;
     padding: 10px 20px;
     margin: 10px auto;
@@ -79,9 +82,9 @@
   }
   
   .wallet-button:hover {
-    background-color: #00ff99;
+    background-color: #840000;
     color: #000;
-    transform: scale(1.05);
+    transform: scale(1.02);
   }
   
   /* Wallet information section */
@@ -95,8 +98,9 @@
   /* Copy button styling */
   .copy-button {
     background-color: #333333;
-    color: #00ff99;
-    border: 1px solid #00ff99;
+    color: #ff0000;
+    border: 1px solid #790000;
+    font-family: 'Cinzel', serif;
     padding: 5px 10px;
     margin-left: 10px;
     font-size: 0.9rem;
@@ -105,7 +109,7 @@
   }
   
   .copy-button:hover {
-    background-color: gold;
+    background-color: #790000;
     color: #000;
   }
   
@@ -155,7 +159,7 @@
       align-items: center; /* Center text inside the button */
       padding: 10px 20px;
       border-radius: 20px;
-      background-color: #00ff99;
+      background-color: #790000;
       color: #000;
       font-size: 1rem;
       font-weight: bold;

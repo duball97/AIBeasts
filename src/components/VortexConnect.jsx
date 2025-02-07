@@ -615,7 +615,7 @@ const VortexConnect = ({ onConnect }) => {
                     </button>
                     <button
                       onClick={disconnectWallet}
-                      className="disconnect-button"
+                      className="wallet-button"
                     >
                       Disconnect
                     </button>
