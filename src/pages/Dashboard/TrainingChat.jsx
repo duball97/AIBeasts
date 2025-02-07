@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./TrainingChat.css";
 import MonsterInfo from "./MonsterInfo"; // Import MonsterInfo
-import { useNavigate } from "react-router-dom";
 
 const TrainingChat = () => {
-   const navigate = useNavigate();
+   
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -136,7 +135,7 @@ const TrainingChat = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Command your beast..."
+              placeholder="Start training your beast"
             />
             <button className="training-chat-send-button" onClick={handleSend} disabled={loading}>
               {loading ? "..." : "Send"}

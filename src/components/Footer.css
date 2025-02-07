@@ -27,14 +27,14 @@
   }
   
   .footer-links a {
-    color: #00ff00; /* Green link color */
+    color: #ffffff; /* Green link color */
     text-decoration: none; /* Remove underline */
     font-size: 1rem; /* Standard font size */
     transition: color 0.3s ease; /* Smooth color transition */
   }
   
   .footer-links a:hover {
-    color: #00cc00; /* Brighter green on hover */
+    color: #ea0000; /* Brighter green on hover */
     text-decoration: underline; /* Underline on hover */
   }
   

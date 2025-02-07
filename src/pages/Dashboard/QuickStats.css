@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(145deg, #1b1b1b, #292929); /* Dark metal */
-  border: 1px solid #4eceb0; /* Mystic accent */
+  border: 1px solid #ae090073;
   border-radius: 12px;
   padding: 15px;
   width: 80%;
@@ -22,9 +22,9 @@
 .quick-stats h3 {
   font-family: 'Cinzel', serif; /* Fantasy/Medieval vibe */
   font-size: 30px;
-  color: #4eceb0;
+  color: #ae0900;
   text-transform: uppercase;
-  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  border-bottom: 2px solid #ae0900;
   padding-bottom: 5px;
   margin-bottom: 15px;
   text-align: center;
@@ -43,7 +43,7 @@
 /* Individual Stat Item */
 .stat-item {
   background: linear-gradient(135deg, #1b1b1b, #222222);
-  border: 1px solid #4eceb0;
+  border: 1px solid #ae090073;
   border-radius: 8px;
   padding: 20px 8px; /* Reduced top/bottom padding */
   box-shadow: 
@@ -54,7 +54,7 @@
 
 /* Hover Effect */
 .stat-item:hover {
-  transform: scale(1.05);
+  transform: scale(1.01);
 }
 
 /* Stat Name */
@@ -69,6 +69,6 @@
 .stat-item span {
   font-size: 27px; /* Slightly smaller */
   font-weight: bold;
-  color: #4eceb0;
+  color: #ae0900;
   
 }

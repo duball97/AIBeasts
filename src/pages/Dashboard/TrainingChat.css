@@ -2,10 +2,10 @@
 .training-chat {
   width: 50%;
   background: linear-gradient(145deg, #0f0f0f, #232323);
-  border: 1px solid #4eceb0; /* Mystic accent */
+  border: 1px solid #ae090073; /* Mystic accent */
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 0 15px rgba(78, 206, 176, 0.3);
+  box-shadow: 0 0 15px #ae09006f;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,8 +43,8 @@
   font-size: 25px;
   font-weight: bold;
   text-align: center;
-  color: #4eceb0;
-  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  color: #ae0900;
+  border-bottom: 2px solid #ae0900;
   padding-bottom: 8px;
   margin-top:40px;
   margin-bottom: 12px;
@@ -80,19 +80,20 @@
 /* Player Messages */
 .training-chat-message.player {
   align-self: flex-end;
-  background: linear-gradient(135deg, #4eceb0, #2e8b75);
-  color: black;
+  background: linear-gradient(135deg, #790000, #ae0900); /* Metallic blue-green */
+  border: 1px solid #ae090073;
+  color: white;
   font-weight: bold;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(78, 206, 176, 0.5);
+  
 }
 
 /* Beast Messages */
 .training-chat-message.beast {
   align-self: flex-start;
   background: linear-gradient(135deg, #1b1b1b, #292929);
-  color: #4eceb0;
-  border-left: 4px solid #4eceb0;
+  color: #c4c4c4;
+  border-left: 4px solid #630000;
 }
 
 /* System Messages */
@@ -106,18 +107,19 @@
 /* Input Area */
 .training-chat-input-container {
   display: flex;
-  width: 100%;
+  width: 98%;
   margin-top: 15px;
+ 
 }
 
 /* Input Field */
 .training-chat-input {
   flex-grow: 1;
   background: #121212;
-  border: 2px solid #4eceb0;
+  border: 1px solid #ae090073;
   padding: 10px;
   font-size: 20px;
-  color: #4eceb0;
+  color: #ffffff;
   border-radius: 8px 0 0 8px;
   outline: none;
 }
@@ -125,12 +127,13 @@
 /* Send Button */
 .training-chat-send-button {
   font-family: 'Cinzel', serif; /* Ensuring the font matches the rest */
-  background: linear-gradient(135deg, #4eceb0, #2e8b75);
+  box-shadow: 0 0 20px rgba(224, 0, 0, 0.153);
+  background: linear-gradient(135deg, #790000, #ae0900); 
   border: none;
-  padding: 10px 15px;
+  padding: 10px 25px;
   font-size: 20px;
   font-weight: bold;
-  color: black;
+  color: white;
   border-radius: 0 8px 8px 0;
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
@@ -138,7 +141,7 @@
 
 /* Send Button Hover */
 .training-chat-send-button:hover {
-  transform: scale(1.05);
+  transform: scale(1.01);
 }
 
 /* Custom Scrollbar */

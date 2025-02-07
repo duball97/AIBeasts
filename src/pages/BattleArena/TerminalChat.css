@@ -2,7 +2,7 @@
 
 .terminal-chat {
     background-color: #1e1e1e;
-    color: #00ff00;
+    color: #ae0900;
     padding: 15px;
     border-radius: 8px;
     height: 100%;
@@ -31,7 +31,7 @@
   
   .chat-message.ai p {
     text-align: left;
-    color: #33c1ff;
+    color: #ae0900;
   }
   
   .chat-message.system p {

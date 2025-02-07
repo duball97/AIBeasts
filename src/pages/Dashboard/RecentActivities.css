@@ -3,7 +3,7 @@
 /* Main Container */
 .recent-activities {
   background: linear-gradient(145deg, #1b1b1b, #292929); /* Dark metallic background */
-  border: 1px solid #4eceb0; /* Mystic accent */
+  border: 1px solid #ae090073;
   border-radius: 12px;
   padding: 15px;
   width: 80%;
@@ -19,9 +19,9 @@
 .recent-activities h3 {
   font-family: 'Cinzel', serif; /* Use a medieval fantasy font */
   font-size: 30px;
-  color: #4eceb0;
+  color: #ae0900;
   text-transform: uppercase;
-  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  border-bottom: 2px solid #ae090073;
   padding-bottom: 5px;
   margin-bottom: 15px;
   text-align: center;
@@ -41,7 +41,7 @@
   align-items: center;
   justify-content: space-between;
   background: linear-gradient(135deg, #1b1b1b, #222222);
-  border: 1px solid #4eceb0;
+  border: 1px solid #ae090073;
   border-radius: 8px;
   padding: 10px 15px;
   margin-bottom: 10px;
@@ -57,7 +57,7 @@
 .activity-type {
   font-size: 22px;
   font-weight: bold;
-  color: #4eceb0;
+  color: #ae0900;
   margin-right: 10px;
 }
 

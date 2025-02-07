@@ -3,7 +3,7 @@
 /* Main Featured Content Section */
 .featured-content {
   background: linear-gradient(145deg, #1b1b1b, #292929);
-  border: 1px solid #4eceb0; /* Neon glow */
+  border: 1px solid #ae0900; 
   border-radius: 12px;
   padding: 20px;
   width: 100%;
@@ -19,9 +19,9 @@
 .featured-content h3 {
   font-family: 'Cinzel', serif;
   font-size: 22px;
-  color: #4eceb0;
+  color: #ae0900;
   text-transform: uppercase;
-  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  border-bottom: 2px solid rgba(107, 0, 0, 0.5);
   padding-bottom: 5px;
   margin-bottom: 15px;
  
@@ -39,7 +39,7 @@
 /* Individual Featured Item */
 .featured-item {
   background: linear-gradient(145deg, #1b1b1b, #222222);
-  border: 1px solid #4eceb0;
+  border: 1px solid #ae090073;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
@@ -49,7 +49,7 @@
 
 .featured-item:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 12px rgba(78, 206, 176, 0.8);
+  box-shadow: 0 0 15px #ae09006f;
 }
 
 /* Featured Image */
@@ -57,7 +57,7 @@
   width: 100%;
   height: 180px;
   object-fit: cover;
-  border-bottom: 2px solid #4eceb0;
+  border-bottom: 2px solid #ae0900;
 }
 
 /* Featured Info */
@@ -69,7 +69,7 @@
 /* Featured Title */
 .featured-info h4 {
   font-size: 18px;
-  color: #4eceb0;
+  color: #db0b00;
   text-transform: uppercase;
   margin-bottom: 8px;
   font-weight: bold;

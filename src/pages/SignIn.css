@@ -77,8 +77,8 @@
   font-size: 18px;
   font-weight: bold;
   text-transform: uppercase;
-  color: #121212;
-  background: #4eceb0;
+  color: white;
+  background: #ae0900;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -86,8 +86,8 @@
 }
 
 .submit-button:hover {
-  background: #3bb092;
-  transform: scale(1.05);
+  background: #3e0d00;
+  transform: scale(1.01);
 }
 
 /* Error Message */

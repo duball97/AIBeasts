@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: flex-start; /* Align content to the top */
   background: linear-gradient(145deg, #1b1b1b, #292929); /* Dark metal */
-  border: 1px solid #4eceb0; /* Mystic accent */
+  border: 1px solid #ae0900; /* Mystic accent */
   border-radius: 12px;
   padding: 60px 15px 20px; /* Extra padding at the top to prevent overlap */
   width: 80%;
@@ -21,9 +21,9 @@
 .quick-actions h3 {
   font-family: 'Cinzel', serif; /* Medieval fantasy feel */
   font-size: 30px;
-  color: #4eceb0;
+  color: #ae0900;
   text-transform: uppercase;
-  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  border-bottom: 2px solid #ae0900;
   padding-bottom: 5px;
   text-align: center;
   width: 100%;
@@ -51,9 +51,9 @@
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: black;
-  background: linear-gradient(135deg, #4eceb0, #2e8b75); /* Metallic blue-green */
-  border: 2px solid #4eceb0;
+  color: white;
+  background: linear-gradient(135deg, #790000, #ae0900); /* Metallic blue-green */
+  border: 1px solid #ae090073;
   border-radius: 8px;
   padding: 14px 12px;
   width: 60%; /* Ensures buttons stay centralized */
@@ -66,13 +66,11 @@
 
 /* Hover Effect */
 .action-button:hover {
-  transform: scale(1.05);
-  background: linear-gradient(135deg, #2e8b75, #4eceb0);
-  border-color: #4eceb0;
-  color: black;
-  box-shadow: 
-      0 0 15px rgba(78, 206, 176, 0.9),
-      0 5px 12px rgba(0, 0, 0, 0.8);
+  transform: scale(1.01);
+  background: linear-gradient(135deg, #000000, #690000);
+  border: 1px solid #ae090073;
+  color: white;
+  box-shadow: 0 0 15px #ae09006f;
 }
 
 /* Remove Focus Outline */
