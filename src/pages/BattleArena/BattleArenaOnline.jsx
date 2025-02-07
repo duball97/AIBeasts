@@ -111,7 +111,7 @@ const BattleArenaOnline = () => {
     
       <div className="battle-arena-content">
         <div className="terminal-column">
-          <TerminalChatTest userBeast={userBeast} aiBeast={opponentBeast} />
+          <TerminalChat userBeast={userBeast} aiBeast={opponentBeast} />
         </div>
         <div className="visual-column">
         <VisualArena 
