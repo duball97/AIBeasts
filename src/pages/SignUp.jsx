@@ -8,6 +8,12 @@ function SignIn() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const token = localStorage.getItem("aibeasts_token");
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();

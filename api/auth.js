@@ -10,7 +10,6 @@ const generateToken = (user) => {
   const payload = {
     id: user.id,
     username: user.username,
-    email: user.email,
   };
 
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -22,10 +21,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { username, email, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!username || !email || !password) {
-    return res.status(400).json({ error: "Username, email, and password are required." });
+  if (!username || !password) {
+    return res.status(400).json({ error: "Username and password are required." });
   }
 
   try {
@@ -58,13 +57,7 @@ export default async function handler(req, res) {
 
       const { data: newUser, error: insertError } = await supabase
         .from("aibeasts_users")
-        .insert([
-          {
-            username,
-            email,
-            password_hash: hashedPassword,
-          },
-        ])
+        .insert([{ username, password_hash: hashedPassword }])
         .select()
         .single();
 

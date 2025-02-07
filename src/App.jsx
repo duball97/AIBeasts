@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Hero from './pages/Hero';
 import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 import Matchmaking from './pages/Matchmaking';
 import AIBattle from './pages/AIBattle';
 import Visuals from './pages/Visuals';
@@ -30,6 +31,7 @@ function App() {
         <Route path="/aibattle" element={<AIBattle />} />
         <Route path="/train" element={<Train />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/flux" element={<FluxPage />} />
         {/* Add more routes as needed */}
       </Routes>
