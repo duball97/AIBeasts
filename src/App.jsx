@@ -15,6 +15,7 @@ import Connect from './components/ConnectWallet';
 import BattleArena from './pages/BattleArena/BattleArena';
 import FluxPage from './components/FluxPage'; 
 import { VortexConnectProvider } from "./VortexConnectContext";
+import BattleArenaOnline from './pages/BattleArena/BattleArenaOnline';
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/matchmaking" element={<Matchmaking />} />
         <Route path="/online-match" element={<OnlineMatch />} />
         <Route path="/aibattle" element={<AIBattle />} />
+        <Route path="/battle-arena-online" element={<BattleArenaOnline />} />
         <Route path="/train" element={<Train />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />

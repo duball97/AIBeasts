@@ -3,7 +3,7 @@ import openai from "../openaiClient.js";
 /**
  * Extract a concise trait and determine its type from the user's input.
  * Also checks if the user wants to stop the conversation or if the message is conversational.
- * Now supports additional categories for naming the beast and removing personality traits.
+ * Now supports additional categories for naming the beast and removing personality, ability, and physic traits.
  * @param {string} userMessage - The full message from the user.
  * @param {string} basisPrompt - The AI's basis prompt for context.
  * @returns {object} - An object containing the traitType, trait, and stopIntent.
@@ -20,7 +20,9 @@ async function extractTraitOrAbility(userMessage, basisPrompt) {
          - "physic": Related to physical appearance (e.g., "big wings", "shiny fur").
          - "conversation": General conversational input (e.g., "Who are you?" or "Tell me about yourself").
          - "name": When the user wants to name or rename the beast (e.g., "Call my beast Charlie The Creep").
-         - "remove_personality": When the user wants to remove one of the beast's personality traits (e.g., "remove aggressive from my beast", "delete the trait kind").
+         - "remove_personality": When the user wants to remove one of the beast's personality traits (e.g., "remove aggressive from my beast", "delete trait kind").
+         - "remove_ability": When the user wants to remove one of the beast's abilities (e.g., "remove fire breath from my beast", "delete ability fly").
+         - "remove_physic": When the user wants to remove one of the beast's physical traits (e.g., "remove big wings", "delete trait shiny fur").
       2. Extract a concise text or phrase that describes the relevant trait or the user's intent.
       3. Determine if the user wants to stop the conversation.
 
@@ -33,6 +35,10 @@ async function extractTraitOrAbility(userMessage, basisPrompt) {
         Output: { "traitType": "name", "trait": "Charlie The Creep", "stopIntent": false }
       - Input: "Remove aggressive from my beast"
         Output: { "traitType": "remove_personality", "trait": "aggressive", "stopIntent": false }
+      - Input: "Remove fire breath from my beast"
+        Output: { "traitType": "remove_ability", "trait": "fire breath", "stopIntent": false }
+      - Input: "Delete big wings"
+        Output: { "traitType": "remove_physic", "trait": "big wings", "stopIntent": false }
       - Input: "Who are you?"
         Output: { "traitType": "conversation", "trait": null, "stopIntent": false }
       - Input: "No, that's it for now."
@@ -40,7 +46,7 @@ async function extractTraitOrAbility(userMessage, basisPrompt) {
 
       Respond in this JSON format:
       {
-        "traitType": "<abilities/personality/physic/conversation/name/remove_personality>",
+        "traitType": "<abilities/personality/physic/conversation/name/remove_personality/remove_ability/remove_physic>",
         "trait": "<extracted trait or null>",
         "stopIntent": <true/false>
       }

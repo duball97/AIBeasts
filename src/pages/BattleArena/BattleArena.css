@@ -14,6 +14,29 @@
     flex: 1;
   }
   
+
+  .lobby-details {
+    background: #1b1b1b; /* Dark background */
+    border: 1px solid #ae090073; /* Mystic accent border */
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px auto;
+    width: 80%;
+    text-align: center;
+  }
+  
+  .lobby-details p {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #ffffff;
+    font-family: 'Cinzel', serif;
+  }
+  
+  .lobby-details strong {
+    color: #ae0900;
+  }
+
+  
   @media (min-width: 768px) {
     .battle-arena-container {
       flex-direction: row;

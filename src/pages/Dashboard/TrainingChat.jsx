@@ -3,7 +3,6 @@ import "./TrainingChat.css";
 import MonsterInfo from "./MonsterInfo"; // Import MonsterInfo
 
 const TrainingChat = () => {
-   
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -45,9 +44,17 @@ const TrainingChat = () => {
   }, []);
 
   const handleSend = async () => {
+    // Check if input has non-whitespace characters and if not loading
     if (!input.trim() || loading) return;
-
-    setMessages((prev) => [...prev, { sender: "player", text: input }]);
+    
+    // Store the original input (with its formatting) before clearing it
+    const messageToSend = input;
+    
+    // Immediately clear the input field
+    setInput("");
+    
+    // Add the player's message to the chat
+    setMessages((prev) => [...prev, { sender: "player", text: messageToSend }]);
     setLoading(true);
 
     try {
@@ -64,7 +71,7 @@ const TrainingChat = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: messageToSend }),
       });
 
       const data = await response.json();
@@ -78,7 +85,6 @@ const TrainingChat = () => {
       setMessages((prev) => [...prev, { sender: "system", text: "⚠️ Something went wrong." }]);
     }
 
-    setInput("");
     setLoading(false);
   };
 
@@ -100,7 +106,6 @@ const TrainingChat = () => {
     if (chatWindowRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = chatWindowRef.current;
       const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10; // Small tolerance
-
       setIsUserScrolling(!isAtBottom);
     }
   };

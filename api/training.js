@@ -55,7 +55,6 @@ const getOrCreateCharacter = async (user_id, character_name = null) => {
 // Function to generate the basis prompt for AI context
 const generateBasisPrompt = (character) => {
   const { name, abilities, personality, physic } = character;
-
   return `You are named ${name}, a unique AI beast.
 Your physical appearance includes: ${physic.length > 0 ? physic.join(", ") : "unspecified"}.
 Your abilities include: ${abilities.length > 0 ? abilities.join(", ") : "none yet"}.
@@ -101,12 +100,34 @@ Respond in this JSON format:
 
     const response = completion.choices[0].message.content.trim();
     const parsed = JSON.parse(response);
-
     return parsed.question !== "No follow-up needed" ? parsed.question : null;
   } catch (error) {
     console.error("Error generating follow-up question:", error.message);
     return null; // Default to no follow-up if there's an error
   }
+};
+
+// Helper function to deduplicate an array (preserving original casing)
+const deduplicate = (arr) => {
+  return arr.reduce((acc, curr) => {
+    if (!acc.some(item => item.trim().toLowerCase() === curr.trim().toLowerCase())) {
+      acc.push(curr);
+    }
+    return acc;
+  }, []);
+};
+
+// Helper function to get unique matches with exact match preference.
+const getUniqueMatches = (currentArray, requested) => {
+  const uniqueCurrent = deduplicate(currentArray);
+  const cleanedRequested = requested.trim().toLowerCase();
+  // If there's an exact match, use that.
+  const exactMatch = uniqueCurrent.find(item => item.trim().toLowerCase() === cleanedRequested);
+  if (exactMatch) {
+    return [exactMatch];
+  }
+  // Otherwise, return fuzzy matches.
+  return uniqueCurrent.filter(item => item.trim().toLowerCase().includes(cleanedRequested));
 };
 
 // Serverless Handler for /api/training
@@ -117,11 +138,9 @@ export default async function handler(req, res) {
 
   const { authorization } = req.headers;
   const { message } = req.body;
-
   if (!authorization) {
     return res.status(401).json({ error: "No token provided" });
   }
-
   const token = authorization.split(" ")[1];
 
   try {
@@ -134,12 +153,10 @@ export default async function handler(req, res) {
     // If no beast exists yet...
     if (!character) {
       if (!message) {
-        // No message provided; prompt for a name.
         return res.status(200).json({
           response: "Welcome to AIBeasts Game. What do you want to call your new beast?"
         });
       } else {
-        // A message is provided; assume it's the beast's name and create it.
         character = await getOrCreateCharacter(user_id, message);
         return res.status(200).json({
           response: `I am ${character.name}. Please teach me something, change my appearance or my personality.`
@@ -147,21 +164,16 @@ export default async function handler(req, res) {
       }
     }
 
-    // At this point, a beast exists so continue with training.
     let basisPrompt = generateBasisPrompt(character);
-
-    // Extract trait, type, and intent from the message.
     const traitData = await extractTraitOrAbility(message, basisPrompt);
     const { traitType, trait, stopIntent } = traitData;
 
-    // Handle stop intent.
     if (stopIntent) {
       return res.status(200).json({
         response: "Alright, let me know if you want to train your beast further!",
       });
     }
 
-    // Handle general conversation.
     if (traitType === "conversation") {
       const openaiResponse = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
@@ -172,75 +184,122 @@ export default async function handler(req, res) {
         temperature: 0.7,
         max_tokens: 150,
       });
-
       const assistantReply = openaiResponse.choices[0].message.content.trim();
       return res.status(200).json({ response: assistantReply });
     }
 
-    // Handle name update separately.
     if (traitType === "name") {
       const { error: updateError } = await supabase
         .from("aibeasts_characters")
         .update({ name: trait })
         .eq("id", character.id);
-
       if (updateError) {
         throw new Error("Error updating character name in Supabase: " + updateError.message);
       }
-
-      // Update the local character object so the new basis prompt reflects the updated name.
       character.name = trait;
       basisPrompt = generateBasisPrompt(character);
-
       return res.status(200).json({
         response: `Your beast's name has been updated to "${trait}".`
       });
     }
 
-    // Handle removal of personality traits with fuzzy matching.
+    // ----- REMOVAL BLOCKS -----
+
+    // Removal of personality traits
     if (traitType === "remove_personality") {
       const currentTraits = Array.isArray(character.personality) ? character.personality : [];
-      const lowerRequested = trait.toLowerCase();
-
-      // Find personality traits that include the removal request (fuzzy match).
-      const matchingTraits = currentTraits.filter(item =>
-        item.toLowerCase().includes(lowerRequested)
-      );
-
-      if (matchingTraits.length === 0) {
+      const uniqueMatches = getUniqueMatches(currentTraits, trait);
+      if (uniqueMatches.length === 0) {
         return res.status(200).json({
           response: `No personality trait similar to "${trait}" was found in your beast's personality.`
         });
-      } else if (matchingTraits.length === 1) {
+      } else if (uniqueMatches.length === 1) {
         const updatedPersonality = currentTraits.filter(item =>
-          item.toLowerCase() !== matchingTraits[0].toLowerCase()
+          item.trim().toLowerCase() !== uniqueMatches[0].trim().toLowerCase()
         );
-
         const { error: updateError } = await supabase
           .from("aibeasts_characters")
           .update({ personality: updatedPersonality })
           .eq("id", character.id);
-
         if (updateError) {
           throw new Error("Error removing personality trait in Supabase: " + updateError.message);
         }
-
-        // Update the local character object.
         character.personality = updatedPersonality;
         basisPrompt = generateBasisPrompt(character);
-
         return res.status(200).json({
-          response: `Removed "${matchingTraits[0]}" from your beast's personality.`,
+          response: `Removed "${uniqueMatches[0]}" from your beast's personality.`,
         });
       } else {
-        // Multiple possible matches found; ask the user for clarification.
         return res.status(200).json({
-          response: `Multiple personality traits match your request: ${matchingTraits.join(", ")}. Please specify which one you want to remove.`
+          response: `Multiple personality traits match your request: ${uniqueMatches.join(", ")}. Please specify which one you want to remove.`
         });
       }
     }
 
-    // Handle trait updates for abilities, personality, or physic (adding new traits).
+    // Removal of ability traits
+    if (traitType === "remove_ability") {
+      const currentAbilities = Array.isArray(character.abilities) ? character.abilities : [];
+      const uniqueMatches = getUniqueMatches(currentAbilities, trait);
+      if (uniqueMatches.length === 0) {
+        return res.status(200).json({
+          response: `No ability similar to "${trait}" was found in your beast's abilities.`
+        });
+      } else if (uniqueMatches.length === 1) {
+        const updatedAbilities = currentAbilities.filter(item =>
+          item.trim().toLowerCase() !== uniqueMatches[0].trim().toLowerCase()
+        );
+        const { error: updateError } = await supabase
+          .from("aibeasts_characters")
+          .update({ abilities: updatedAbilities })
+          .eq("id", character.id);
+        if (updateError) {
+          throw new Error("Error removing ability in Supabase: " + updateError.message);
+        }
+        character.abilities = updatedAbilities;
+        basisPrompt = generateBasisPrompt(character);
+        return res.status(200).json({
+          response: `Removed "${uniqueMatches[0]}" from your beast's abilities.`,
+        });
+      } else {
+        return res.status(200).json({
+          response: `Multiple abilities match your request: ${uniqueMatches.join(", ")}. Please specify which one you want to remove.`
+        });
+      }
+    }
+
+    // Removal of physic traits
+    if (traitType === "remove_physic") {
+      const currentPhysic = Array.isArray(character.physic) ? character.physic : [];
+      const uniqueMatches = getUniqueMatches(currentPhysic, trait);
+      if (uniqueMatches.length === 0) {
+        return res.status(200).json({
+          response: `No physical trait similar to "${trait}" was found in your beast's physical traits.`
+        });
+      } else if (uniqueMatches.length === 1) {
+        const updatedPhysic = currentPhysic.filter(item =>
+          item.trim().toLowerCase() !== uniqueMatches[0].trim().toLowerCase()
+        );
+        const { error: updateError } = await supabase
+          .from("aibeasts_characters")
+          .update({ physic: updatedPhysic })
+          .eq("id", character.id);
+        if (updateError) {
+          throw new Error("Error removing physic trait in Supabase: " + updateError.message);
+        }
+        character.physic = updatedPhysic;
+        basisPrompt = generateBasisPrompt(character);
+        return res.status(200).json({
+          response: `Removed "${uniqueMatches[0]}" from your beast's physical traits.`,
+        });
+      } else {
+        return res.status(200).json({
+          response: `Multiple physical traits match your request: ${uniqueMatches.join(", ")}. Please specify which one you want to remove.`
+        });
+      }
+    }
+
+    // ----- ADDITION BLOCK -----
+    // If none of the removal or name cases match, assume it's an addition.
     const updatedTraits = {
       [traitType]: [
         ...(Array.isArray(character[traitType]) ? character[traitType] : []),
@@ -252,14 +311,10 @@ export default async function handler(req, res) {
       .from("aibeasts_characters")
       .update(updatedTraits)
       .eq("id", character.id);
-
     if (updateError) {
       throw new Error("Error updating character in Supabase: " + updateError.message);
     }
-
-    // Generate a follow-up question dynamically using the basis prompt.
     const followUpQuestion = await generateFollowUpQuestion(traitType, trait, basisPrompt);
-
     return res.status(200).json({
       response: `Added "${trait}" as a new ${traitType}. ${followUpQuestion || ""}`,
     });
