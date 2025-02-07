@@ -57,17 +57,10 @@ const Dashboard = () => {
       {/* News & Updates Section */}
       <NewsUpdates news={newsUpdates} />
       <RecentActivities activities={recentActivities} />
-      <QuickActions/>
-    
-      {/* Training Chat Section */}
-      
-      </div>
-      
-
-      <div className="stats-activities-container">
       <QuickStats stats={quickStats} />
+      
       </div>
-   
+      
     </div>
   );
 };

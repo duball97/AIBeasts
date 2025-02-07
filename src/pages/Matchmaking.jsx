@@ -7,7 +7,11 @@ const Matchmaking = () => {
 
   return (
     <div className="matchmaking-page">
-      <h2 className="matchmaking-title">Choose Your Battle Mode</h2>
+      <div className="matchmaking-header">
+        <h2 className="matchmaking-title">Choose Your Battle Mode</h2>
+        <p className="matchmaking-subtitle">Test your beast's strength in battle.</p>
+      </div>
+
       <div className="matchmaking-options">
         <button className="matchmaking-button" onClick={() => navigate("/online-match")}>
           Play Online

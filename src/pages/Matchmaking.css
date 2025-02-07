@@ -1,40 +1,88 @@
+/* Matchmaking Page Container */
 .matchmaking-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: #1a1a1a; /* Dark background for a cool vibe */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(145deg, #1b1b1b, #292929);
+  border: 1px solid #4eceb0;
+  border-radius: 12px;
+  padding: 40px;
+  width: 80%;
+  max-width: 700px;
+  margin: 40px auto;
+  box-shadow: 
+      inset 0 0 8px rgba(255, 255, 255, 0.1),
+      0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* Header Styling */
+.matchmaking-header {
+  margin-bottom: 20px;
+}
+
+/* Title */
+.matchmaking-title {
+  font-family: 'Cinzel', serif;
+  font-size: 32px;
+  color: #4eceb0;
+  text-transform: uppercase;
+  border-bottom: 2px solid rgba(78, 206, 176, 0.5);
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+/* Subtitle */
+.matchmaking-subtitle {
+  font-size: 20px;
+  color: #ddd;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Matchmaking Options */
+.matchmaking-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Matchmaking Buttons */
+.matchmaking-button {
+  background: linear-gradient(135deg, #4eceb0, #2e8b75);
+  border: none;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  color: black;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  text-transform: uppercase;
+}
+
+.matchmaking-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(78, 206, 176, 0.5);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .matchmaking-page {
+    width: 90%;
   }
-  
+
   .matchmaking-title {
-    color: white;
-    font-size: 2rem;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    font-size: 26px;
   }
-  
-  .matchmaking-options {
-    display: flex;
-    gap: 20px;
+
+  .matchmaking-subtitle {
+    font-size: 18px;
   }
-  
+
   .matchmaking-button {
-    background: linear-gradient(45deg, #ff416c, #ff4b2b);
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    font-size: 16px;
+    padding: 12px 25px;
   }
-  
-  .matchmaking-button:hover {
-    background: linear-gradient(45deg, #ff4b2b, #ff416c);
-    transform: scale(1.05);
-  }
-  
+}
