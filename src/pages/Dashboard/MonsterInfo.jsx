@@ -1,12 +1,14 @@
-// src/components/MonsterInfo.jsx
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 import "./MonsterInfo.css";
+import { useNavigate } from "react-router-dom";
+
 
 const MonsterInfo = () => {
   const [monster, setMonster] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMonster = async () => {
@@ -80,12 +82,20 @@ const MonsterInfo = () => {
 
   return (
     <div className="monster-info">
-      <img src={monster.image} alt={monster.name} className="monster-image" />
-      <div className="info">
-        <h2>{monster.name}</h2>
+      {/* Top Section: Logo + Name on the same line */}
+      <div className="monster-header">
+        <img src={monster.image} alt={monster.name} className="monster-logo" />
+        <h2 className="monster-name">{monster.name}</h2>
+      </div>
+
+      {/* Bottom Section: Personality, Abilities, Physic */}
+      <div className="monster-details">
         <p><strong>Personality:</strong> {monster.personality}</p>
         <p><strong>Abilities:</strong> {monster.abilities}</p>
         <p><strong>Physic:</strong> {monster.physic}</p>
+        <button className="action-button" onClick={() => navigate("/matchmaking")}>
+         Fight
+        </button>
       </div>
     </div>
   );

@@ -1,23 +1,39 @@
-/* src/components/Dashboard/Dashboard.css */
-
 .dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 20px;
-  /* Optional: add some padding */
   padding: 20px;
+  margin-top: 0px;
 }
 
+/* Ensure consistency with MonsterInfo */
+.stats-activities-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch; /* Ensures both sections are the same height */
+  width: 85%; /* Match MonsterInfo width */
+  /* Keep consistency */
+  margin: 0px 20px 20px 20px auto; /* Center it like MonsterInfo */
+  gap: 20px;
+ 
+}
 
-/* Responsive Layout */
-@media (min-width: 768px) {
-  .dashboard {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
+/* Individual items take equal space */
+.stats-activities-container > div {
+  flex: 1; /* Ensures equal width */
+  display: flex;
+  flex-direction: column;
+}
 
-  .dashboard > div {
-    flex: 1 1 45%;
+/* Make sure QuickStats & RecentActivities fill the full height */
+.quick-stats, .recent-activities {
+  flex-grow: 1; /* Makes them stretch to the same height */
+}
+
+/* Responsive: Stack on smaller screens */
+@media (max-width: 768px) {
+  .stats-activities-container {
+    flex-direction: column;
   }
 }

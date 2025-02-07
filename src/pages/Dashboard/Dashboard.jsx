@@ -49,25 +49,25 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       {/* Monster Information Section */}
-      <MonsterInfo />
-
-      {/* Quick Stats Section */}
-      <QuickStats stats={quickStats} />
-
-      {/* Recent Activities Section */}
-      <RecentActivities activities={recentActivities} />
-
-      {/* Quick Actions Section */}
-      <QuickActions />
-
-      {/* Featured Content Section */}
-      <FeaturedContent featured={featuredContent} />
-
+      <div className="stats-activities-container">
+      
+      <TrainingChat />
+     </div>
+      <div className="stats-activities-container">
       {/* News & Updates Section */}
       <NewsUpdates news={newsUpdates} />
-
+      <RecentActivities activities={recentActivities} />
+      <QuickActions/>
+    
       {/* Training Chat Section */}
-      <TrainingChat />
+      
+      </div>
+      
+
+      <div className="stats-activities-container">
+      <QuickStats stats={quickStats} />
+      </div>
+   
     </div>
   );
 };
