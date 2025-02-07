@@ -7,13 +7,11 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const feeReceiver = "";
+  const MyAIBeasts = await ethers.getContractFactory("BattleBet");
+  const MyAIBeastsDeployment = await MyAIBeasts.deploy();
 
-  const MyAdManager = await ethers.getContractFactory("AdManager");
-  const MyAdManagerDeployment = await MyAdManager.deploy(feeReceiver);
-
-  console.log("AdManager address:", MyAdManagerDeployment.target);
-  const adManagerAddress = MyAdManagerDeployment.target;
+  console.log("AIBeasts address:", MyAIBeastsDeployment.target);
+  const aiBeastsAddress = MyAIBeastsDeployment.target;
 }
 
 main()
