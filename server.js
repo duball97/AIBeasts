@@ -9,7 +9,6 @@ import trainingRouter from "./api/training.js"; // Training API route
 import authRouter from "./api/auth.js"; // Authentication API route
 import battleRouter from "./api/battle.js"; // Authentication API route
 import extractTraitOrAbilityRouter from "./api/extractTraitOrAbility.js"; // Authentication API route
-import fluxGenerateRouter from "./api/flux-generate.js";
 import visualGenerateRouter from "./api/visuals-generate.js";
 
 
