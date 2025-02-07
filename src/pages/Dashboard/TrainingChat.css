@@ -82,6 +82,7 @@
   align-self: flex-end;
   background: linear-gradient(135deg, #790000, #ae0900); /* Metallic blue-green */
   border: 1px solid #ae090073;
+  font-family: 'Cinzel', serif;
   color: white;
   font-weight: bold;
   border-radius: 8px;
@@ -93,6 +94,7 @@
   align-self: flex-start;
   background: linear-gradient(135deg, #1b1b1b, #292929);
   color: #c4c4c4;
+  font-family: 'Cinzel', serif;
   border-left: 4px solid #630000;
 }
 
@@ -100,6 +102,7 @@
 .training-chat-message.system {
   align-self: center;
   color: #aaa;
+  
   font-style: italic;
   font-size: 20px;
 }
@@ -109,12 +112,14 @@
   display: flex;
   width: 98%;
   margin-top: 15px;
+  font-family: 'Cinzel', serif;
  
 }
 
 /* Input Field */
 .training-chat-input {
   flex-grow: 1;
+  font-family: 'Cinzel', serif; 
   background: #121212;
   border: 1px solid #ae090073;
   padding: 10px;
@@ -154,7 +159,7 @@
 }
 
 .training-chat-window::-webkit-scrollbar-thumb {
-  background: #4eceb0;
+  background: #820000;
   border-radius: 4px;
 }
 

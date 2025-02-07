@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     for (let round = 1; round <= 5; round++) {
       // 🧠 AI 1 (User's Beast)
       const responseAI1 = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: `You are ${userBeast.name}, a beast fighting against other beast with the goal to win the battle. Max 1 sentence. You can use abilities, personality, and physique to win the battle. You MUST NOT say the name of the opponent.` },
           { role: "user", content: `Opponent: ${aiBeast.name}. Fight back and win the game!\n\n${beast1Details}` },
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
 
       // 🤖 AI 2 (Opponent's Beast)
       const responseAI2 = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: `You are ${userBeast.name}, a beast fighting against other beast with the goal to win the battle. Max 1 sentence. You can use abilities, personality, and physique to win the battle. You MUST NOT say the name of the opponent.` },
           { role: "user", content: `Opponent said: "${ai1Message}". Fight back and win the game\n\n${beast2Details}` },
@@ -70,7 +70,7 @@ export default async function handler(req, res) {
         { role: "system", content: `You are an impartial AI referee judging a logic battle. Analyze which beast used its abilities, personality, and physique most effectively. Provide a 2-3 sentence summary before declaring a winner.Declare the winner.` },
         { role: "user", content: `Battle log:\n\n${battleLog.join("\n")}\n\nWho wins? Explain why before naming the winner.` }
       ],
-      temperature: 0.3,
+      temperature: 0.6,
       max_tokens: 200,
     });
 

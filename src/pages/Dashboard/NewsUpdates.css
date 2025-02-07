@@ -15,7 +15,7 @@
 /* Section Title */
 .news-updates h3 {
   font-family: 'Cinzel', serif;
-  font-size: 22px;
+  font-size: 30px;
   color: #ae0900;
   text-transform: uppercase;
   border-bottom: 2px solid #ae0900;
@@ -28,6 +28,7 @@
 .news-updates ul {
   list-style: none;
   padding: 0;
+  font-family: 'Cinzel', serif;
 }
 
 /* Individual News Item */
@@ -50,7 +51,7 @@
 
 /* News Title */
 .news-updates h4 {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: bold;
   color: #ae0900;
   margin-bottom: 5px;
@@ -58,14 +59,14 @@
 
 /* News Description */
 .news-updates p {
-  font-size: 14px;
+  font-size: 16px;
   color: #ddd;
   line-height: 1.5;
 }
 
 /* News Timestamp */
 .news-time {
-  font-size: 12px;
+  font-size: 14px;
   color: #ae0900;
   display: block;
   margin-top: 8px;

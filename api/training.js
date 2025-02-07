@@ -8,13 +8,14 @@ import extractTraitOrAbility from "./extractTraitOrAbility.js"; // Our custom pa
 
 // Helper Function: Retrieve or Create AI Beast (Character)
 const getOrCreateCharacter = async (user_id, character_name = null) => {
+  // Use maybeSingle() to return a row if it exists or null if it doesn't
   const { data, error } = await supabase
     .from("aibeasts_characters")
     .select("*")
     .eq("user_id", user_id)
-    .single();
+    .maybeSingle();
 
-  if (error && error.code !== "PGRST116") {
+  if (error) {
     throw error;
   }
 
@@ -38,7 +39,7 @@ const getOrCreateCharacter = async (user_id, character_name = null) => {
         },
       ])
       .select()
-      .single();
+      .maybeSingle();
 
     if (insertError) {
       throw insertError;
@@ -51,28 +52,38 @@ const getOrCreateCharacter = async (user_id, character_name = null) => {
   return null;
 };
 
+// Function to generate the basis prompt for AI context
+const generateBasisPrompt = (character) => {
+  const { name, abilities, personality, physic } = character;
+
+  return `You are named ${name}, a unique AI beast.
+Your physical appearance includes: ${physic.length > 0 ? physic.join(", ") : "unspecified"}.
+Your abilities include: ${abilities.length > 0 ? abilities.join(", ") : "none yet"}.
+Your personality traits are: ${personality.length > 0 ? personality.join(", ") : "still developing"}.
+Always respond as if you are this character, and help guide the user in training and improving you.`;
+};
+
+// Function to generate a follow-up question dynamically using the basis prompt
 const generateFollowUpQuestion = async (traitType, trait, basisPrompt) => {
   const systemPrompt = {
     role: "system",
-    content: `
-      ${basisPrompt}
-      Based on the trait type and trait provided, generate a relevant follow-up question if necessary.
+    content: `${basisPrompt}
+Based on the trait type and trait provided, generate a relevant follow-up question if necessary.
 
-      Examples:
-      - Trait Type: "physic", Trait: "big wings"
-        Question: "What color should the big wings be?"
-      - Trait Type: "abilities", Trait: "fire breath"
-        Question: "How does the fire breath work in combat?"
-      - Trait Type: "personality", Trait: "brave"
-        Question: "Can you describe a situation where being brave would be helpful?"
+Examples:
+- Trait Type: "physic", Trait: "big wings"
+  Question: "What color should the big wings be?"
+- Trait Type: "abilities", Trait: "fire breath"
+  Question: "How does the fire breath work in combat?"
+- Trait Type: "personality", Trait: "brave"
+  Question: "Can you describe a situation where being brave would be helpful?"
 
-      If no follow-up question is needed, respond with: "No follow-up needed."
+If no follow-up question is needed, respond with: "No follow-up needed."
 
-      Respond in this JSON format:
-      {
-        "question": "<follow-up question or 'No follow-up needed'>"
-      }
-    `,
+Respond in this JSON format:
+{
+  "question": "<follow-up question or 'No follow-up needed'>"
+}`,
   };
 
   const userPrompt = {
@@ -98,22 +109,7 @@ const generateFollowUpQuestion = async (traitType, trait, basisPrompt) => {
   }
 };
 
-// Function to generate the basis prompt for AI context
-const generateBasisPrompt = (character) => {
-  const { name, abilities, personality, physic } = character;
-
-  return `
-    You are named ${name}, a unique AI beast.
-    Your physical appearance includes: ${physic.length > 0 ? physic.join(", ") : "unspecified"}.
-    Your abilities include: ${abilities.length > 0 ? abilities.join(", ") : "none yet"}.
-    Your personality traits are: ${personality.length > 0 ? personality.join(", ") : "still developing"}.
-    Always respond as if you are this character, and help guide the user in training and improving you.
-  `;
-};
-
 // Serverless Handler for /api/training
-// ... (previous imports and helper functions remain unchanged)
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -132,20 +128,25 @@ export default async function handler(req, res) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user_id = decoded.id;
 
-    // Retrieve or create character
+    // Retrieve or create character using maybeSingle()
     let character = await getOrCreateCharacter(user_id);
-
-    // Generate the basis prompt
-    let basisPrompt = generateBasisPrompt(character);
 
     // Greet if no message is provided
     if (!message) {
       return res.status(200).json({
         response: character
-          ? `Welcome back! Your beast is ${character.name}. What are we going to train today?`
+          ? `I' am ${character.name}. Please teach me something, change my appearance or my personality.`
           : "Welcome to AIBeasts Game. What do you want to call your new beast?",
       });
     }
+
+    // If a message is provided but no character exists, return an error
+    if (!character) {
+      return res.status(400).json({ error: "You must create your beast before training." });
+    }
+
+    // Generate the basis prompt
+    let basisPrompt = generateBasisPrompt(character);
 
     // Extract trait, type, and intent
     const traitData = await extractTraitOrAbility(message, basisPrompt);
@@ -265,4 +266,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
-

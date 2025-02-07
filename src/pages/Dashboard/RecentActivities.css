@@ -56,6 +56,7 @@
 /* Activity Type - Bold and colored */
 .activity-type {
   font-size: 22px;
+  font-family: 'Cinzel', serif;
   font-weight: bold;
   color: #ae0900;
   margin-right: 10px;
@@ -64,14 +65,16 @@
 /* Activity Description */
 .activity-description {
   flex: 1;
-  font-size: 20px;
+  font-size: 14px;
+  font-family: 'Cinzel', serif;
   color: #ddd;
   text-align: left;
 }
 
 /* Activity Time - Smaller and subdued */
 .activity-time {
-  font-size: 18px;
+  font-size: 14px;
+  font-family: 'Cinzel', serif;
   color: #aaa;
   font-weight: bold;
 }
