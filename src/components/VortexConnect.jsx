@@ -1,17 +1,14 @@
-// src/components/VortexConnect.js
-
 import React, { useState, useEffect, useRef } from "react";
 import { ethers } from "ethers";
+import { supabase } from "../supabaseClient"; // Import Supabase client
 import "./VortexConnect.css";
 
 import sepoliaIcon from "../assets/icons/sepolia.png";
 import baseIcon from "../assets/icons/base.png";
 import bscIcon from "../assets/icons/bsc.png";
-
 import optimismIcon from "../assets/icons/optimism.png";
 
 const chains = [
- 
   {
     chainId: 1,
     name: "Ethereum",
@@ -20,14 +17,10 @@ const chains = [
     rpcUrl: import.meta.env.VITE_ETH_RPC_URL,
     icon: sepoliaIcon,
   },
- 
-  
 ];
 
 const chainNames = {
   1: "Ethereum",
- 
-
 };
 
 const VortexConnect = ({ onConnect }) => {
@@ -174,25 +167,33 @@ const VortexConnect = ({ onConnect }) => {
       setError(null);
       closeModal();
 
+      // Optionally notify parent component of the connection
       if (onConnect) {
         onConnect({
           provider: tempProvider,
           signer: tempSigner,
-          chainId: chainId,
+          chainId: network.chainId,
         });
       }
 
-   
-
-      // Setup event listeners directly on window.ethereum or specific wallet provider
-      if (walletType !== "Phantom") {
-        // Phantom might have a different event emitter
-        window.ethereum.on("accountsChanged", handleAccountsChanged);
-        window.ethereum.on("chainChanged", handleChainChanged);
-      } else {
-        window.phantom.ethereum.on("accountsChanged", handleAccountsChanged);
-        window.phantom.ethereum.on("chainChanged", handleChainChanged);
+      // ====== NEW CODE: Update Supabase with the connected wallet ======
+      // Retrieve the JWT token from localStorage (as done in MonsterInfo)
+      const jwtToken = localStorage.getItem("aibeasts_token");
+      if (jwtToken) {
+        // Decode the JWT token to extract the user ID
+        const decodedToken = JSON.parse(atob(jwtToken.split(".")[1]));
+        const userId = decodedToken.id;
+        if (userId) {
+          const { error: updateError } = await supabase
+            .from("aibeasts_users")
+            .update({ wallet: userAddress }) // Update the wallets column with the connected address
+            .eq("id", userId);
+          if (updateError) {
+            console.error("Error updating wallet in Supabase:", updateError.message);
+          }
+        }
       }
+      // ================================================================
     } catch (err) {
       console.error(`${walletType} connection error:`, err);
       setError(
@@ -200,8 +201,6 @@ const VortexConnect = ({ onConnect }) => {
       );
     }
   };
-
- 
 
   const reconnectWallet = async () => {
     if (window.ethereum && address) {
