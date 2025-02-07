@@ -10,9 +10,9 @@ import AIBattle from './pages/AIBattle';
 import Visuals from './pages/Visuals';
 import OnlineMatch from './pages/OnlineMatch';
 import Train from './pages/Train';
-import Dashboard from './pages/Dashboard/Dashboard'; // Create this component next
+import Dashboard from './pages/Dashboard/Dashboard'; 
 import BattleArena from './pages/BattleArena/BattleArena';
-import FluxPage from './components/FluxPage'; // Create this component next
+import FluxPage from './components/FluxPage'; 
 import { VortexConnectProvider } from "./VortexConnectContext";
 
 
@@ -33,7 +33,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/flux" element={<FluxPage />} />
-        {/* Add more routes as needed */}
+        
       </Routes>
     </Router>
     </VortexConnectProvider>
