@@ -11,15 +11,16 @@ const CryptoMatch = () => {
   const [lobbyName, setLobbyName] = useState("");
   const [lobbyConditions, setLobbyConditions] = useState("");
   const [stakeAmount, setStakeAmount] = useState(""); // stake input (in ETH)
+  const [creatorWallet, setCreatorWallet] = useState(""); // creator's wallet address
 
-  // Fetch all crypto betting lobbies (assuming lobby_mode === "crypto")
+  // Fetch all crypto betting lobbies: we show only those with bet_amount > 0
   const fetchLobbies = async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("aibeasts_lobbies")
       .select("*")
       .eq("lobby_status", "open")
-      .eq("lobby_mode", "crypto")
+      .gt("bet_amount", 0) // only include lobbies where bet_amount > 0
       .order("created_at", { ascending: false });
     if (error) {
       setError(error.message);
@@ -52,7 +53,7 @@ const CryptoMatch = () => {
     }
 
     // Insert the new lobby into aibeasts_lobbies.
-    // We set lobby_mode to "crypto" and store the stake amount.
+    // We now save the bet_amount and creator_wallet instead of lobby_mode.
     const { data, error } = await supabase
       .from("aibeasts_lobbies")
       .insert([
@@ -60,9 +61,10 @@ const CryptoMatch = () => {
           created_by: userId,
           lobby_name: lobbyName,
           conditions: lobbyConditions,
-          stake: stakeAmount, // Save the stake amount (as entered, e.g. in ETH)
+          stake: stakeAmount,         // You may or may not need this duplicate field
+          bet_amount: stakeAmount,      // Save the bet amount (numeric)
+          creator_wallet: creatorWallet, // Save the creator's wallet address
           lobby_status: "open",
-          lobby_mode: "crypto",
         },
       ])
       .single();
@@ -76,6 +78,7 @@ const CryptoMatch = () => {
       setLobbyName("");
       setLobbyConditions("");
       setStakeAmount("");
+      setCreatorWallet("");
     }
   };
 
@@ -90,7 +93,7 @@ const CryptoMatch = () => {
       <h2>Crypto Betting Lobby</h2>
       <p>Find a crypto betting match or create your own lobby!</p>
 
-      <button onClick={() => setCreatingLobby(true)}>
+      <button className="custom-button" onClick={() => setCreatingLobby(true)}>
         Create New Lobby
       </button>
 
@@ -113,8 +116,18 @@ const CryptoMatch = () => {
             value={stakeAmount}
             onChange={(e) => setStakeAmount(e.target.value)}
           />
-          <button onClick={handleCreateLobby}>Create Lobby</button>
-          <button onClick={() => setCreatingLobby(false)}>Cancel</button>
+          <input
+            type="text"
+            placeholder="Your Wallet Address"
+            value={creatorWallet}
+            onChange={(e) => setCreatorWallet(e.target.value)}
+          />
+          <button className="custom-button" onClick={handleCreateLobby}>
+            Create Lobby
+          </button>
+          <button className="custom-button" onClick={() => setCreatingLobby(false)}>
+            Cancel
+          </button>
         </div>
       )}
 
@@ -139,7 +152,13 @@ const CryptoMatch = () => {
                 <p>
                   <strong>Stake:</strong> {lobby.stake} ETH
                 </p>
-                <button onClick={() => handleJoinLobby(lobby.id)}>
+                <p>
+                  <strong>Bet Amount:</strong> {lobby.bet_amount} ETH
+                </p>
+                <p>
+                  <strong>Creator Wallet:</strong> {lobby.creator_wallet}
+                </p>
+                <button className="custom-button" onClick={() => handleJoinLobby(lobby.id)}>
                   Join Lobby
                 </button>
               </div>

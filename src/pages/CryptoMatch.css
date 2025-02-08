@@ -1,86 +1,106 @@
-/* src/components/TerminalChat.css */
+/* src/pages/CryptoMatch.css */
 
-.terminal-chat {
-    background-color: #1e1e1e;
-    padding: 15px;
+.crypto-match-page {
+    max-width: 1200px;
+    margin: 40px auto;
+    background: linear-gradient(145deg, #0f0f0f, #232323);
+    border: 1px solid #ae090073;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 15px #ae09006f;
+    color: #fff;
+    font-family: "Cinzel", serif;
+    text-align: center;
+  }
+  
+  .crypto-match-page h2 {
+    font-size: 30px;
+    margin-bottom: 20px;
+    color: #ae0900;
+    border-bottom: 2px solid #ae0900;
+    padding-bottom: 10px;
+  }
+  
+  .crypto-match-page p {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .create-lobby-form {
+    margin: 20px auto;
+    padding: 20px;
+    background: #121212;
+    border: 1px solid #ae090073;
     border-radius: 8px;
-    height: 500px;             /* Fixed overall terminal height */
+    max-width: 400px;
     display: flex;
     flex-direction: column;
-    font-family: "Cinzel", serif;
-    overflow: hidden;          /* Prevent overall container from growing */
-  }
-  
-  .terminal-chat h2 {
-    margin-bottom: 10px;
+    gap: 10px;
     text-align: center;
   }
   
-  .chat-window {
-    flex: 1;                   /* Use remaining space */
-    overflow-y: auto;          /* Enable internal scrolling */
-    background-color: #000;
+  .create-lobby-form input,
+  .create-lobby-form textarea {
     padding: 10px;
-    border-radius: 6px;
+    font-size: 18px;
+    border: 1px solid #ae090073;
+    border-radius: 8px;
+    background: #1b1b1b;
+    color: #fff;
+    font-family: "Cinzel", serif;
+    text-align: center;
   }
   
-  /* Custom scrollbar styling for the chat window */
-  .chat-window::-webkit-scrollbar {
-    width: 10px;
-  }
-  
-  .chat-window::-webkit-scrollbar-track {
-    background: #1e1e1e;
-  }
-  
-  .chat-window::-webkit-scrollbar-thumb {
-    background: red;
-    border-radius: 5px;
-  }
-  
-  .chat-window::-webkit-scrollbar-thumb:hover {
-    background: #ff0000;
-  }
-  
-  /* Message styling: all text white */
-  .chat-message p {
-    margin: 5px 0;
+  .create-lobby-form button {
+    background: linear-gradient(135deg, #790000, #ae0900);
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-family: "Cinzel", serif;
     color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, background 0.3s;
   }
   
-  /* Right-align player 1 messages */
-  .chat-message.user p {
-    text-align: right;
+  .create-lobby-form button:hover {
+    transform: scale(1.02);
+    background: linear-gradient(135deg, #8c0000, #c10a00);
   }
   
-  /* Left-align player 2 messages */
-  .chat-message.ai p {
-    text-align: left;
+  .lobby-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
   }
   
-  /* System messages: centered, grey */
-  .chat-message.system p {
+  .lobby-item {
+    background: #1b1b1b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
     text-align: center;
-    color: #aaaaaa;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 0 10px #ae09006f;
+    font-family: "Cinzel", serif;
+    color: #fff;
   }
   
-  /* Judge messages: centered, bold, accent color */
-  .chat-message.judge p {
-    text-align: center;
+  .lobby-item h3 {
+    margin: 10px 0;
+    font-size: 24px;
     color: #ae0900;
-    font-weight: bold;
   }
   
-  /* Winner feedback styling */
-  .winner {
-    margin-top: 10px;
-    text-align: center;
-    font-size: 20px;
-    color: #ae0900;
+  .lobby-item p {
+    margin: 5px 0;
+    font-size: 18px;
   }
   
-  /* Button styling to match other pages */
-  .terminal-chat button {
+  .lobby-item button {
     background: linear-gradient(135deg, #790000, #ae0900);
     border: none;
     padding: 10px 20px;
@@ -92,7 +112,37 @@
     transition: transform 0.2s ease-in-out;
   }
   
-  .terminal-chat button:hover {
+  .lobby-item button:hover {
     transform: scale(1.02);
+  }
+  
+  /* Common button styling for all custom buttons */
+  .custom-button {
+    background: linear-gradient(135deg, #790000, #ae0900);
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-family: "Cinzel", serif;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, background 0.3s;
+  }
+  
+  /* Hover effect for all custom buttons */
+  .custom-button:hover {
+    transform: scale(1.02);
+    background: linear-gradient(135deg, #8c0000, #c10a00);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .crypto-match-page {
+      width: 90%;
+      padding: 10px;
+    }
+    .create-lobby-form {
+      width: 100%;
+    }
   }
   
