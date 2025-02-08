@@ -10,6 +10,7 @@ import Matchmaking from './pages/Matchmaking';
 import AIBattle from './pages/AIBattle';
 import Visuals from './pages/Visuals';
 import OnlineMatch from './pages/OnlineMatch';
+import CryptoMatch from './pages/CryptoMatch';
 import Train from './pages/Train';
 import Dashboard from './pages/Dashboard/Dashboard'; 
 import Connect from './components/ConnectWallet';
@@ -31,6 +32,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/connect" element={<Connect />} />
         <Route path="/arena" element={<BattleArena />} />
+        <Route path="/crypto-match" element={<CryptoMatch />} />
         <Route path="/style" element={<Visuals />} />
         <Route path="/matchmaking" element={<Matchmaking />} />
         <Route path="/online-match" element={<OnlineMatch />} />

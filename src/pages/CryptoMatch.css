@@ -1,0 +1,98 @@
+/* src/components/TerminalChat.css */
+
+.terminal-chat {
+    background-color: #1e1e1e;
+    padding: 15px;
+    border-radius: 8px;
+    height: 500px;             /* Fixed overall terminal height */
+    display: flex;
+    flex-direction: column;
+    font-family: "Cinzel", serif;
+    overflow: hidden;          /* Prevent overall container from growing */
+  }
+  
+  .terminal-chat h2 {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .chat-window {
+    flex: 1;                   /* Use remaining space */
+    overflow-y: auto;          /* Enable internal scrolling */
+    background-color: #000;
+    padding: 10px;
+    border-radius: 6px;
+  }
+  
+  /* Custom scrollbar styling for the chat window */
+  .chat-window::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  .chat-window::-webkit-scrollbar-track {
+    background: #1e1e1e;
+  }
+  
+  .chat-window::-webkit-scrollbar-thumb {
+    background: red;
+    border-radius: 5px;
+  }
+  
+  .chat-window::-webkit-scrollbar-thumb:hover {
+    background: #ff0000;
+  }
+  
+  /* Message styling: all text white */
+  .chat-message p {
+    margin: 5px 0;
+    color: white;
+  }
+  
+  /* Right-align player 1 messages */
+  .chat-message.user p {
+    text-align: right;
+  }
+  
+  /* Left-align player 2 messages */
+  .chat-message.ai p {
+    text-align: left;
+  }
+  
+  /* System messages: centered, grey */
+  .chat-message.system p {
+    text-align: center;
+    color: #aaaaaa;
+  }
+  
+  /* Judge messages: centered, bold, accent color */
+  .chat-message.judge p {
+    text-align: center;
+    color: #ae0900;
+    font-weight: bold;
+  }
+  
+  /* Winner feedback styling */
+  .winner {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 20px;
+    color: #ae0900;
+  }
+  
+  /* Button styling to match other pages */
+  .terminal-chat button {
+    background: linear-gradient(135deg, #790000, #ae0900);
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-family: "Cinzel", serif;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .terminal-chat button:hover {
+    transform: scale(1.02);
+  }
+  

@@ -16,6 +16,10 @@ const Matchmaking = () => {
         <button className="matchmaking-button" onClick={() => navigate("/online-match")}>
           Play Online
         </button>
+
+        <button className="matchmaking-button" onClick={() => navigate("/crypto-match")}>
+          Play for Crypto
+        </button>
        
       </div>
     </div>
