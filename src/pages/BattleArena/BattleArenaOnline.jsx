@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import TerminalChat from "./TerminalChat";
-import TerminalChatTest from "./TerminalChatTest";
 import VisualArena from "./VisualArena";
 import { supabase } from "../../supabaseClient";
 import "./BattleArenaOnline.css";
@@ -108,17 +107,21 @@ const BattleArenaOnline = () => {
 
   return (
     <div className="battle-arena-online">
-    
       <div className="battle-arena-content">
         <div className="terminal-column">
-          <TerminalChat userBeast={userBeast} aiBeast={opponentBeast} />
+          {/* Pass lobbyDetails as a prop */}
+          <TerminalChat 
+            userBeast={userBeast} 
+            aiBeast={opponentBeast} 
+            lobbyDetails={lobbyDetails} 
+          />
         </div>
         <div className="visual-column">
-        <VisualArena 
-      messages={[]} 
-      userBeast={userBeast} 
-      opponentBeast={opponentBeast} 
-    />
+          <VisualArena 
+            messages={[]} 
+            userBeast={userBeast} 
+            opponentBeast={opponentBeast} 
+          />
         </div>
       </div>
       {lobbyDetails && (

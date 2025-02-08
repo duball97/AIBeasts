@@ -1,42 +1,56 @@
 /* src/components/TerminalChat.css */
 
 .terminal-chat {
-    background-color: #1e1e1e;
-    color: #ae0900;
-    padding: 15px;
-    border-radius: 8px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .terminal-chat h2 {
-    margin-bottom: 10px;
-    text-align: center;
-    font-family: "Cinzel", serif;
-  }
-  
-  .chat-window {
-    flex: 1;
-    overflow-y: auto;
-    background-color: #000000;
-    padding: 10px;
-    border-radius: 6px;
-    font-family: "Cinzel", serif;
-  }
-  
-  .chat-message.user p {
-    text-align: right;
-    color: #ffcc00;
-  }
-  
-  .chat-message.ai p {
-    text-align: left;
-    color: #ae0900;
-  }
-  
-  .chat-message.system p {
-    text-align: center;
-    color: #aaaaaa;
-  }
-  
+  background-color: #1e1e1e;
+  padding: 15px;
+  border-radius: 8px;
+  /* Set a fixed height so the overall terminal doesn't grow */
+  height: 500px; 
+  display: flex;
+  flex-direction: column;
+  font-family: "Cinzel", serif;
+}
+
+.terminal-chat h2 {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.chat-window {
+  /* Set a fixed height for the chat log area */
+  height: 500px;
+  overflow-y: auto;  /* Enable scrolling when messages overflow */
+  background-color: #000;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+/* Message styling */
+.chat-message p {
+  margin: 5px 0;
+}
+
+/* Player 1 messages (user beast): red text, right-aligned */
+.chat-message.user p {
+  text-align: right;
+  color: red;
+}
+
+/* Player 2 messages (opponent beast): white text, left-aligned */
+.chat-message.ai p {
+  text-align: left;
+  color: white;
+}
+
+/* System messages: centered and grey */
+.chat-message.system p {
+  text-align: center;
+  color: #aaaaaa;
+}
+
+.winner {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 20px;
+  color: #ae0900;
+}

@@ -1,13 +1,15 @@
+// src/components/TerminalChat.jsx
 import React, { useEffect, useRef, useState } from "react";
 import "./TerminalChat.css";
 
-const TerminalChat = ({ userBeast, aiBeast }) => {
+const TerminalChat = ({ userBeast, aiBeast, lobbyDetails }) => {
   const chatEndRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [winnerExplanation, setWinnerExplanation] = useState(null);
 
+  // Scroll to the bottom whenever messages update
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -16,20 +18,28 @@ const TerminalChat = ({ userBeast, aiBeast }) => {
     if (userBeast && aiBeast) {
       startBattle(userBeast, aiBeast);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userBeast, aiBeast]);
 
   const startBattle = async (userBeast, aiBeast) => {
     try {
       setMessages([
-        { sender: "system", text: "⚔️ Battle Start! ⚔️" },
-        { sender: "system", text: `${userBeast.name} vs ${aiBeast.name}` },
-        { sender: "system", text: "Generating battle dialogue... 🤖" },
+        { role: "system", text: "⚔️ Battle Start! ⚔️" },
+        { role: "system", text: `${userBeast.name} vs ${aiBeast.name}` },
+        { role: "system", text: "Generating battle dialogue... 🤖" },
       ]);
+
+      // Get the token from localStorage
+      const token = localStorage.getItem("aibeasts_token");
 
       const response = await fetch("/api/battle", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userBeast, aiBeast }),
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // Ensure token is passed
+        },
+        // Pass lobbyDetails along with the beasts
+        body: JSON.stringify({ userBeast, aiBeast, lobbyDetails }),
       });
 
       const data = await response.json();
@@ -38,20 +48,20 @@ const TerminalChat = ({ userBeast, aiBeast }) => {
       const battleLines = data.transcript.split("\n").filter(line => line.trim() !== "");
 
       let turn = 0;
-      const interval = setInterval(() => {
+      const sendNextLine = () => {
         if (turn >= battleLines.length) {
-          clearInterval(interval);
-          setWinnerExplanation(data.winnerExplanation); // 🏆 Show Referee's Explanation
+          setWinnerExplanation(data.winnerExplanation);
           return;
         }
-
         setMessages(prev => [
           ...prev,
-          { sender: turn % 2 === 0 ? userBeast.name : aiBeast.name, text: battleLines[turn] }
+          { role: turn % 2 === 0 ? "user" : "ai", text: battleLines[turn] }
         ]);
-
         turn++;
-      }, 3000);
+        setTimeout(sendNextLine, 3000);
+      };
+
+      sendNextLine();
     } catch (err) {
       console.error("Error starting battle:", err.message);
       setError("Failed to generate battle.");
@@ -68,7 +78,7 @@ const TerminalChat = ({ userBeast, aiBeast }) => {
       <h2>Battle Log</h2>
       <div className="chat-window">
         {messages.map((msg, index) => (
-          <div key={index} className={`chat-message ${msg.sender}`}>
+          <div key={index} className={`chat-message ${msg.role}`}>
             <p>{msg.text}</p>
           </div>
         ))}
