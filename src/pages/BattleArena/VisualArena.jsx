@@ -4,20 +4,18 @@ import './VisualArena.css';
 // Optional fallback images if beast.image_url is missing
 import fallbackMonster1 from '../../assets/monster1.png';
 import fallbackMonster2 from '../../assets/monster2.png';
+// Import the arena background image (adjust path if needed)
+import arenaBg from '../../assets/arena.png';
 
 const VisualArena = ({ messages, userBeast, opponentBeast }) => {
-  const [environment, setEnvironment] = useState('forest');
   const [effects, setEffects] = useState([]);
 
-  // Listen to messages to update the environment or add attack effects.
+  // Listen to messages to add attack effects (if needed)
   useEffect(() => {
     if (Array.isArray(messages)) {
       messages.forEach((msg) => {
         if (msg && msg.text) {
-          if (msg.text.includes('environment changes to')) {
-            const newEnv = msg.text.split('environment changes to ')[1];
-            setEnvironment(newEnv);
-          } else if (msg.text.includes('uses')) {
+          if (msg.text.includes('uses')) {
             const action = msg.text.split('uses ')[1].replace('!', '');
             setEffects((prev) => [...prev, action]);
           }
@@ -26,19 +24,11 @@ const VisualArena = ({ messages, userBeast, opponentBeast }) => {
     }
   }, [messages]);
 
-  // Map environments to background images.
-  const environmentImages = {
-    forest: '/environments/forest.png',
-    desert: '/environments/desert.png',
-    icy: '/environments/icy.png',
-    // Add more environments as needed.
-  };
-
   return (
     <div
       className="visual-arena"
       style={{
-        backgroundImage: `url(${environmentImages[environment] || environmentImages.forest})`,
+        backgroundImage: `url(${arenaBg})`
       }}
     >
       {/* Container for Player 1's beast (joiner) positioned at bottom left */}
@@ -49,7 +39,8 @@ const VisualArena = ({ messages, userBeast, opponentBeast }) => {
           className="monster monster1"
         />
         <div className="monster-label">
-          {userBeast?.name}{userBeast?.username ? ` - ${userBeast.username}` : ""}
+          {userBeast?.name}
+          {userBeast?.username ? ` - ${userBeast.username}` : ""}
         </div>
       </div>
       
@@ -61,7 +52,8 @@ const VisualArena = ({ messages, userBeast, opponentBeast }) => {
           className="monster monster2"
         />
         <div className="monster-label">
-          {opponentBeast?.name}{opponentBeast?.username ? ` - ${opponentBeast.username}` : ""}
+          {opponentBeast?.name}
+          {opponentBeast?.username ? ` - ${opponentBeast.username}` : ""}
         </div>
       </div>
       

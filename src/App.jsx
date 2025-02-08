@@ -2,6 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Hero from './pages/Hero';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
@@ -41,8 +42,8 @@ function App() {
         <Route path="/flux" element={<FluxPage />} />
         <Route path="/mylobbies" element={<MyLobbies />} />
         <Route path="/lobby-battle" element={<LobbyBattle />} />
-        
       </Routes>
+      <Footer />
     </Router>
     </VortexConnectProvider>
   );
