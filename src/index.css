@@ -1,15 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
 
-
 body {
-    background-color: black;
-    margin: 0; /* Optional: Removes any default margin */
-    padding: 0; /* Optional: Removes any default padding */
-  }
+  background-color: black;
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  /* Optionally, set a default font-family */
+  font-family: "Cinzel", serif;
+}
 
- 
-  h1, h2, h3 {
-    font-family: "Cinzel", serif;
-    color: white;
-  }
-  
+/* Global Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px; /* For horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e; /* Dark track background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ae0900;      /* Red scrollbar thumb */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ae0900;  /* Brighter red on hover */
+}
+
+h1, h2, h3 {
+  font-family: "Cinzel", serif;
+  color: white;
+}

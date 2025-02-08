@@ -16,9 +16,7 @@ const Matchmaking = () => {
         <button className="matchmaking-button" onClick={() => navigate("/online-match")}>
           Play Online
         </button>
-        <button className="matchmaking-button" onClick={() => navigate("/arena")}>
-          Play Against AI
-        </button>
+       
       </div>
     </div>
   );

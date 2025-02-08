@@ -1,96 +1,96 @@
 /* src/components/VisualArena.css */
 
 .visual-arena {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    border-radius: 8px;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Container for each monster image and label */
+.monster-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* For Player 1 (joiner): bottom left */
+.monster1-container {
+  bottom: 20px;
+  left: 20px;
+}
+
+/* For Player 2 (opponent): top right */
+.monster2-container {
+  top: 20px;
+  right: 20px;
+}
+
+/* Monster image styling: fixed size and circular shape */
+.monster {
+  width: 150px;
+  height: 150px;
+  border-radius: 360px;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+/* Monster label styling: small text with Cinzel font */
+.monster-label {
+  margin-top: 5px;
+  font-size: 14px;
+  color: white;
+  font-family: "Cinzel", serif;
+}
+
+/* Attack effect container (centered) */
+.attack-effect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Example Attack Effects */
+.fire-breath {
+  width: 100px;
+  height: 100px;
+  background: url('/effects/fire.png') no-repeat center center;
+  background-size: contain;
+  animation: fireAnim 1s forwards;
+}
+
+@keyframes fireAnim {
+  from {
+    opacity: 1;
+    transform: scale(0.5) translate(-50%, -50%);
   }
-  
-  .monster {
-    position: absolute;
-    bottom: 20px;
-    width: 150px;
-    height: auto;
-    transition: transform 0.5s;
+  to {
+    opacity: 0;
+    transform: scale(2) translate(-50%, -50%);
   }
-  
-  .monster1 {
-    left: 20px;
-  }
-  
-  .monster2 {
-    right: 20px;
-  }
-  
-  .attack-effect {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
-  /* Example Attack Effects */
-  
-  .fire-breath {
-    width: 100px;
-    height: 100px;
-    background: url('/effects/fire.png') no-repeat center center;
-    background-size: contain;
-    animation: fireAnim 1s forwards;
-  }
-  
-  @keyframes fireAnim {
-    from {
-      opacity: 1;
-      transform: scale(0.5) translate(-50%, -50%);
-    }
-    to {
-      opacity: 0;
-      transform: scale(2) translate(-50%, -50%);
-    }
-  }
-  
-  .invisibility-effect {
-    width: 200px;
-    height: 200px;
-    border: 2px dashed #ffffff;
-    border-radius: 50%;
+}
+
+.invisibility-effect {
+  width: 200px;
+  height: 200px;
+  border: 2px dashed #ffffff;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: invisibilityAnim 2s forwards;
+}
+
+@keyframes invisibilityAnim {
+  from {
     opacity: 0.5;
-    animation: invisibilityAnim 2s forwards;
+    transform: scale(1);
   }
-  
-  @keyframes invisibilityAnim {
-    from {
-      opacity: 0.5;
-      transform: scale(1);
-    }
-    to {
-      opacity: 0;
-      transform: scale(1.5);
-    }
+  to {
+    opacity: 0;
+    transform: scale(1.5);
   }
-  
-  /* Additional Effects */
-  .magic-spell {
-    width: 100px;
-    height: 100px;
-    background: url('/effects/magic.png') no-repeat center center;
-    background-size: contain;
-    animation: magicAnim 1.5s forwards;
-  }
-  
-  @keyframes magicAnim {
-    from {
-      opacity: 1;
-      transform: scale(0.7) rotate(0deg);
-    }
-    to {
-      opacity: 0;
-      transform: scale(1.5) rotate(360deg);
-    }
-  }
-  
+}

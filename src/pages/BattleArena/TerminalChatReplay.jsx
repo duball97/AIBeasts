@@ -34,7 +34,7 @@ const TerminalChatReplay = ({ savedBattleLog, winnerExplanation }) => {
 
   return (
     <div className="terminal-chat">
-      <h2>Battle Log Replay</h2>
+      <h2>Battle Terminal</h2>
       <div className="chat-window">
         {messages.map((line, idx) => (
           <div key={idx} className="chat-message">

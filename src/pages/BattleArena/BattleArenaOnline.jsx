@@ -33,7 +33,7 @@ const BattleArenaOnline = () => {
     }
   };
 
-  // Helper: Fetch beast data for a given user ID.
+  // Helper: Fetch beast data from aibeasts_characters for a given user ID.
   const fetchBeast = async (userId) => {
     if (!userId) throw new Error("User ID is undefined.");
     try {
@@ -55,7 +55,24 @@ const BattleArenaOnline = () => {
     }
   };
 
-  // Fetch lobby details from the aibeasts_lobbies table.
+  // Helper: Fetch user data from aibeasts_users for a given user ID.
+  const fetchUser = async (userId) => {
+    if (!userId) throw new Error("User ID is undefined.");
+    try {
+      const { data, error } = await supabase
+        .from("aibeasts_users")
+        .select("username")
+        .eq("id", userId)
+        .single();
+      if (error || !data) throw new Error("Failed to fetch user data.");
+      return data;
+    } catch (err) {
+      console.error("Error fetching user:", err.message);
+      throw err;
+    }
+  };
+
+  // Fetch lobby details from aibeasts_lobbies.
   const fetchLobbyDetails = async (lobbyId) => {
     try {
       const { data, error } = await supabase
@@ -77,19 +94,21 @@ const BattleArenaOnline = () => {
         setLoading(true);
         if (!lobbyId) throw new Error("Lobby ID is missing in URL.");
 
-        // Fetch lobby details
+        // Fetch lobby details.
         const lobby = await fetchLobbyDetails(lobbyId);
         setLobbyDetails(lobby);
 
         // Fetch opponent's beast using the lobby creator's user ID.
         const opponent = await fetchBeast(lobby.created_by);
-        setOpponentBeast(opponent);
+        const opponentUser = await fetchUser(lobby.created_by);
+        setOpponentBeast({ ...opponent, username: opponentUser.username });
 
         // Fetch the joiner's beast using their own user ID.
         const userId = getUserId();
         if (!userId) throw new Error("User ID is missing.");
         const userBeastData = await fetchBeast(userId);
-        setUserBeast(userBeastData);
+        const userData = await fetchUser(userId);
+        setUserBeast({ ...userBeastData, username: userData.username });
       } catch (err) {
         setError(err.message);
       } finally {

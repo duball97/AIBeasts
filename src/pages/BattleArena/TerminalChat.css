@@ -4,11 +4,11 @@
   background-color: #1e1e1e;
   padding: 15px;
   border-radius: 8px;
-  /* Set a fixed height so the overall terminal doesn't grow */
-  height: 500px; 
+  height: 500px;           /* Fixed overall terminal height */
   display: flex;
   flex-direction: column;
   font-family: "Cinzel", serif;
+  overflow: hidden;        /* Prevent the overall container from growing */
 }
 
 .terminal-chat h2 {
@@ -17,9 +17,8 @@
 }
 
 .chat-window {
-  /* Set a fixed height for the chat log area */
-  height: 500px;
-  overflow-y: auto;  /* Enable scrolling when messages overflow */
+  flex: 1;                 /* Use remaining space so height remains fixed */
+  overflow-y: auto;        /* Enable scrolling when messages overflow */
   background-color: #000;
   padding: 10px;
   border-radius: 6px;
@@ -48,9 +47,31 @@
   color: #aaaaaa;
 }
 
+/* Judge messages (if desired, can have a different style) */
+.chat-message.judge p {
+  text-align: center;
+  color: #ae0900;
+  font-weight: bold;
+}
+
 .winner {
   margin-top: 10px;
   text-align: center;
   font-size: 20px;
   color: #ae0900;
 }
+
+/* Custom scrollbar styling for the chat window */
+.chat-window::-webkit-scrollbar {
+  width: 10px;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background: #ae0900;      /* Set thumb to red */
+  border-radius: 5px;
+}
+
+.chat-window::-webkit-scrollbar-thumb:hover {
+  background: #ae0900;  /* Brighter red on hover */
+}
+

@@ -3,16 +3,38 @@ import React, { useEffect, useRef, useState } from "react";
 import "./TerminalChat.css";
 
 const TerminalChat = ({ userBeast, aiBeast, lobbyDetails }) => {
-  const chatEndRef = useRef(null);
+  const chatWindowRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [winnerExplanation, setWinnerExplanation] = useState(null);
+  const [autoScroll, setAutoScroll] = useState(true);
 
-  // Scroll to the bottom whenever messages update
+  // Monitor scroll position on the chat window.
+  const handleScroll = () => {
+    const chatWindow = chatWindowRef.current;
+    if (!chatWindow) return;
+    // Check if user is near the bottom (within 10px tolerance)
+    const isAtBottom =
+      chatWindow.scrollHeight - chatWindow.scrollTop <= chatWindow.clientHeight + 10;
+    setAutoScroll(isAtBottom);
+  };
+
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const chatWindow = chatWindowRef.current;
+    if (chatWindow) {
+      chatWindow.addEventListener("scroll", handleScroll);
+      return () => chatWindow.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
+  // Only scroll to bottom automatically if the user is already near the bottom.
+  useEffect(() => {
+    if (autoScroll && chatWindowRef.current) {
+      // Scroll so that the last message is fully visible.
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
+  }, [messages, autoScroll]);
 
   useEffect(() => {
     if (userBeast && aiBeast) {
@@ -50,7 +72,7 @@ const TerminalChat = ({ userBeast, aiBeast, lobbyDetails }) => {
       let turn = 0;
       const sendNextLine = () => {
         if (turn >= battleLines.length) {
-          // When all battle lines have been displayed, show the judge feedback.
+          // When all battle lines have been displayed, show the judge's feedback.
           setWinnerExplanation(data.judge_log);
           return;
         }
@@ -77,13 +99,12 @@ const TerminalChat = ({ userBeast, aiBeast, lobbyDetails }) => {
   return (
     <div className="terminal-chat">
       <h2>Battle Log</h2>
-      <div className="chat-window">
+      <div className="chat-window" ref={chatWindowRef}>
         {messages.map((msg, index) => (
           <div key={index} className={`chat-message ${msg.role}`}>
             <p>{msg.text}</p>
           </div>
         ))}
-        <div ref={chatEndRef} />
       </div>
       {winnerExplanation && (
         <div className="winner">

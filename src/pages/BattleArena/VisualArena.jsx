@@ -9,7 +9,7 @@ const VisualArena = ({ messages, userBeast, opponentBeast }) => {
   const [environment, setEnvironment] = useState('forest');
   const [effects, setEffects] = useState([]);
 
-  // Listen to messages to update the environment or add attack effects
+  // Listen to messages to update the environment or add attack effects.
   useEffect(() => {
     if (Array.isArray(messages)) {
       messages.forEach((msg) => {
@@ -26,39 +26,51 @@ const VisualArena = ({ messages, userBeast, opponentBeast }) => {
     }
   }, [messages]);
 
-  // Map environments to background images
+  // Map environments to background images.
   const environmentImages = {
     forest: '/environments/forest.png',
     desert: '/environments/desert.png',
     icy: '/environments/icy.png',
-    // Add more environments as needed
+    // Add more environments as needed.
   };
 
   return (
     <div
       className="visual-arena"
       style={{
-        backgroundImage: `url(${environmentImages[environment] || environmentImages['forest']})`,
+        backgroundImage: `url(${environmentImages[environment] || environmentImages.forest})`,
       }}
     >
-      {/* Display the joiner's beast on the left */}
-      <img
-        src={userBeast?.image_url || fallbackMonster1}
-        alt={userBeast?.name || "Monster 1"}
-        className="monster monster1"
-      />
-      {/* Display the opponent's beast on the right */}
-      <img
-        src={opponentBeast?.image_url || fallbackMonster2}
-        alt={opponentBeast?.name || "Monster 2"}
-        className="monster monster2"
-      />
+      {/* Container for Player 1's beast (joiner) positioned at bottom left */}
+      <div className="monster-container monster1-container">
+        <img
+          src={userBeast?.image_url || fallbackMonster1}
+          alt={userBeast?.name || "Monster 1"}
+          className="monster monster1"
+        />
+        <div className="monster-label">
+          {userBeast?.name}{userBeast?.username ? ` - ${userBeast.username}` : ""}
+        </div>
+      </div>
+      
+      {/* Container for Player 2's beast (opponent) positioned at top right */}
+      <div className="monster-container monster2-container">
+        <img
+          src={opponentBeast?.image_url || fallbackMonster2}
+          alt={opponentBeast?.name || "Monster 2"}
+          className="monster monster2"
+        />
+        <div className="monster-label">
+          {opponentBeast?.name}{opponentBeast?.username ? ` - ${opponentBeast.username}` : ""}
+        </div>
+      </div>
+      
       {/* Render any attack effects */}
       {effects.map((action, index) => (
         <div key={index} className="attack-effect">
           {action === 'FireBreath' && <div className="fire-breath"></div>}
           {action === 'Invisibility' && <div className="invisibility-effect"></div>}
-          {/* Add more conditional effects based on actions */}
+          {/* Add more conditional effects based on actions if needed */}
         </div>
       ))}
     </div>
