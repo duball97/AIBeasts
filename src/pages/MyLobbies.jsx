@@ -92,10 +92,10 @@ const MyLobbies = () => {
             </p>
             {lobby.battle ? (
               <button onClick={() => navigate(`/lobby-battle?battleId=${lobby.battle.id}`)}>
-                Watch Replay
+                Start Fight
               </button>
             ) : (
-              <p>Battle not played yet.</p>
+              <p>No player accepted yet.</p>
             )}
           </div>
         ))
