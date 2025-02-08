@@ -22,7 +22,7 @@ const Header = () => {
           <li><Link to="/signin">Sign In</Link></li>
           <li><Link to="/style">Style</Link></li>
           <li><Link to="/connect">Connect</Link></li>
-          <li><Link to="/arena">Arena</Link></li>
+          <li><Link to="/mylobbies">MyLobbies</Link></li>
           {/* Add more navigation links as needed */}
         </ul>
       </nav>

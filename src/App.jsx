@@ -16,6 +16,8 @@ import BattleArena from './pages/BattleArena/BattleArena';
 import FluxPage from './components/FluxPage'; 
 import { VortexConnectProvider } from "./VortexConnectContext";
 import BattleArenaOnline from './pages/BattleArena/BattleArenaOnline';
+import LobbyBattle from './pages/BattleArena/LobbyBattle';
+import MyLobbies from './pages/MyLobbies';
 
 
 function App() {
@@ -37,6 +39,8 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/flux" element={<FluxPage />} />
+        <Route path="/mylobbies" element={<MyLobbies />} />
+        <Route path="/lobby-battle" element={<LobbyBattle />} />
         
       </Routes>
     </Router>

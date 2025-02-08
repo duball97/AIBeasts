@@ -50,7 +50,8 @@ const TerminalChat = ({ userBeast, aiBeast, lobbyDetails }) => {
       let turn = 0;
       const sendNextLine = () => {
         if (turn >= battleLines.length) {
-          setWinnerExplanation(data.winnerExplanation);
+          // When all battle lines have been displayed, show the judge feedback.
+          setWinnerExplanation(data.judge_log);
           return;
         }
         setMessages(prev => [

@@ -33,6 +33,17 @@ export default async function handler(req, res) {
   }
 
   try {
+    // **Step 1: Check if the lobby is still open (i.e. no battle record exists)**
+    const { data: existingBattle } = await supabase
+      .from("aibeasts_battles")
+      .select("id")
+      .eq("lobby_id", lobbyDetails.id)
+      .single();
+
+    if (existingBattle) {
+      return res.status(400).json({ error: "This lobby has already been played." });
+    }
+
     let battleLog = [];
 
     // Construct beast details strings.
@@ -49,6 +60,7 @@ export default async function handler(req, res) {
       Physic: ${aiBeast.physic.join(", ")}
     `;
 
+    // Generate 5 rounds of battle dialogue.
     for (let round = 1; round <= 5; round++) {
       // --- AI 1 (User's Beast) ---
       const responseAI1 = await openai.chat.completions.create({
@@ -56,13 +68,13 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `You are ${userBeast.name}, a beast fighting against another beast with the goal to win the battle. You do not give up. Max 1 sentence. Use your abilities, personality, and physique effectively.`
+            content: `You are ${userBeast.name}, a beast fighting against another beast with the goal to win the battle. You do not give up. Max 1 sentence. Use your abilities, personality, and physique effectively.`,
           },
           {
             role: "user",
-            content: `Opponent: ${aiBeast.name}. Fight back and win the game!\n\n${beast1Details}`
+            content: `Opponent: ${aiBeast.name}. Fight back and win the game!\n\n${beast1Details}`,
           },
-          ...battleLog.map(line => ({ role: "user", content: line }))
+          ...battleLog.map((line) => ({ role: "user", content: line })),
         ],
         temperature: 0.7,
         max_tokens: 50,
@@ -78,13 +90,13 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `You are ${aiBeast.name}, a beast fighting against another beast with the goal to win the battle. You do not give up. Max 1 sentence. Use your abilities, personality, and physique effectively.`
+            content: `You are ${aiBeast.name}, a beast fighting against another beast with the goal to win the battle. You do not give up. Max 1 sentence. Use your abilities, personality, and physique effectively.`,
           },
           {
             role: "user",
-            content: `Opponent said: "${ai1Message}". Fight back and win the game!\n\n${beast2Details}`
+            content: `Opponent said: "${ai1Message}". Fight back and win the game!\n\n${beast2Details}`,
           },
-          ...battleLog.map(line => ({ role: "user", content: line }))
+          ...battleLog.map((line) => ({ role: "user", content: line })),
         ],
         temperature: 0.7,
         max_tokens: 50,
@@ -96,18 +108,20 @@ export default async function handler(req, res) {
     }
 
     // --- AI Referee Judges the Battle ---
-    // Instruct the referee to first provide reasoning, then output on a new line: "The winner is <winner beast name>"
+    // Instruct the referee to provide reasoning and then output exactly a JSON object on a new line.
     const responseReferee = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: `You are an impartial AI referee judging a logic battle between two beasts. First, provide a 2-3 sentence explanation of which beast used its abilities, personality, and physique most effectively. Then, on a new line, output exactly: "The winner is <winner beast name>" (replace <winner beast name> with the winning beast's name, without any extra punctuation).`
+          content: `You are an impartial AI referee judging a logic battle between two beasts. First, provide a 2-3 sentence explanation of which beast performed best. Then, on a new line, output exactly:
+{"winner": "<winner beast name>"}
+with no additional text.`,
         },
         {
           role: "user",
-          content: `Battle log:\n\n${battleLog.join("\n")}\n\nExplain your reasoning and then, on a new line, output exactly "The winner is <winner beast name>".`
-        }
+          content: `Battle log:\n\n${battleLog.join("\n")}\n\nExplain your reasoning and then output the JSON object as described.`,
+        },
       ],
       temperature: 0.6,
       max_tokens: 150,
@@ -115,29 +129,29 @@ export default async function handler(req, res) {
 
     const refereeOutput = responseReferee.choices[0].message.content.trim();
 
-    // Find the line that starts with "The winner is"
-    let winnerFromRef = null;
-    const lines = refereeOutput.split("\n").map(line => line.trim());
-    const winnerLine = lines.find(line =>
-      line.toLowerCase().startsWith("the winner is")
-    );
-    if (winnerLine) {
-      // Extract the winning beast's name and remove any trailing punctuation.
-      winnerFromRef = winnerLine.substring("the winner is".length).trim();
-      winnerFromRef = winnerFromRef.replace(/[.,!?]$/, "");
+    // Parse the JSON object from the referee output.
+    let refereeData = null;
+    const lines = refereeOutput.split("\n").map((line) => line.trim());
+    const jsonLine = lines.find((line) => line.startsWith("{") && line.endsWith("}"));
+    if (jsonLine) {
+      try {
+        refereeData = JSON.parse(jsonLine);
+      } catch (e) {
+        console.error("Error parsing referee JSON:", e.message);
+      }
     }
 
     let winnerId = null;
-    // Save the winning beast's name in a new field character_winner.
     let character_winner = null;
-    if (winnerFromRef) {
+    if (refereeData && refereeData.winner) {
+      // Clean the winner name by removing extra punctuation.
+      let winnerFromRef = refereeData.winner.trim().replace(/[^a-zA-Z0-9 ]+$/, "");
       character_winner = winnerFromRef;
       const userBeastName = userBeast.name.trim().toLowerCase();
       const aiBeastName = aiBeast.name.trim().toLowerCase();
-      // Get joiner's user id from the header (user_1)
-      const user1 = getUserId(authHeader);
-      // Use the lobby creator's id from lobbyDetails as user_2.
-      const user2 = lobbyDetails.created_by; // Ensure lobbyDetails.created_by exists
+
+      const user1 = getUserId(authHeader);            // Joiner's user id.
+      const user2 = lobbyDetails.created_by;            // Lobby creator's user id.
 
       if (winnerFromRef.toLowerCase() === userBeastName) {
         winnerId = user1;
@@ -146,35 +160,37 @@ export default async function handler(req, res) {
       }
     }
 
+    // Fallback: if no winner determined, choose joiner by default.
+    if (!winnerId) {
+      winnerId = getUserId(authHeader);
+      character_winner = userBeast.name;
+    }
+
     // --- Save the Battle Record ---
     const battleRecord = {
-      // Uncomment the next line if your table does NOT auto-generate the id:
-      id: uuidv4(),
+      id: uuidv4(), // Remove this if your table auto-generates the id.
+      lobby_id: lobbyDetails.id, // Save the lobby id for replay association.
       character_1: userBeast.name,
       character_2: aiBeast.name,
-      character_winner: character_winner, // Save the winning beast's name.
+      character_winner: character_winner,
       user_1: getUserId(authHeader),
       user_2: lobbyDetails.created_by,
       winner: winnerId, // The winning user's uuid.
       battle_log: battleLog, // Saved as a JSON array.
-      environment: "standard", // Replace with dynamic environment if available.
+      judge_log: refereeOutput, // Save the full judge output (reasoning and JSON).
+      environment: "standard",
       winner_wallet: userBeast.wallet || null,
     };
 
-    const { data: battleData, error: battleError } = await supabase
-      .from("aibeasts_battles")
-      .insert([battleRecord])
-      .select();
+    await supabase.from("aibeasts_battles").insert([battleRecord]);
 
-    if (battleError) {
-      console.error("Error saving battle:", battleError.message);
-      // Optionally, you can choose whether to return an error or just log this issue.
-    }
+    // **Step 2: Close the Lobby** (only allow one game per lobby)
+    await supabase.from("aibeasts_lobbies").update({ lobby_status: "closed" }).eq("id", lobbyDetails.id);
 
     res.status(200).json({
       transcript: battleLog.join("\n"),
-      winnerExplanation: refereeOutput, // Full output including reasoning and the winner line.
-      savedBattle: battleData, // Optionally return saved record details.
+      judge_log: refereeOutput,
+      message: "Battle completed and lobby closed.",
     });
   } catch (error) {
     console.error("Error generating battle:", error);

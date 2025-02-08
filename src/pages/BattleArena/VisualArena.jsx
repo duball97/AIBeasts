@@ -11,15 +11,19 @@ const VisualArena = ({ messages, userBeast, opponentBeast }) => {
 
   // Listen to messages to update the environment or add attack effects
   useEffect(() => {
-    messages.forEach((msg) => {
-      if (msg.text.includes('environment changes to')) {
-        const newEnv = msg.text.split('environment changes to ')[1];
-        setEnvironment(newEnv);
-      } else if (msg.text.includes('uses')) {
-        const action = msg.text.split('uses ')[1].replace('!', '');
-        setEffects((prev) => [...prev, action]);
-      }
-    });
+    if (Array.isArray(messages)) {
+      messages.forEach((msg) => {
+        if (msg && msg.text) {
+          if (msg.text.includes('environment changes to')) {
+            const newEnv = msg.text.split('environment changes to ')[1];
+            setEnvironment(newEnv);
+          } else if (msg.text.includes('uses')) {
+            const action = msg.text.split('uses ')[1].replace('!', '');
+            setEffects((prev) => [...prev, action]);
+          }
+        }
+      });
+    }
   }, [messages]);
 
   // Map environments to background images
@@ -37,7 +41,7 @@ const VisualArena = ({ messages, userBeast, opponentBeast }) => {
         backgroundImage: `url(${environmentImages[environment] || environmentImages['forest']})`,
       }}
     >
-      {/* Display the joiner's beast (userBeast) on the left */}
+      {/* Display the joiner's beast on the left */}
       <img
         src={userBeast?.image_url || fallbackMonster1}
         alt={userBeast?.name || "Monster 1"}
@@ -49,7 +53,6 @@ const VisualArena = ({ messages, userBeast, opponentBeast }) => {
         alt={opponentBeast?.name || "Monster 2"}
         className="monster monster2"
       />
-
       {/* Render any attack effects */}
       {effects.map((action, index) => (
         <div key={index} className="attack-effect">
