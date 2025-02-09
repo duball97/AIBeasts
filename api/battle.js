@@ -1,6 +1,11 @@
 import openai from "../openaiClient.js"; // OpenAI Client
 import { supabase } from "../supabaseClient.js"; // Supabase Client
 import { v4 as uuidv4 } from "uuid"; // For generating UUIDs if needed
+import { ethers } from 'ethers';
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const BattleBetABI = require("../artifacts/contracts/AIBeastsBattle.sol/BattleBet.json");
+
 
 // Helper function to extract user ID from the authorization header.
 const getUserId = (authorization) => {
@@ -180,6 +185,27 @@ with no additional text.`,
               console.log(`🏆 Winner's wallet: ${winnerWallet}`);
           }
       }
+
+
+      // --- Call the Smart Contract to Pay the Winner ---
+// Fetch bet amount from lobbyDetails
+const betAmount = lobbyDetails.bet_amount || 0; 
+
+if (betAmount > 0) { // Only pay the winner if there's a bet
+    console.log("Bet detected, sending payment to winner...");
+
+    // Call the Smart Contract to Pay the Winner
+    const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_SEPOLIA_ENDPOINT);
+    const ownerWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+    const contract = new ethers.Contract(process.env.VITE_SEPOLIA_BATTLE_CONTRACT, BattleBetABI.abi, ownerWallet);
+
+    console.log("Calling contract to declare winner and process payment...");
+    const payTx = await contract.declareWinner(lobbyDetails.battlecontract_id, winnerWallet);
+    await payTx.wait();
+    console.log("Payment successful: Winner has been paid on-chain.");
+} else {
+    console.log("Free match detected, skipping on-chain payment.");
+}
 
     // --- Save the Battle Record ---
     const battleRecord = {
