@@ -39,6 +39,8 @@ const MyLobbies = () => {
           .from("aibeasts_lobbies")
           .select("*")
           .eq("created_by", userId)
+.in("lobby_status", ["open", "played"]) // Fetch lobbies that are either open or played
+
           .order("created_at", { ascending: false });
 
         if (lobbyError) {
@@ -78,6 +80,23 @@ const MyLobbies = () => {
   if (loading) return <p>Loading your lobbies...</p>;
   if (error) return <p className="error">{error}</p>;
 
+
+  const markBattleAsClosed = async () => {
+    try {
+      await supabase
+        .from("aibeasts_lobbies")
+        .update({ lobby_status: "closed" })
+        .eq("id", battle.lobby_id);
+  
+      alert("Battle marked as closed. It will now disappear from your lobbies.");
+      navigate("/my-lobbies"); // Redirect back after marking as closed
+    } catch (err) {
+      console.error("Error marking battle as closed:", err);
+    }
+  };
+
+  
+  
   return (
     <div className="my-lobbies-page">
       <h2>My Lobbies</h2>

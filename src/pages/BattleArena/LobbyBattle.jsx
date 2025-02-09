@@ -44,6 +44,31 @@ const LobbyBattle = () => {
     fetchBattle();
   }, [battleId]);
 
+
+
+  useEffect(() => {
+    const markLobbyAsClosed = async () => {
+      if (!battle || !battle.lobby_id) return;
+  
+      const { error } = await supabase
+        .from("aibeasts_lobbies")
+        .update({ lobby_status: "closed" })
+        .eq("id", battle.lobby_id);
+  
+      if (error) {
+        console.error("⚠️ Failed to update lobby status:", error);
+      } else {
+        console.log("✅ Lobby marked as closed.");
+      }
+    };
+  
+    if (battle) {
+      markLobbyAsClosed();
+    }
+  }, [battle]); // Runs when battle data is fetched
+
+  
+  
   if (loading) return <div className="battle-arena-online">Loading battle replay... 🕒</div>;
   if (error) return <div className="battle-arena-online error">{error}</div>;
 

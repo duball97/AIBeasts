@@ -227,7 +227,7 @@ if (betAmount > 0) { // Only pay the winner if there's a bet
     await supabase.from("aibeasts_battles").insert([battleRecord]);
 
     // **Step 2: Close the Lobby** (only allow one game per lobby)
-    await supabase.from("aibeasts_lobbies").update({ lobby_status: "closed" }).eq("id", lobbyDetails.id);
+    await supabase.from("aibeasts_lobbies").update({ lobby_status: "played" }).eq("id", lobbyDetails.id);
 
     res.status(200).json({
       transcript: battleLog.join("\n"),
