@@ -7,7 +7,7 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const MyAIBeasts = await ethers.getContractFactory("BattleBet");
+  const MyAIBeasts = await ethers.getContractFactory("BattleBet2");
   const MyAIBeastsDeployment = await MyAIBeasts.deploy();
 
   console.log("AIBeasts address:", MyAIBeastsDeployment.target);

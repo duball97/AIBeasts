@@ -37,6 +37,43 @@
       "artifacts": [
         "BattleBet"
       ]
+    },
+    "C:\\Users\\dubal\\Downloads\\AIBeasts Game\\AIBeasts\\contracts\\AiBeastsBattle2.sol": {
+      "lastModificationDate": 1739069036755,
+      "contentHash": "2e4c3374247d2bcdbf5f1a4804606abb",
+      "sourceName": "contracts/AiBeastsBattle2.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.17"
+      ],
+      "artifacts": [
+        "BattleBet2"
+      ]
     }
   }
 }

@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { supabase } from "../supabaseClient"; // Your Supabase client
 import { VortexConnectContext } from "../VortexConnectContext";
 import "./CryptoMatch.css";
-import BattleBetABI from "../contracts/BattleBet.json";
+import BattleBetABI from "../contracts/BattleBet2.json";
 
 // Define your contract addresses using Vite’s environment variables
 const CONTRACT_ADDRESSES = {
@@ -164,13 +164,103 @@ const CryptoMatch = () => {
     }
   };
   
+  const handleJoinLobby = async (lobbyId) => {
+    try {
+      if (!isConnected) await connectMetaMask();
+      if (!walletAddress) {
+        setError("Wallet not connected!");
+        return;
+      }
   
-
-  // When a user clicks "Join Lobby", redirect them to the crypto battle page.
-  const handleJoinLobby = (lobbyId) => {
-    window.location.href = `/crypto-match-battle?lobbyId=${lobbyId}`;
+      console.log("Fetching battlecontract_id for lobbyId:", lobbyId);
+  
+      // ✅ Step 1: Fetch battlecontract_id and check Player1 & Player2
+      const { data: lobbyData, error: lobbyError } = await supabase
+        .from("aibeasts_lobbies")
+        .select("battlecontract_id, creator_wallet, player2_wallet, bet_amount")
+        .eq("id", lobbyId)
+        .maybeSingle();
+  
+      if (lobbyError || !lobbyData || !lobbyData.battlecontract_id) {
+        console.error("Error fetching battlecontract_id:", lobbyError?.message || "Not found");
+        setError("Failed to retrieve battlecontract_id.");
+        return;
+      }
+  
+      const battlecontractId = lobbyData.battlecontract_id;
+      const creatorWallet = lobbyData.creator_wallet;
+      let player2Wallet = lobbyData.player2_wallet;
+      const stakeAmount = lobbyData.bet_amount;
+  
+      console.log("Correct battlecontract_id:", battlecontractId);
+      console.log("Lobby created by (Player1):", creatorWallet);
+      console.log("Existing player2 (if any):", player2Wallet);
+  
+      // ✅ Step 2: Prevent Player1 from joining again
+      if (walletAddress.toLowerCase() === creatorWallet.toLowerCase()) {
+        console.error("You are Player1 and have already staked!");
+        setError("You have already staked. Wait for an opponent.");
+        return;
+      }
+  
+      // ✅ Step 3: Assign Player2 if not set in Supabase
+      if (!player2Wallet) {
+        console.log(`Assigning ${walletAddress} as Player2 in Supabase`);
+        const { error: updateError } = await supabase
+          .from("aibeasts_lobbies")
+          .update({ player2_wallet: walletAddress })
+          .eq("battlecontract_id", battlecontractId);
+  
+        if (updateError) {
+          console.error("Error setting Player2:", updateError.message);
+          setError("Failed to set player 2.");
+          return;
+        }
+        player2Wallet = walletAddress;
+      }
+  
+      // ✅ Step 4: Validate Stake Amount
+      if (!stakeAmount || isNaN(parseFloat(stakeAmount))) {
+        console.error("Invalid stake amount:", stakeAmount);
+        setError("Invalid stake amount.");
+        return;
+      }
+  
+      const stakeWei = ethers.parseEther(stakeAmount.toString());
+      console.log(`Converted stake amount to Wei: ${stakeWei.toString()}`);
+  
+      console.log(`Player2 (${walletAddress}) joining battle #${battlecontractId} with ${stakeWei.toString()} Wei`);
+  
+      // ✅ Step 5: Execute Join Battle Transaction
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESSES[chainId], BattleBetABI.abi, signer);
+  
+      const joinTx = await contract.joinBattle(battlecontractId, { value: stakeWei });
+      console.log("Joining transaction sent:", joinTx.hash);
+      await joinTx.wait();
+      console.log(`Player2 joined battle #${battlecontractId}!`);
+  
+      // ✅ Step 6: Update Lobby Status to "ongoing"
+      const { error: updateStatusError } = await supabase
+        .from("aibeasts_lobbies")
+        .update({ lobby_status: "ongoing" })
+        .eq("battlecontract_id", battlecontractId);
+  
+      if (updateStatusError) {
+        setError(updateStatusError.message);
+      } else {
+        console.log("Lobby status updated to 'ongoing'!");
+        fetchLobbies();
+      }
+    } catch (err) {
+      console.error("Error joining battle:", err);
+      setError("Transaction failed. Please try again.");
+    }
   };
-
+  
+  
+  
   return (
     <div className="crypto-match-page">
       <h2>Crypto Betting Lobby</h2>
