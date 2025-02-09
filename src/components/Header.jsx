@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import './Header.css'; // Create this CSS file for styling
 import { Link } from 'react-router-dom';
+import logo from "../assets/logo.png";
+
 
 const Header = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,7 +15,8 @@ const Header = () => {
   return (
     <header className="header">
       <div className="logo">
-      <img src="src/assets/logo.png" alt="AIBeasts Logo"/>
+      <img src={logo} alt="AIBeasts Logo" />
+
 
       </div>
       <nav className={`nav ${isMobileMenuOpen ? 'active' : ''}`}>
