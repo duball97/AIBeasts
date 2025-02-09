@@ -130,6 +130,16 @@
    
   }
 
+  .player1-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 10px;
+  }
+
+  
   .centered2-button {
     display: block;
     margin: 20px auto;

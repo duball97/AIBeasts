@@ -313,6 +313,19 @@ const CryptoMatch = () => {
           ) : (
             lobbies.map((lobby) => (
               <div key={lobby.id} className="lobby-item">
+                 {lobby.player1_pic ? (
+          <img
+            src={lobby.player1_pic}
+            alt="Player 1 Beast"
+            className="player1-image"
+          />
+        ) : (
+          <img
+            src="./assets/logo.png"  // Replace with the path to your fallback image
+            alt="Default Beast"
+            className="player1-image"
+          />
+        )}
                 <h3>{lobby.lobby_name}</h3>
                 <p><strong>Created by:</strong> {lobby.created_by}</p>
                 <p><strong>Conditions:</strong> {lobby.conditions}</p>
