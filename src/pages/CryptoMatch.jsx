@@ -1,7 +1,30 @@
-// src/pages/CryptoMatch.jsx
-import React, { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import { ethers } from "ethers";
 import { supabase } from "../supabaseClient"; // Your Supabase client
+import { VortexConnectContext } from "../VortexConnectContext";
 import "./CryptoMatch.css";
+import BattleBetABI from "../contracts/BattleBet.json";
+
+// Define your contract addresses using Vite’s environment variables
+const CONTRACT_ADDRESSES = {
+  1: "", // Ethereum Mainnet (if needed)
+  11155111: import.meta.env.VITE_SEPOLIA_BATTLE_CONTRACT, // Sepolia BattleBet Contract (e.g. "0xff9f97c2eBDf33DCB13A558663fA35408dEbFe2a")
+  8453: "", // Base Testnet (if needed)
+};
+
+// ABI for the createBattle function – note that it is nonpayable (so do NOT send ETH)
+const ABI = [
+  {
+    inputs: [
+      { internalType: "address", name: "_player2", type: "address" },
+      { internalType: "uint256", name: "_stake", type: "uint256" },
+    ],
+    name: "createBattle",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
 
 const CryptoMatch = () => {
   const [lobbies, setLobbies] = useState([]);
@@ -10,17 +33,48 @@ const CryptoMatch = () => {
   const [creatingLobby, setCreatingLobby] = useState(false);
   const [lobbyName, setLobbyName] = useState("");
   const [lobbyConditions, setLobbyConditions] = useState("");
-  const [stakeAmount, setStakeAmount] = useState(""); // stake input (in ETH)
-  const [creatorWallet, setCreatorWallet] = useState(""); // creator's wallet address
+  const [stakeAmount, setStakeAmount] = useState(""); // Stake amount input (in ETH)
 
-  // Fetch all crypto betting lobbies: we show only those with bet_amount > 0
+  // Wallet connection via VortexConnect
+  const { address: walletAddress, isConnected, chainId, connectMetaMask } =
+    useContext(VortexConnectContext);
+
+  // Helper: Get the user ID from the JWT token stored in localStorage.
+  const getUserId = () => {
+    try {
+      const token = localStorage.getItem("aibeasts_token");
+      if (!token) throw new Error("No token found.");
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      return decodedToken.id;
+    } catch (err) {
+      console.error("Error extracting user ID:", err.message);
+      return null;
+    }
+  };
+
+  // Helper: Fetch the wallet address from aibeasts_users for the given user ID.
+  const fetchUserWallet = async (userId) => {
+    const { data, error } = await supabase
+      .from("aibeasts_users")
+      .select("wallet")
+      .eq("id", userId)
+      .single();
+    if (error) {
+      console.error("Error fetching wallet:", error.message);
+      return "";
+    }
+    return data.wallet;
+  };
+
+  // Fetch all crypto betting lobbies:
+  // Only show lobbies that are open and have a bet_amount > 0.
   const fetchLobbies = async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("aibeasts_lobbies")
       .select("*")
       .eq("lobby_status", "open")
-      .gt("bet_amount", 0) // only include lobbies where bet_amount > 0
+      .gt("bet_amount", 0)
       .order("created_at", { ascending: false });
     if (error) {
       setError(error.message);
@@ -35,56 +89,85 @@ const CryptoMatch = () => {
   }, []);
 
   // Create a new crypto betting lobby.
+  // IMPORTANT: This function first interacts with the contract (which does NOT receive ETH because createBattle is nonpayable)
+  // then saves the lobby record (including the on-chain battle ID) in Supabase.
   const handleCreateLobby = async () => {
-    // Get the user ID from the JWT token stored in localStorage
-    const token = localStorage.getItem("aibeasts_token");
-    if (!token) {
-      setError("User not authenticated.");
-      return;
-    }
-    let userId = null;
     try {
-      const decoded = JSON.parse(atob(token.split(".")[1])); // decode JWT
-      userId = decoded.id;
+      if (!isConnected) await connectMetaMask();
+      if (!walletAddress) {
+        setError("Wallet not connected!");
+        return;
+      }
+      if (!chainId || !CONTRACT_ADDRESSES[chainId]) {
+        setError("Unsupported network! Please switch to Sepolia.");
+        return;
+      }
+      if (!stakeAmount || isNaN(stakeAmount) || parseFloat(stakeAmount) <= 0) {
+        setError("Invalid stake amount.");
+        return;
+      }
+  
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESSES[chainId], BattleBetABI.abi, signer);
+  
+      const stakeWei = ethers.parseEther(stakeAmount);
+  
+      console.log(`Creating battle with stake: ${stakeWei.toString()} Wei`);
+  
+      // Step 1: Call createBattle (no ETH sent)
+      const createTx = await contract.createBattle("0x0000000000000000000000000000000000000000", stakeWei);
+      console.log("Transaction sent:", createTx.hash);
+      await createTx.wait();
+      console.log("Battle successfully created on-chain!");
+  
+      // Step 2: Fetch the latest battle ID
+      const battleCounter = await contract.battleCounter();
+      const battleId = battleCounter.toString();
+      console.log(`Battle ID: ${battleId}`);
+  
+      // Step 3: Player 1 Joins the Battle (Sends ETH)
+      console.log(`Player1 (${walletAddress}) joining battle #${battleId} with ${stakeWei.toString()} Wei`);
+      const joinTx = await contract.joinBattle(battleId, { value: stakeWei });
+      console.log("Joining transaction sent:", joinTx.hash);
+      await joinTx.wait();
+      console.log(`Player1 joined battle #${battleId}!`);
+  
+      // Step 4: Save the lobby in Supabase and mark it as "open"
+      const { data, error } = await supabase
+        .from("aibeasts_lobbies")
+        .insert([
+          {
+            created_by: walletAddress,
+            lobby_name: lobbyName,
+            conditions: lobbyConditions,
+            bet_amount: stakeAmount,
+            creator_wallet: walletAddress,
+            battlecontract_id: battleId,
+            lobby_status: "open", 
+          },
+        ])
+        .single();
+  
+      if (error) setError(error.message);
+      else {
+        console.log("Battle saved in database!");
+        fetchLobbies();
+        setCreatingLobby(false);
+        setLobbyName("");
+        setLobbyConditions("");
+        setStakeAmount("");
+      }
     } catch (err) {
-      console.error("Error decoding token:", err);
-      setError("Invalid user token.");
-      return;
-    }
-
-    // Insert the new lobby into aibeasts_lobbies.
-    // We now save the bet_amount and creator_wallet instead of lobby_mode.
-    const { data, error } = await supabase
-      .from("aibeasts_lobbies")
-      .insert([
-        {
-          created_by: userId,
-          lobby_name: lobbyName,
-          conditions: lobbyConditions,
-          stake: stakeAmount,         // You may or may not need this duplicate field
-          bet_amount: stakeAmount,      // Save the bet amount (numeric)
-          creator_wallet: creatorWallet, // Save the creator's wallet address
-          lobby_status: "open",
-        },
-      ])
-      .single();
-
-    if (error) {
-      setError(error.message);
-    } else {
-      // Refresh the lobby list and hide the creation form.
-      fetchLobbies();
-      setCreatingLobby(false);
-      setLobbyName("");
-      setLobbyConditions("");
-      setStakeAmount("");
-      setCreatorWallet("");
+      console.error("Error creating and joining battle:", err);
+      setError("Transaction failed. Please try again.");
     }
   };
+  
+  
 
   // When a user clicks "Join Lobby", redirect them to the crypto battle page.
   const handleJoinLobby = (lobbyId) => {
-    // For example, navigate to /crypto-match-battle?lobbyId=...
     window.location.href = `/crypto-match-battle?lobbyId=${lobbyId}`;
   };
 
@@ -112,15 +195,9 @@ const CryptoMatch = () => {
           />
           <input
             type="text"
-            placeholder="Stake Amount (ETH)"
+            placeholder="Bet Amount (ETH)"
             value={stakeAmount}
             onChange={(e) => setStakeAmount(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Your Wallet Address"
-            value={creatorWallet}
-            onChange={(e) => setCreatorWallet(e.target.value)}
           />
           <button className="custom-button" onClick={handleCreateLobby}>
             Create Lobby
@@ -143,21 +220,10 @@ const CryptoMatch = () => {
             lobbies.map((lobby) => (
               <div key={lobby.id} className="lobby-item">
                 <h3>{lobby.lobby_name}</h3>
-                <p>
-                  <strong>Created by:</strong> {lobby.created_by}
-                </p>
-                <p>
-                  <strong>Conditions:</strong> {lobby.conditions}
-                </p>
-                <p>
-                  <strong>Stake:</strong> {lobby.stake} ETH
-                </p>
-                <p>
-                  <strong>Bet Amount:</strong> {lobby.bet_amount} ETH
-                </p>
-                <p>
-                  <strong>Creator Wallet:</strong> {lobby.creator_wallet}
-                </p>
+                <p><strong>Created by:</strong> {lobby.created_by}</p>
+                <p><strong>Conditions:</strong> {lobby.conditions}</p>
+                <p><strong>Bet Amount:</strong> {lobby.bet_amount} ETH</p>
+                <p><strong>Creator Wallet:</strong> {lobby.creator_wallet}</p>
                 <button className="custom-button" onClick={() => handleJoinLobby(lobby.id)}>
                   Join Lobby
                 </button>

@@ -1,96 +1,114 @@
-/* 1) Reset full-page container for vertical/horizontal center */
+.visuals-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  background: linear-gradient(145deg, #0f0f0f, #232323);
+  border: 1px solid #ae090073;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 15px #ae09006f;
+  color: #fff;
+  font-family: "Cinzel", serif;
+  text-align: center;
+}
 
-  /* Ensure the component is centered in its own space */
-.flux-container {
-    display: flex;
-    justify-content: center; /* Horizontally center */
-    align-items: center; /* Vertically center */
-    min-height: 100vh; /* Ensure it takes up full screen height */
-    padding: 20px;
-  }
-  
-  /* Make sure the wrapper itself is centered */
-  .flux-wrapper {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    max-width: 500px;
-    width: 90%;
-    text-align: center; /* Center text inside box */
-  }
-  /* Title */
-  .flux-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  /* Text input */
-  .flux-input {
+.visuals-page h2 {
+  font-size: 30px;
+  margin-bottom: 20px;
+  color: #ae0900;
+  border-bottom: 2px solid #ae0900;
+  padding-bottom: 10px;
+}
+
+/* 🛠 Centered Monster Details */
+.monster-details {
+  background: #121212;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ae090073;
+  max-width: 500px;
+  margin: 20px auto;
+  text-align: center;
+}
+
+.monster-details h3 {
+  font-size: 24px;
+  color: #ae0900;
+  text-align: center;
+}
+
+/* 🖼️ Centered & Smaller Generated Image */
+.generated-image {
+  max-width: 200px; /* Smaller size */
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ae09006f;
+  margin: 0px auto;
+  display: block; /* Ensures proper centering */
+}
+
+/* 🖼️ Centered Beast Image */
+.monster-image {
+  max-width: 200px; /* Smaller */
+  border-radius: 10px;
+  margin-top: 0px;
+  display: block; /* Ensures it's centered */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 📜 Centered Generated Prompt */
+.generated-prompt {
+  background: #1b1b1b;
+  padding: 15px;
+  border-radius: 8px;
+  max-width: 500px;
+  margin: 20px auto;
+  text-align: center;
+}
+
+/* 🎨 Dropdown & Buttons */
+.custom-label {
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.custom-select {
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 16px;
+  background: #1b1b1b;
+  color: #fff;
+  border: 1px solid #ae090073;
+}
+
+.custom-button {
+  background: linear-gradient(135deg, #790000, #ae0900);
+  border: none;
+  padding: 10px 20px;
+  font-size: 18px;
+  font-family: "Cinzel", serif;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background 0.3s;
+  margin: 10px 0;
+}
+
+.custom-button:hover {
+  transform: scale(1.02);
+  background: linear-gradient(135deg, #8c0000, #c10a00);
+}
+
+/* 📱 Responsive Adjustments */
+@media (max-width: 768px) {
+  .visuals-page {
     width: 90%;
     padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    outline: none;
-    font-size: 16px;
   }
-  
-  /* Button */
-  .flux-button {
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-top: 15px;
+
+  .generated-image,
+  .monster-image {
+    max-width: 150px; /* Even smaller on mobile */
   }
-  .flux-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  }
-  .flux-button:disabled {
-    background: gray;
-    cursor: not-allowed;
-  }
-  
-  /* File label + input */
-  .flux-label {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 10px;
-    display: block;
-  }
-  .flux-file-input {
-    display: block;
-    margin: 10px auto 20px auto;
-    font-size: 14px;
-  }
-  
-  /* 3) The bottom-fixed image container */
-  .flux-result-bottom {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    max-width: 90%;
-  }
-  
-  /* The image */
-  .flux-image {
-    max-width: 40%;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  }
-  
+}

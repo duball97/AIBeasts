@@ -1,234 +1,141 @@
-// components/Visuals.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { supabase } from "../supabaseClient"; // Adjust the path as needed
+import { supabase } from "../supabaseClient"; // Adjust path if needed
 import "./Visuals.css";
 
 const Visuals = () => {
-  const [monster, setMonster] = useState(null); // Store monster data
+  const [monster, setMonster] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [aspectRatio, setAspectRatio] = useState("1:1"); // Default aspect ratio
-  const [prompt, setPrompt] = useState(""); // Store the generated prompt
-  const [error, setError] = useState(null); // Store any errors
+  const [aspectRatio, setAspectRatio] = useState("1:1");
+  const [prompt, setPrompt] = useState("");
+  const [error, setError] = useState(null);
 
-  // Fetch monster data on component mount
   useEffect(() => {
     const fetchMonster = async () => {
       try {
         setLoading(true);
-        
         const token = localStorage.getItem("aibeasts_token");
-        
-        if (!token) {
-          throw new Error("No token found. Please log in to view your monster.");
-        }
-        
-        const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decode JWT
+        if (!token) throw new Error("Please log in to view your monster.");
+
+        const decodedToken = JSON.parse(atob(token.split(".")[1]));
         const { id: userId } = decodedToken;
-        
-        console.log("🔍 Fetching from Supabase with user ID:", userId);
-        
+
         const { data, error } = await supabase
           .from("aibeasts_characters")
-          .select("*")  // Fetch all columns to include 'physic'
+          .select("*")
           .eq("user_id", userId)
           .single();
-        
-        console.log("📊 Supabase Response:", { data, error });
-        
-        if (error) {
-          throw new Error(error.message);
-        }
-        
-        if (!data) {
-          throw new Error("No monster found for this user.");
-        }
-        
+
+        if (error) throw new Error(error.message);
+        if (!data) throw new Error("No monster found for this user.");
+
         setMonster(data);
-        generatePrompt(data.physic); // Generate prompt after fetching data
+        generatePrompt(data.physic);
       } catch (err) {
-        console.error("❌ Error fetching monster:", err.message);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    
     fetchMonster();
   }, []);
 
-  // Function to generate prompt based on physic data
   const generatePrompt = (physic) => {
     if (!Array.isArray(physic) || physic.length === 0) {
-      setPrompt("No physic data available to generate a prompt.");
+      setPrompt("No physic data available.");
       return;
     }
-  
-    // Join array elements into a description
+
     const description = physic.join(", ");
-  
-    // Generate a complete prompt with a fixed style
-    const promptText = `Create a detailed 2D cartoon illustration of a monster. It has ${description}. Style: 2d Studio Ghibli. Cartoon. Dragon Ball. Family Guy.`;
-  
-    setPrompt(promptText);
+    setPrompt(
+      `Create a 2D cartoon-style monster illustration. It has ${description}. Style: Studio Ghibli, Dragon Ball, Family Guy.`
+    );
   };
-  
-  
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
       alert("Prompt is not available!");
       return;
     }
-  
+
     setLoading(true);
-    setImageUrl(""); // Clear previous image
-  
+    setImageUrl("");
+
     try {
-      const requestData = {
-        aspectRatio,
-        prompt, // Only using the prompt, ignoring images
-      };
-  
-      console.log("🚀 Sending request to API:", requestData);
-  
-      // Send request to API
+      const requestData = { aspectRatio, prompt };
       const response = await axios.post("/api/visuals-generate", requestData);
       handleResponse(response);
     } catch (error) {
-      console.error("❌ Error generating image:", error.message);
-      alert("Failed to generate the image. Please try again.");
+      setError("Failed to generate image.");
       setLoading(false);
     }
   };
-  
-  
 
   const handleResponse = async (response) => {
     setLoading(false);
     const { imageUrl: returnedValue } = response.data;
-  
-    if (!returnedValue) {
-      alert("Error: No valid image URL received.");
+
+    let finalImageUrl = typeof returnedValue === "string" ? returnedValue : returnedValue?.output?.[0];
+
+    if (!finalImageUrl) {
+      setError("No valid image URL received.");
       return;
     }
-  
-    let finalImageUrl = "";
-  
-    if (typeof returnedValue === "string") {
-      finalImageUrl = returnedValue;
-    } else if (
-      typeof returnedValue === "object" &&
-      returnedValue.output &&
-      Array.isArray(returnedValue.output) &&
-      returnedValue.output.length > 0
-    ) {
-      finalImageUrl = returnedValue.output[0];
-    } else {
-      alert("Error: No valid image URL received.");
-      return;
-    }
-  
+
     setImageUrl(finalImageUrl);
-  
-    // Save to Supabase
+
     if (monster?.user_id) {
       try {
-        const { error } = await supabase
+        await supabase
           .from("aibeasts_characters")
-          .update({ image_url: finalImageUrl }) // Update the image_url column
+          .update({ image_url: finalImageUrl })
           .eq("user_id", monster.user_id);
-  
-        if (error) throw new Error(error.message);
-        console.log("✅ Image URL saved to Supabase!");
       } catch (error) {
-        console.error("❌ Failed to save image URL to Supabase:", error.message);
+        console.error("Failed to save image to Supabase:", error.message);
       }
-    }   
+    }
   };
-  
-
-  if (loading && !monster) {
-    return (
-      <div className="flux-container">
-        <div className="flux-wrapper">
-          <p>Loading your monster data...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flux-container">
-        <div className="flux-wrapper">
-          <p className="error">{error}</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="flux-container">
-      <div className="flux-wrapper">
-        {/* Display Monster Details */}
-       
-        {/* Display Generated Image */}
-        {imageUrl && (
-          <div>
-            <img src={imageUrl} alt="Generated" className="flux-image" />
-          </div>
-        )}
-        {monster && (
-          <div className="monster-details">
-            <h2>{monster.name}</h2>
-            <p>{monster.description}</p>
-            {monster.image_url && (
-              <img
-                src={monster.image_url}
-                alt={monster.name}
-                className="monster-image"
-              />
-            )}
-          </div>
-        )}
+    <div className="visuals-page">
+      <h2>Monster Visuals</h2>
+      <p>Generate a new visual for your AI Beast!</p>
 
-        {/* Display Generated Prompt */}
-        {prompt && (
-          <div className="generated-prompt">
-            <h3>Generated Prompt:</h3>
-            <p>{prompt}</p>
-          </div>
-        )}
+      {loading && !monster ? <p>Loading your monster data...</p> : error ? <p className="error">{error}</p> : null}
 
-       
+      {monster && (
+        <div className="monster-details">
+          <h3>{monster.name}</h3>
+          <p>{monster.description}</p>
+          {monster.image_url && <img src={monster.image_url} alt={monster.name} className="monster-image" />}
+        </div>
+      )}
 
-        {/* Aspect Ratio Selection */}
-        <label className="flux-label">
-          Aspect Ratio:
-          <select
-            className="flux-select"
-            value={aspectRatio}
-            onChange={(e) => setAspectRatio(e.target.value)}
-          >
-            <option value="1:1">1:1 (Square)</option>
-            <option value="16:9">16:9 (Landscape)</option>
-            <option value="9:16">9:16 (Portrait)</option>
-            <option value="4:5">4:5</option>
-            <option value="3:2">3:2</option>
-          </select>
-        </label>
+      {imageUrl && <img src={imageUrl} alt="Generated" className="generated-image" />}
 
-        {/* Generate Buttons */}
-        <button
-          onClick={() => handleGenerate(false)}
-          className="flux-button"
-          disabled={loading}
-        >
-          {loading ? "Generating..." : "Generate Image"}
-        </button>
-      </div>
+      <button onClick={handleGenerate} className="custom-button" disabled={loading}>
+        {loading ? "Generating..." : "Generate New Style"}
+      </button>
+
+      {monster && monster.physic && (
+  <div className="generated-prompt">
+    <h3>Description:</h3>
+    <p>{monster.physic.join(", ")}</p>
+  </div>
+)}
+
+
+      <label className="custom-label">
+        Aspect Ratio:
+        <select className="custom-select" value={aspectRatio} onChange={(e) => setAspectRatio(e.target.value)}>
+          <option value="1:1">1:1 (Square)</option>
+          <option value="16:9">16:9 (Landscape)</option>
+          <option value="9:16">9:16 (Portrait)</option>
+        </select>
+      </label>
+
+      
     </div>
   );
 };
