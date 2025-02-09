@@ -13,7 +13,8 @@ const Header = () => {
   return (
     <header className="header">
       <div className="logo">
-        <img src="src\assets\logo.png" alt="AIBeasts Logo"/>
+      <img src="src/assets/logo.png" alt="AIBeasts Logo"/>
+
       </div>
       <nav className={`nav ${isMobileMenuOpen ? 'active' : ''}`}>
         <ul>
