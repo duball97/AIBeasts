@@ -37,6 +37,11 @@ const TrainingChat = () => {
       } catch (err) {
         console.error("Error fetching initial message:", err);
         setMessages([{ sender: "system", text: "⚠️ Error loading chat." }]);
+
+        console.error("Error fetching initial message:", err.message, err.stack);
+        +        setMessages([{ sender: "system", text: "⚠️ Error loading chat. Check console for details." }]);
+     
+        
       }
     };
 
