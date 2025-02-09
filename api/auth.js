@@ -12,7 +12,7 @@ const generateToken = (user) => {
     username: user.username,
   };
 
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "2000d" });
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
 // Serverless Handler for /api/auth
