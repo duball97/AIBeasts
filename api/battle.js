@@ -159,12 +159,27 @@ with no additional text.`,
         winnerId = user2;
       }
     }
-
-    // Fallback: if no winner determined, choose joiner by default.
     if (!winnerId) {
-      winnerId = getUserId(authHeader);
-      character_winner = userBeast.name;
-    }
+      return res.status(400).json({ error: "No winner determined by the AI judge." });
+  }
+
+      // --- Fetch the Winner's Wallet Address ---
+      let winnerWallet = null;
+
+      if (winnerId) {
+          const { data: winnerData, error: winnerError } = await supabase
+              .from("aibeasts_users")
+              .select("wallet")
+              .eq("id", winnerId)
+              .single();
+  
+          if (winnerError || !winnerData?.wallet) {
+              console.warn(`⚠️ Could not fetch wallet for winner ID: ${winnerId}`);
+          } else {
+              winnerWallet = winnerData.wallet;
+              console.log(`🏆 Winner's wallet: ${winnerWallet}`);
+          }
+      }
 
     // --- Save the Battle Record ---
     const battleRecord = {
@@ -179,7 +194,8 @@ with no additional text.`,
       battle_log: battleLog, // Saved as a JSON array.
       judge_log: refereeOutput, // Save the full judge output (reasoning and JSON).
       environment: "standard",
-      winner_wallet: userBeast.wallet || null,
+      winner_wallet: winnerWallet || null,
+
     };
 
     await supabase.from("aibeasts_battles").insert([battleRecord]);
