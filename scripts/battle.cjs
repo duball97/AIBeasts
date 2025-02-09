@@ -43,19 +43,13 @@ async function main() {
   const currentBattleId = await contractPlayer1.battleCounter();
   console.log("Current Battle ID:", currentBattleId.toString());
 
-  /* // --- Step 2: Player1 Joins the Battle ---
-  console.log(
-    `Player1 (${player1.address}) joining battle #${currentBattleId}...`
-  );
+  // Cancel Battle
 
-  const joinTx = await contractPlayer1.joinBattle(currentBattleId, {
-    value: stakeWei,
-  });
-  await joinTx.wait();
+  const cancelTx = await contractPlayer1.cancelBattle(currentBattleId);
+  await cancelTx.wait();
+  console.log("Battle canceled!");
 
-  console.log(`Player1 joined battle #${currentBattleId}!`); */
-
-  // --- Step 2: Player2 Joins the Battle ---
+  /* // --- Step 2: Player2 Joins the Battle ---
   console.log(
     `Player2 (${player2.address}) joining battle #${currentBattleId}...`
   );
@@ -78,7 +72,7 @@ async function main() {
   );
   await winnerTx.wait();
 
-  console.log("Battle winner is player 1!");
+  console.log("Battle winner is player 1!"); */
 }
 
 main().catch((error) => {

@@ -1,45 +1,8 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "C:\\Users\\dubal\\Downloads\\AIBeasts Game\\AIBeasts\\contracts\\AiBeastsBattle2.sol": {
-      "lastModificationDate": 1739070303601,
-      "contentHash": "6b0dea28d1212eaec7f20c1e638cdb15",
-      "sourceName": "contracts/AiBeastsBattle2.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000
-          },
-          "viaIR": true,
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.17"
-      ],
-      "artifacts": [
-        "BattleBet2"
-      ]
-    },
-    "C:\\Users\\dubal\\Downloads\\AIBeasts Game\\AIBeasts\\contracts\\AiBeastsBattle.sol": {
-      "lastModificationDate": 1739070323304,
+    "C:\\Users\\Utilizador\\Desktop\\AIBeasts\\contracts\\AiBeastsBattle.sol": {
+      "lastModificationDate": 1739069476857,
       "contentHash": "abdb20538da908b9fab3eb431b16d5be",
       "sourceName": "contracts/AiBeastsBattle.sol",
       "solcConfig": {
@@ -73,6 +36,43 @@
       ],
       "artifacts": [
         "BattleBet"
+      ]
+    },
+    "C:\\Users\\Utilizador\\Desktop\\AIBeasts\\contracts\\AiBeastsBattle2.sol": {
+      "lastModificationDate": 1739109436196,
+      "contentHash": "6b0dea28d1212eaec7f20c1e638cdb15",
+      "sourceName": "contracts/AiBeastsBattle2.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.17"
+      ],
+      "artifacts": [
+        "BattleBet2"
       ]
     }
   }

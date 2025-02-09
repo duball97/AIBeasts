@@ -23,6 +23,10 @@ module.exports = {
       url: process.env.ALCHEMY_BASE_ENDPOINT,
       accounts: [process.env.PLAYER1_PRIVATE_KEY],
     },
+    arb: {
+      url: process.env.ALCHEMY_ARBITRUM_ENDPOINT,
+      accounts: [process.env.PLAYER1_PRIVATE_KEY],
+    },
 
     localhost: {
       url: "http://127.0.0.1:8545", // This is the default URL for the Hardhat node
