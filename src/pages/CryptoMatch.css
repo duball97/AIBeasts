@@ -127,7 +127,25 @@
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.2s ease-in-out, background 0.3s;
+   
   }
+
+  .centered2-button {
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+    background: linear-gradient(135deg, #790000, #ae0900);
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-family: "Cinzel", serif;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, background 0.3s;
+}
+
+
   
   /* Hover effect for all custom buttons */
   .custom-button:hover {

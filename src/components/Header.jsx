@@ -19,7 +19,7 @@ const Header = () => {
         <ul>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/dashboard">Dashboard</Link></li>
-          <li><Link to="/signin">Sign In</Link></li>
+          <li><Link to="/matchmaking">Fight</Link></li>
           <li><Link to="/style">Style</Link></li>
           <li><Link to="/connect">Connect</Link></li>
           <li><Link to="/mylobbies">MyLobbies</Link></li>

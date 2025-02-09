@@ -37,29 +37,31 @@ contract BattleBet2 {
         return battleCounter;
     }
 
-    // ✅ Join the battle as Player2
-    function joinBattle(uint256 _battleId) external payable {
-        Battle storage b = battles[_battleId];
-        require(msg.value == b.stake, "Must send correct stake");
+    
+// ✅ Join the battle as Player2
+function joinBattle(uint256 _battleId) external payable {
+    Battle storage b = battles[_battleId];
+    require(msg.value == b.stake, "Must send correct stake");
 
-        // ✅ Assign Player2 if not already set
-        if (b.player2 == address(0)) {
-            b.player2 = msg.sender;
-        }
-
-        require(
-            msg.sender == b.player1 || msg.sender == b.player2,
-            "Not a participant"
-        );
-
-        if (msg.sender == b.player1) {
-            require(!b.player1Staked, "Player1 already staked");
-            b.player1Staked = true;
-        } else {
-            require(!b.player2Staked, "Player2 already staked");
-            b.player2Staked = true;
-        }
+    // ✅ Assign Player2 if not already set BEFORE checking the participant condition
+    if (b.player2 == address(0)) {
+        b.player2 = msg.sender;
     }
+
+    // ✅ Now check if the sender is Player1 or Player2
+    require(msg.sender == b.player1 || msg.sender == b.player2, "Not a participant");
+
+    if (msg.sender == b.player1) {
+        require(!b.player1Staked, "Player1 already staked");
+        b.player1Staked = true;
+    } else {
+        require(!b.player2Staked, "Player2 already staked");
+        b.player2Staked = true;
+    }
+}
+
+
+
 
     // ✅ Only the contract owner can declare the winner
     function declareWinner(uint256 _battleId, address _winner) external onlyOwner {
