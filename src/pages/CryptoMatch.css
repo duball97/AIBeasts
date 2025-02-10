@@ -2,16 +2,26 @@
 
 .crypto-match-page {
     max-width: 1200px;
-    margin: 40px auto;
+    margin: 10px auto;
     background: linear-gradient(145deg, #0f0f0f, #232323);
     border: 1px solid #ae090073;
     border-radius: 12px;
-    padding: 20px;
+    padding: 60px;
     box-shadow: 0 0 15px #ae09006f;
     color: #fff;
     font-family: "Cinzel", serif;
     text-align: center;
   }
+
+  .small-info-text {
+    font-size: 12px;  /* ✅ Way smaller */
+   
+    color: #aaa;      /* ✅ Lighter color */
+    text-align: center;
+    margin-top: 0px;
+  }
+  
+  
   
   .crypto-match-page h2 {
     font-size: 30px;
@@ -23,7 +33,7 @@
   
   .crypto-match-page p {
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
   }
   
   .create-lobby-form {
@@ -131,8 +141,8 @@
   }
 
   .player1-image {
-    width: 80px;
-    height: 80px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     object-fit: cover;
     display: block;
@@ -140,6 +150,20 @@
   }
 
   
+  .text-sm {
+    font-size: 12px; /* Equivalent to 14px */
+}
+
+
+/* Container for all lobbies */
+.lobby-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* ✅ 3 columns per row */
+  gap: 50px; /* Spacing between lobbies */
+  padding: 50px;
+  justify-content: center;
+}
+
   .centered2-button {
     display: block;
     margin: 20px auto;

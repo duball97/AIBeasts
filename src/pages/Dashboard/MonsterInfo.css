@@ -5,9 +5,9 @@
   align-items: flex-start; /* Align everything to the left */
   background: linear-gradient(145deg, #1b1b1b, #292929);
   border-radius: 12px;
-  padding: 30px;
+  padding: 50px;
   width: 90%;
-  margin: 20px auto;
+  margin: 0px auto;
   box-shadow: 
       inset 0 0 8px rgba(255, 255, 255, 0.1),
       0 2px 6px rgba(0, 0, 0, 0.8);
@@ -51,7 +51,8 @@
   display: flex;
   flex-direction: column;
   gap: 0px;
-  margin-top:10px;
+ 
+  margin: 0px;
   text-align: left; /* Align details text to the left */
   width: 100%;
 }

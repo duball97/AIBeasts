@@ -42,6 +42,22 @@ const CryptoMatch = () => {
     }
   };
 
+  // Map of Chain IDs to Chain Names
+const CHAIN_NAMES = {
+  1: "Ethereum Mainnet",
+  11155111: "Sepolia",
+  8453: "Base",
+  42170: "Arbitrum",
+  56: "Binance Smart Chain",
+ 
+};
+
+// Convert Chain ID to Chain Name
+const getChainName = (chainId) => {
+  return CHAIN_NAMES[chainId] || `Unknown (${chainId})`;
+};
+
+
   // Helper: Fetch the wallet address from aibeasts_users for the given user ID.
   const fetchUserWallet = async (userId) => {
     const { data, error } = await supabase
@@ -99,9 +115,9 @@ const CryptoMatch = () => {
         setError("Invalid stake amount.");
         return;
       }
-
+  
       setCreatingLobbyLoading(true); // ✅ Start loading
-
+  
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(
@@ -109,10 +125,10 @@ const CryptoMatch = () => {
         BattleBetABI.abi,
         signer
       );
-
+  
       const stakeWei = ethers.parseEther(stakeAmount);
       console.log(`Creating battle with stake: ${stakeWei.toString()} Wei`);
-
+  
       const createTx = await contract.createAndJoinBattle({
         value: stakeWei,
         gasLimit: 300000,
@@ -120,25 +136,25 @@ const CryptoMatch = () => {
       console.log("Transaction sent:", createTx.hash);
       await createTx.wait();
       console.log("Battle successfully created and Player1 has joined!");
-
+  
       const battleCounter = await contract.battleCounter();
       const battleId = battleCounter.toString();
       console.log(`Battle ID: ${battleId}`);
-
+  
       const userId = getUserId(); // ✅ Get user ID
-
+  
       // ✅ Fetch user's beast picture
       const { data: userBeastData, error: userBeastError } = await supabase
         .from("aibeasts_characters")
         .select("image_url")
         .eq("user_id", userId)
         .single();
-
-      if (userBeastError)
-        console.warn("⚠️ Could not fetch user beast picture.");
-
+  
+      if (userBeastError) console.warn("⚠️ Could not fetch user beast picture.");
+  
       const player1Pic = userBeastData?.image_url || null; // ✅ Save beast image
-
+  
+      // ✅ Insert into Supabase, including chainId
       const { error } = await supabase
         .from("aibeasts_lobbies")
         .insert([
@@ -152,10 +168,11 @@ const CryptoMatch = () => {
             player1_pic: player1Pic, // ✅ Save beast image
             player2_wallet: null,
             lobby_status: "open",
+            chain: chainId.toString(), // ✅ Save chainId as a string
           },
         ])
         .single();
-
+  
       if (error) {
         setError(error.message);
       } else {
@@ -173,6 +190,7 @@ const CryptoMatch = () => {
       setCreatingLobbyLoading(false); // ✅ Stop loading
     }
   };
+  
 
   const [joiningLobbyLoading, setJoiningLobbyLoading] = useState(false);
 
@@ -285,8 +303,11 @@ const CryptoMatch = () => {
 
   return (
     <div className="crypto-match-page">
-      <h2>Crypto Betting Lobby</h2>
-      <p>Find a crypto betting match or create your own lobby!</p>
+      <h2>Betting Matches</h2>
+      <p>Find a betting match or create your own lobby by betting your chosen amount and waiting for a player to join.</p>
+      <p className="small-info-text">
+  You need a crypto wallet to play. If you don't have one, play the free match instead or create one.
+</p>
 
       <button
         className="centered2-button"
@@ -295,7 +316,7 @@ const CryptoMatch = () => {
       >
         {creatingLobbyLoading ? "Creating..." : "Create Lobby"}
       </button>
-
+  
       {creatingLobby && (
         <div className="create-lobby-form">
           <input
@@ -326,13 +347,13 @@ const CryptoMatch = () => {
           </button>
         </div>
       )}
-
+  
       {loading ? (
         <p>Loading lobbies...</p>
       ) : error ? (
         <p className="error">{error}</p>
       ) : (
-        <div className="lobby-list">
+        <div className="lobby-grid"> {/* ✅ Updated to use grid for 3 per row */}
           {lobbies.length === 0 ? (
             <p>No open crypto betting lobbies available at the moment.</p>
           ) : (
@@ -346,24 +367,15 @@ const CryptoMatch = () => {
                   />
                 ) : (
                   <img
-                    src="./assets/logo.png" // Replace with the path to your fallback image
+                    src="./assets/logo.png"
                     alt="Default Beast"
                     className="player1-image"
                   />
                 )}
                 <h3>{lobby.lobby_name}</h3>
-                <p>
-                  <strong>Created by:</strong> {lobby.created_by}
-                </p>
-                <p>
-                  <strong>Conditions:</strong> {lobby.conditions}
-                </p>
-                <p>
-                  <strong>Bet Amount:</strong> {lobby.bet_amount} ETH
-                </p>
-                <p>
-                  <strong>Creator Wallet:</strong> {lobby.creator_wallet}
-                </p>
+                <p><strong>Conditions:</strong> {lobby.conditions}</p>
+                <p><strong>Bet Amount:</strong> {lobby.bet_amount} ETH</p>
+                <p><strong>Chain:</strong> {getChainName(lobby.chain)}</p>
                 <button
                   className="custom-button"
                   onClick={() => handleJoinLobby(lobby.id)}
@@ -371,6 +383,9 @@ const CryptoMatch = () => {
                 >
                   {joiningLobbyLoading ? "Joining..." : "Join Lobby"}
                 </button>
+                <div>
+                  <p className="text-sm">You are betting real funds.</p>
+                </div>
               </div>
             ))
           )}
@@ -378,6 +393,7 @@ const CryptoMatch = () => {
       )}
     </div>
   );
+  
 };
 
 export default CryptoMatch;

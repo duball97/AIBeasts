@@ -7,10 +7,7 @@ const QuickStats = ({ stats }) => {
     <div className="quick-stats">
       <h3>Stats</h3>
       <div className="stats-grid">
-        <div className="stat-item">
-          <p>Monsters</p>
-          <span>{stats.totalMonsters}</span>
-        </div>
+      
         <div className="stat-item">
           <p>Battles</p>
           <span>{stats.battlesParticipated}</span>

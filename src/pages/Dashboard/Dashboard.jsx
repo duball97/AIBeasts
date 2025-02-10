@@ -42,8 +42,8 @@ const Dashboard = () => {
   ];
 
   const newsUpdates = [
-    { id: 1, title: "Version 1.2 Released", description: "New environments and abilities added!", time: "3 days ago" },
-    { id: 2, title: "Upcoming Tournament", description: "Register now for the Chaos Masters Cup!", time: "1 week ago" },
+    { id: 1, title: "Version 1.0 Released", description: "You can now play the test version!", time: "2 days ago" },
+    { id: 2, title: "Build your Beast ", description: "Start training your beast!", time: "3 days ago" },
   ];
 
   return (
