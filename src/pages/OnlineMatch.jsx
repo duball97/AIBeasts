@@ -142,7 +142,7 @@ const OnlineMatch = () => {
                   alt="Player 1 Beast"
                   className="player1-image"
                 />
-                <button className="join-lobby-btn" onClick={() => handleJoinLobby(lobby.id)} style={{ marginTop: "10px", marginBottom:"10px", }}>
+                <button className="join-lobby-btn" onClick={() => handleJoinLobby(lobby.id)} style={{  backgroundColor: "#ae090073", marginTop: "10px", marginBottom:"10px", }}>
                   Join Lobby
                 </button>
                 <h3>{lobby.lobby_name}</h3>

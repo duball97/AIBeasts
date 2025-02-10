@@ -378,6 +378,8 @@ const getChainName = (chainId) => {
                   className="custom-button"
                   onClick={() => handleJoinLobby(lobby.id)}
                   disabled={joiningLobbyLoading}
+                  style={{
+                    backgroundColor: "#ae090073", }}
                 >
                   {joiningLobbyLoading ? "Joining..." : "Join Lobby"}
                 </button>
