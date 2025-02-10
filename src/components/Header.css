@@ -36,7 +36,7 @@
 
 .nav ul {
   display: flex;
-  gap: 35px;
+  gap: 25px;
   font-family: 'Cinzel', serif;
   list-style: none;
   padding: 0;
@@ -46,7 +46,7 @@
 .nav ul li a {
   color: white;  
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   transition: color 0.3s ease-in-out;
 }
@@ -66,7 +66,7 @@
 
 .start-button .btn {
   padding: 10px 40px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   text-transform: uppercase;
   border: none;
