@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient"; // Your Supabase client
 import { useNavigate } from "react-router-dom";
-import "./OnlineMatch.css";
+import "./MyLobbies.css";
 
 const MyLobbies = () => {
   const [lobbies, setLobbies] = useState([]);
@@ -81,46 +81,34 @@ const MyLobbies = () => {
   if (error) return <p className="error">{error}</p>;
 
 
-  const markBattleAsClosed = async () => {
-    try {
-      await supabase
-        .from("aibeasts_lobbies")
-        .update({ lobby_status: "closed" })
-        .eq("id", battle.lobby_id);
-  
-      alert("Battle marked as closed. It will now disappear from your lobbies.");
-      navigate("/my-lobbies"); // Redirect back after marking as closed
-    } catch (err) {
-      console.error("Error marking battle as closed:", err);
-    }
-  };
-
-  
   
   return (
     <div className="my-lobbies-page">
-      <h2>My Lobbies</h2>
+      <h2 className="lobbies-title">My Lobbies</h2>
+      <p className="lobbies-p">When a player accepts your game, you can play it here</p>
+      
       {lobbies.length === 0 ? (
         <p>You have not created any lobbies yet.</p>
       ) : (
-        lobbies.map((lobby) => (
-          <div key={lobby.id} className="lobby-item">
-            <h3>{lobby.lobby_name}</h3>
-            <p>
-              <strong>Conditions:</strong> {lobby.conditions}
-            </p>
-            {lobby.battle ? (
-              <button onClick={() => navigate(`/lobby-battle?battleId=${lobby.battle.id}`)}>
-                Start Fight
-              </button>
-            ) : (
-              <p>No player accepted yet.</p>
-            )}
-          </div>
-        ))
+        <div className="lobby-grid"> {/* ✅ Wrap in a grid */}
+          {lobbies.map((lobby) => (
+            <div key={lobby.id} className="lobby-item">
+              <h3>{lobby.lobby_name}</h3>
+              <p><strong>Conditions:</strong> {lobby.conditions}</p>
+              {lobby.battle ? (
+                <button onClick={() => navigate(`/lobby-battle?battleId=${lobby.battle.id}`)}>
+                  Start Fight
+                </button>
+              ) : (
+                <p>No player accepted yet.</p>
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
+  
 };
 
 export default MyLobbies;

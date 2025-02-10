@@ -97,7 +97,7 @@ const OnlineMatch = () => {
 
   return (
     <div className="online-match-page">
-      <h2>Online Lobby</h2>
+      <h2>Free Online Match</h2>
       <p>Find an opponent or create your own match!</p>
 
       <button className="centered2-button" onClick={() => setCreatingLobby(true)}>

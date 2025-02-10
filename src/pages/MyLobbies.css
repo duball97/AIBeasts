@@ -1,0 +1,80 @@
+/* Centering the entire page */
+.my-lobbies-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* ✅ Centers everything horizontally */
+    justify-content: center; /* ✅ Centers vertically if needed */
+    text-align: center;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  /* Centering the lobby grid */
+  .lobby-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* ✅ 3 lobbies per row */
+    gap: 50px;
+    justify-content: center;
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+  }
+  
+
+  .lobbies-title{font-size:30px;}
+  .lobbies-p {
+    font-size: 18px;
+    margin-bottom: 0px;
+    margin-top:-20px;
+    color:white;
+  }
+  /* Responsive adjustments */
+  @media (max-width: 1024px) {
+    .lobby-grid {
+      grid-template-columns: repeat(2, 1fr); /* ✅ 2 per row on tablets */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .lobby-grid {
+      grid-template-columns: repeat(1, 1fr); /* ✅ 1 per row on mobile */
+    }
+  }
+  
+  /* Lobby Item Styling */
+  .lobby-item {
+    background: #1a1a1a; /* Dark mode */
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    color: white;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .lobby-item:hover {
+    transform: scale(1.05); /* ✅ Slight hover effect */
+  }
+  
+  /* Buttons */
+  .lobby-item button {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%; /* ✅ Full width for better UI */
+  }
+  
+  .lobby-item button:hover {
+    background: #45a049;
+  }
+  
+  /* Centering text */
+  p.error {
+    color: red;
+    font-weight: bold;
+  }
+  

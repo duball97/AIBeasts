@@ -102,9 +102,15 @@ const MonsterInfo = () => {
         <p>
           <strong>Physic:</strong> {monster.physic}
         </p>
-        <button className="action-button" onClick={() => navigate("/matchmaking")}>
-          Fight
-        </button>
+        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+  <button className="action-button" onClick={() => navigate("/matchmaking")}>
+    Fight
+  </button>
+  <button className="action-button" onClick={() => navigate("/style")}>
+    Edit Style
+  </button>
+</div>
+
       </div>
     </div>
   );
