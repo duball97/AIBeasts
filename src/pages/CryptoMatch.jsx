@@ -313,6 +313,7 @@ const getChainName = (chainId) => {
         className="centered2-button"
         onClick={() => setCreatingLobby(true)}
         disabled={creatingLobbyLoading}
+        style={{ marginTop: "20px" }}
       >
         {creatingLobbyLoading ? "Creating..." : "Create Lobby"}
       </button>
@@ -342,6 +343,7 @@ const getChainName = (chainId) => {
           <button
             className="custom-button"
             onClick={() => setCreatingLobby(false)}
+            style={{ marginTop: "-10px" }}
           >
             Cancel
           </button>
@@ -372,10 +374,6 @@ const getChainName = (chainId) => {
                     className="player1-image"
                   />
                 )}
-                <h3>{lobby.lobby_name}</h3>
-                <p><strong>Conditions:</strong> {lobby.conditions}</p>
-                <p><strong>Bet Amount:</strong> {lobby.bet_amount} ETH</p>
-                <p><strong>Chain:</strong> {getChainName(lobby.chain)}</p>
                 <button
                   className="custom-button"
                   onClick={() => handleJoinLobby(lobby.id)}
@@ -383,7 +381,13 @@ const getChainName = (chainId) => {
                 >
                   {joiningLobbyLoading ? "Joining..." : "Join Lobby"}
                 </button>
-                <div>
+                <h3>{lobby.lobby_name}</h3>
+               
+                <p><strong>Bet Amount:</strong> {lobby.bet_amount} ETH</p>
+                <p><strong>Chain:</strong> {getChainName(lobby.chain)}</p>
+               
+                <div style={{ marginTop: "20px" }}>
+                <p><strong>Conditions:</strong> {lobby.conditions}</p>
                   <p className="text-sm">You are betting real funds.</p>
                 </div>
               </div>

@@ -18,7 +18,9 @@ const OnlineMatch = () => {
       .from("aibeasts_lobbies")
       .select("*")
       .eq("lobby_status", "open")
+      .is("bet_amount", null) // ✅ Only fetch lobbies where bet_amount is NULL
       .order("created_at", { ascending: false });
+  
     if (error) {
       setError(error.message);
     } else {
@@ -27,30 +29,44 @@ const OnlineMatch = () => {
     setLoading(false);
   };
 
+  
   useEffect(() => {
     fetchLobbies();
   }, []);
 
   // Create a new lobby
   const handleCreateLobby = async () => {
-    // Get the user ID from the JWT token stored in localStorage
     const token = localStorage.getItem("aibeasts_token");
     if (!token) {
       setError("User not authenticated.");
       return;
     }
+  
     let userId = null;
     try {
-      const decoded = JSON.parse(atob(token.split(".")[1])); // decode JWT
+      const decoded = JSON.parse(atob(token.split(".")[1])); // Decode JWT
       userId = decoded.id;
     } catch (err) {
       console.error("Error decoding token:", err);
       setError("Invalid user token.");
       return;
     }
-
-    // Insert the new lobby into aibeasts_lobbies
-    const { data, error } = await supabase
+  
+    // ✅ Fetch user's beast image from Supabase
+    const { data: userBeast, error: beastError } = await supabase
+      .from("aibeasts_characters")
+      .select("image_url")
+      .eq("user_id", userId)
+      .single();
+  
+    if (beastError) {
+      console.warn("⚠️ Could not fetch user beast picture.");
+    }
+  
+    const player1Pic = userBeast?.image_url || null; // ✅ Store the image
+  
+    // ✅ Insert new lobby into Supabase with player1_pic
+    const { error } = await supabase
       .from("aibeasts_lobbies")
       .insert([
         {
@@ -58,24 +74,24 @@ const OnlineMatch = () => {
           lobby_name: lobbyName,
           conditions: lobbyConditions,
           lobby_status: "open",
+          player1_pic: player1Pic, // ✅ Store Player 1's image
         },
       ])
       .single();
-
+  
     if (error) {
       setError(error.message);
     } else {
-      // Refresh the lobby list and hide the form.
       fetchLobbies();
       setCreatingLobby(false);
       setLobbyName("");
       setLobbyConditions("");
     }
   };
+  
 
-  // When a user clicks "Join Lobby", redirect them to the battle arena page with the lobby ID as a query parameter.
+  // Join lobby function
   const handleJoinLobby = (lobbyId) => {
-    // For example, navigate to /battle-arena-online?lobbyId=...
     window.location.href = `/battle-arena-online?lobbyId=${lobbyId}`;
   };
 
@@ -84,7 +100,7 @@ const OnlineMatch = () => {
       <h2>Online Lobby</h2>
       <p>Find an opponent or create your own match!</p>
 
-      <button onClick={() => setCreatingLobby(true)}>
+      <button className="centered2-button" onClick={() => setCreatingLobby(true)}>
         Create New Lobby
       </button>
 
@@ -101,8 +117,12 @@ const OnlineMatch = () => {
             value={lobbyConditions}
             onChange={(e) => setLobbyConditions(e.target.value)}
           />
-          <button onClick={handleCreateLobby}>Create Lobby</button>
-          <button onClick={() => setCreatingLobby(false)}>Cancel</button>
+          <button className="custom-button" onClick={handleCreateLobby}>
+            Create Lobby
+          </button>
+          <button className="custom-button cancel-btn" onClick={() => setCreatingLobby(false)}>
+            Cancel
+          </button>
         </div>
       )}
 
@@ -111,22 +131,24 @@ const OnlineMatch = () => {
       ) : error ? (
         <p className="error">{error}</p>
       ) : (
-        <div className="lobby-list">
+        <div className="lobby-grid"> {/* ✅ Grid layout for 3 lobbies per row */}
           {lobbies.length === 0 ? (
             <p>No open lobbies available at the moment.</p>
           ) : (
             lobbies.map((lobby) => (
               <div key={lobby.id} className="lobby-item">
-                <h3>{lobby.lobby_name}</h3>
-                <p>
-                  <strong>Created by:</strong> {lobby.created_by}
-                </p>
-                <p>
-                  <strong>Conditions:</strong> {lobby.conditions}
-                </p>
-                <button onClick={() => handleJoinLobby(lobby.id)}>
+                <img
+                  src={lobby.player1_pic || "./assets/default-avatar.png"} // ✅ Show Player 1 image
+                  alt="Player 1 Beast"
+                  className="player1-image"
+                />
+                <button className="join-lobby-btn" onClick={() => handleJoinLobby(lobby.id)} style={{ marginTop: "10px", marginBottom:"10px", }}>
                   Join Lobby
                 </button>
+                <h3>{lobby.lobby_name}</h3>
+                
+                <p><strong>Conditions:</strong> {lobby.conditions}</p>
+               
               </div>
             ))
           )}
