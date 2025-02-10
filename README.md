@@ -96,33 +96,6 @@ On a betting game, our smart contract will **automatically transfers funds** to 
 npm install
 ```
 
-### Deploy Smart Contracts:
-```bash
-npx hardhat run scripts/deploy.js --network base
-npx hardhat run scripts/deploy.js --network arbitrum
-```
-
-### Verify Contracts:
-```bash
-npx hardhat verify --network base 0xYourContractAddress "ConstructorArg1" "ConstructorArg2"
-npx hardhat verify --network arbitrum 0xYourContractAddress "ConstructorArg1" "ConstructorArg2"
-```
-
----
-
-## 🌍 Roadmap
-✅ Alpha Game  
-✅ Free version live  
-✅ Deployed on Sepolia Testnet
-✅ Base & Arbitrum Deployment
-🔜 Find a way to improve the Visual Arena
-🔜 Improve prompts
-🔜 Better models  
-🔜 NFT Integration for Beast Customization  
-🔜 Leaderboards & Tournaments  
-🔜 AI-Generated Beast Evolution  
-🔜 AIBeast Beta 
----
 
 Lots to build.
 
