@@ -1,20 +1,17 @@
-/* src/components/Header.css */
-
 /* Main Header */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 90%; /* Keeps it responsive */
-  max-width: 1500px; /* Ensures it doesn't exceed 1500px */
-  margin: 0 auto; /* Centers the header */
+  max-width: 1500px;
+  margin: 0 auto;
   padding: 10px 20px;
   position: relative;
   z-index: 1000;
 }
 
-
-/* Logo Section (25% Width) */
+/* Logo Section */
 .logo {
   flex: 1;
   display: flex;
@@ -27,7 +24,7 @@
   max-width: 100%;
 }
 
-/* Navigation Menu (Centered, 50% Width) */
+/* Navigation Menu (Desktop) */
 .nav {
   flex: 2;
   display: flex;
@@ -56,7 +53,7 @@
   text-shadow: 0 0 5px #cd0000;
 }
 
-/* Start Button (Properly Aligned) */
+/* Start Button (Desktop) */
 .start-button {
   flex: 1;
   display: flex;
@@ -69,6 +66,7 @@
   font-size: 16px;
   font-weight: bold;
   text-transform: uppercase;
+  font-family: 'Cinzel', serif;
   border: none;
   border-radius: 6px;
   background: linear-gradient(135deg, #790000, #ae0900); 
@@ -84,7 +82,7 @@
   box-shadow: 0 0 20px rgb(224, 0, 0);
 }
 
-/* Mobile Menu (Hidden by Default on Desktop) */
+/* Hamburger Menu (Hidden on Desktop) */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -110,39 +108,74 @@
   transform: rotate(45deg) translate(-5px, -6px);
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
+  /* Universal box-sizing */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  
+  /* Header settings for mobile */
   .header {
-    width: 100%; /* Full width on mobile */
-    padding: 10px 15px;
-  }
-
-  .nav {
-    position: absolute;
-    top: 80px;
-    left: -100%;
     width: 100%;
-    height: calc(100vh - 80px);
-    background-color: black;
-    flex-direction: column;
+    margin: 0;
+    padding: 10px 15px;
+    flex-direction: row;           /* Two columns: logo on left, hamburger on right */
     align-items: center;
-    transition: 0.5s;
+    justify-content: space-between;
+    position: relative;
+    height: 70px;                  /* Fixed header height */
   }
-
-  .nav.active {
-    left: 0;
+  
+  .logo {
+    margin: 0;
+    justify-content: flex-start;
   }
-
-  .nav ul {
-    flex-direction: column;
-    gap: 25px;
+  
+  .logo img {
+    height: 60px;                /* Slightly smaller logo */
   }
-
+  
+  /* Hide the start button on mobile */
+  .start-button {
+    display: none;
+  }
+  
+  /* Hamburger menu */
   .hamburger {
     display: flex;
+    margin: 0;
   }
-
-  .start-button {
-    display: none; /* Hide start button on mobile */
+  
+  .hamburger .bar {
+    width: 25px;
+    height: 3px;
+    margin: 4px 0;
+  }
+  
+  /* Mobile Navigation Overlay */
+  .nav {
+    position: fixed;
+    top: 70px;                   /* Place the nav just below the header */
+    left: 0;
+    width: 100vw;                /* Full viewport width */
+    height: calc(100vh - 70px);    /* Occupies the remaining height */
+    background-color: rgba(0, 0, 0, 0.95);
+    display: none;               /* Hidden by default, no animation */
+    flex-direction: column;
+    align-items: center;         /* Center contents horizontally */
+    justify-content: center;     /* Center contents vertically */
+    z-index: 999;
+  }
+  
+  /* When active, simply display the overlay (no transitions or animations) */
+  .nav.active {
+    display: flex;
+  }
+  
+  .nav ul {
+    flex-direction: column;
+    gap: 20px;
+    font-size: 18px;
   }
 }

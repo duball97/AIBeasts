@@ -36,7 +36,8 @@
   height: 150px;
   border-radius: 360px;
   object-fit: cover;
-  transition: transform 0.5s;
+  /* You can remove transition if using CSS animations to avoid conflicts */
+  /* transition: transform 0.5s; */
 }
 
 /* Monster label styling: small text with Cinzel font */
@@ -92,5 +93,41 @@
   to {
     opacity: 0;
     transform: scale(1.5);
+  }
+}
+
+/* ===== Attack Animation Classes ===== */
+
+/* User's beast attack animation (lunge up/right and return) */
+.monster.user-attacking {
+  animation: userAttackAnim 0.5s forwards;
+}
+
+@keyframes userAttackAnim {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(380px, -240px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Opponent's beast attack animation (lunge down/left and return) */
+.monster.opponent-attacking {
+  animation: opponentAttackAnim 0.5s forwards;
+}
+
+@keyframes opponentAttackAnim {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-380px, 240px);
+  }
+  100% {
+    transform: translate(0, 0);
   }
 }

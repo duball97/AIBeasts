@@ -40,7 +40,7 @@
 
 /* Header */
 .training-chat-header {
-  font-size: 25px;
+  font-size: 22px;
   font-weight: bold;
   text-align: center;
   color: #ae0900;
@@ -104,7 +104,7 @@
   color: #aaa;
   
   font-style: italic;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 /* Input Area */
@@ -123,7 +123,7 @@
   background: #121212;
   border: 1px solid #ae090073;
   padding: 10px;
-  font-size: 20px;
+  font-size: 18px;
   color: #ffffff;
   border-radius: 8px 0 0 8px;
   outline: none;
@@ -136,7 +136,7 @@
   background: linear-gradient(135deg, #790000, #ae0900); 
   border: none;
   padding: 10px 25px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   color: white;
   border-radius: 0 8px 8px 0;
@@ -163,18 +163,21 @@
   border-radius: 4px;
 }
 
-/* Responsive: Stack on smaller screens */
+
+/* Responsive: Stack components vertically on smaller screens */
 @media (max-width: 768px) {
-  .training-content {
+  .monster-content {
     flex-direction: column;
     align-items: center;
+    gap: 20px;  /* Adjust gap as needed */
+    width: 80%;
+    margin:30px;
   }
-
-  .training-monster {
-    max-width: 100%;
-  }
-
+  
+  /* Make both MonsterInfo and the Chat box take full width */
+  .monster-monster,
   .training-chat-box {
+    width: 100%;
     max-width: 100%;
   }
 }

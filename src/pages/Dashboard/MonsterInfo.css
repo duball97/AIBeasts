@@ -2,26 +2,26 @@
 .monster-info {
   display: flex;
   flex-direction: column; /* Stack elements vertically */
-  align-items: flex-start; /* Align everything to the left */
+  align-items: flex-start; /* Default left alignment on desktop */
   background: linear-gradient(145deg, #1b1b1b, #292929);
   border-radius: 12px;
   padding: 50px;
   width: 90%;
-  margin: 0px auto;
+  margin: 0 auto;
   box-shadow: 
-      inset 0 0 8px rgba(255, 255, 255, 0.1),
-      0 2px 6px rgba(0, 0, 0, 0.8);
-  text-align: left; /* Align text to the left */
+    inset 0 0 8px rgba(255, 255, 255, 0.1),
+    0 2px 6px rgba(0, 0, 0, 0.8);
+  text-align: left; /* Default left text alignment on desktop */
 }
 
 /* Top Section: Image (Logo) + Name on the same row */
 .monster-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Align to the left */
-  gap: 15px; /* Space between image and name */
+  justify-content: flex-start; /* Default left alignment */
+  gap: 15px;
   margin-bottom: 20px;
-  width: 100%; /* Ensure it spans the container */
+  width: 100%;
 }
 
 /* Monster Logo */
@@ -35,15 +35,15 @@
   box-shadow: 0 0 15px #ae09006f;
 }
 
-/* Monster Name - Aligned to the left */
+/* Monster Name - Default aligned to the left */
 .monster-name {
   font-family: 'Cinzel', serif;
-  font-size: 30px;
+  font-size: 25px;
   color: #c80000;
   text-transform: uppercase;
-  margin-top: 30px; /* Remove top margin to align properly */
-  margin-left:20px;
-  text-align: left; /* Ensure text aligns to the left */
+  margin-top: 30px;
+  margin-left: 20px;
+  text-align: left;
 }
 
 /* Bottom Section: Personality, Abilities, Physic */
@@ -51,60 +51,63 @@
   display: flex;
   flex-direction: column;
   gap: 0px;
- 
-  margin: 0px;
-  text-align: left; /* Align details text to the left */
+  margin: 0;
+  text-align: left; /* Default left text alignment */
   width: 100%;
 }
 
 /* General Text */
 .monster-details p {
-  font-size: 16px;
-  margin-top:-5px;
-  font-weight: 600px;
+  font-size: 14px;
+  margin-top: -5px;
+  font-weight: 600;
   color: #ddd;
   font-family: 'Cinzel', serif;
 }
 
-.monster-info.error {
-  color: #ffffff; /* White text */
-  font-family: 'Cinzel', serif; /* Use Cinzel font */
-  font-size: 1.2rem;
-  text-align: center;
-  padding: 20px;
-}
-
-/* Strong Labels */
 .monster-details p strong {
-  margin-top:-5px;
+  margin-top: -5px;
   color: #ae0900;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 900;
   letter-spacing: 0.5px;
   font-family: 'Cinzel', serif;
 }
 
-/* Responsive: Adjust sizing for smaller screens */
+/* Responsive: Adjust for Mobile Devices */
 @media (max-width: 768px) {
   .monster-info {
     width: 100%;
+    padding: 20px;
+    align-items: center;  /* Center all content */
+    text-align: center;   /* Center text */
   }
-
+  
   .monster-header {
-    flex-direction: row; /* Ensure it remains on one line */
+    flex-direction: column;  /* Stack image and name */
+    align-items: center;       /* Center both horizontally */
+    justify-content: center;
     gap: 10px;
+    margin-bottom: 15px;
+    width: 100%;
   }
-
+  
   .monster-logo {
     width: 120px;
     height: 120px;
   }
-
+  
   .monster-name {
-    font-size: 22px;
+    margin: 0;        /* Remove extra margins */
+    font-size: 20px;
+    text-align: center;
   }
-
+  
+  .monster-details {
+    text-align: center;
+  }
+  
   .monster-details p {
-    font-size: 16px;
+    font-size: 14px;
   }
 }

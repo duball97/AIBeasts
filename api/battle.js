@@ -1,11 +1,10 @@
 import openai from "../openaiClient.js"; // OpenAI Client
 import { supabase } from "../supabaseClient.js"; // Supabase Client
 import { v4 as uuidv4 } from "uuid"; // For generating UUIDs if needed
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const BattleBetABI = require("../artifacts/contracts/AIBeastsBattle.sol/BattleBet.json");
-
 
 // Helper function to extract user ID from the authorization header.
 const getUserId = (authorization) => {
@@ -53,79 +52,134 @@ export default async function handler(req, res) {
 
     // Construct beast details strings.
     const beast1Details = `
-      Name: ${userBeast.name}
-      Personality: ${userBeast.personality.join(", ")}
-      Abilities: ${userBeast.abilities.join(", ")}
-      Physic: ${userBeast.physic.join(", ")}
+Name: ${userBeast.name}
+Personality: ${userBeast.personality.join(", ")}
+Abilities: ${userBeast.abilities.join(", ")}
+Physic: ${userBeast.physic.join(", ")}
     `;
     const beast2Details = `
-      Name: ${aiBeast.name}
-      Personality: ${aiBeast.personality.join(", ")}
-      Abilities: ${aiBeast.abilities.join(", ")}
-      Physic: ${aiBeast.physic.join(", ")}
+Name: ${aiBeast.name}
+Personality: ${aiBeast.personality.join(", ")}
+Abilities: ${aiBeast.abilities.join(", ")}
+Physic: ${aiBeast.physic.join(", ")}
     `;
 
-    // Generate 5 rounds of battle dialogue.
-    for (let round = 1; round <= 5; round++) {
-      // --- AI 1 (User's Beast) ---
-      const responseAI1 = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: `You are ${userBeast.name}, a beast fighting against another beast with the goal to win the battle. You do not give up. Max 1 sentence. Use your abilities, personality, and physique effectively.`,
-          },
-          {
-            role: "user",
-            content: `Opponent: ${aiBeast.name}. Fight back and win the game!\n\n${beast1Details}`,
-          },
-          ...battleLog.map((line) => ({ role: "user", content: line })),
-        ],
-        temperature: 0.7,
-        max_tokens: 50,
-      });
+    const totalRounds = 5;
+    for (let round = 1; round <= totalRounds; round++) {
+      // Add a header for the round.
+      battleLog.push(`Round ${round}:`);
 
-      let ai1Message = responseAI1.choices[0].message.content.trim();
-      ai1Message = ai1Message.replace(new RegExp(`^${userBeast.name}:?`, "i"), "").trim();
-      battleLog.push(`${userBeast.name}: ${ai1Message}`);
+      if (round % 2 === 1) {
+        // === SIMULTANEOUS ROUND (odd rounds: 1, 3, 5) ===
 
-      // --- AI 2 (Opponent's Beast) ---
-      const responseAI2 = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: `You are ${aiBeast.name}, a beast fighting against another beast with the goal to win the battle. You do not give up. Max 1 sentence. Use your abilities, personality, and physique effectively.`,
-          },
-          {
-            role: "user",
-            content: `Opponent said: "${ai1Message}". Fight back and win the game!\n\n${beast2Details}`,
-          },
-          ...battleLog.map((line) => ({ role: "user", content: line })),
-        ],
-        temperature: 0.7,
-        max_tokens: 50,
-      });
+        // Generate Beast #1's move independently.
+        const responseAI1 = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content: `You are ${userBeast.name}. Generate a single, powerful move (one sentence) for round ${round} based solely on your personality, abilities, and physique. Do not mention or react to your opponent.`,
+            },
+            {
+              role: "user",
+              content: `${beast1Details}\nRound ${round} context: Previous moves:\n${battleLog.join("\n") || "None"}`,
+            },
+          ],
+          temperature: 0.5,
+          max_tokens: 50,
+        });
+        let move1 = responseAI1.choices[0].message.content.trim();
+        move1 = move1.replace(new RegExp(`^${userBeast.name}:?`, "i"), "").trim();
 
-      let ai2Message = responseAI2.choices[0].message.content.trim();
-      ai2Message = ai2Message.replace(new RegExp(`^${aiBeast.name}:?`, "i"), "").trim();
-      battleLog.push(`${aiBeast.name}: ${ai2Message}`);
+        // Generate Beast #2's move independently.
+        const responseAI2 = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content: `You are ${aiBeast.name}. Generate a single, powerful move (one sentence) for round ${round} based solely on your personality, abilities, and physique. Do not mention or react to your opponent.`,
+            },
+            {
+              role: "user",
+              content: `${beast2Details}\nRound ${round} context: Previous moves:\n${battleLog.join("\n") || "None"}`,
+            },
+          ],
+          temperature: 0.5,
+          max_tokens: 50,
+        });
+        let move2 = responseAI2.choices[0].message.content.trim();
+        move2 = move2.replace(new RegExp(`^${aiBeast.name}:?`, "i"), "").trim();
+
+        // Append each beast's move.
+        battleLog.push(`${userBeast.name}: ${move1}`);
+        battleLog.push(`${aiBeast.name}: ${move2}`);
+
+      } else {
+        // === SEQUENTIAL ROUND (even rounds: 2 and 4) ===
+        // Determine starting beast: alternate starting order.
+        let startingBeast, secondBeast;
+        if (round % 4 === 2) {
+          startingBeast = userBeast;
+          secondBeast = aiBeast;
+        } else {
+          startingBeast = aiBeast;
+          secondBeast = userBeast;
+        }
+
+        // Generate a sequential exchange of 4 moves.
+        // Instruct GPT to produce exactly 4 moves (plain sentences, no beast names).
+        const seqResponse = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content: `You are a battle narrative generator. For round ${round}, generate exactly 4 moves (each one sentence) representing a sequential exchange between two beasts. Do not include any proper names or pronouns that indicate who is speaking—simply output the moves as plain sentences, one per line.`,
+            },
+            {
+              role: "user",
+              content: `Beast 1 details: ${beast1Details}\nBeast 2 details: ${beast2Details}\nGenerate exactly 4 moves for this round.`,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 150,
+        });
+        const seqText = seqResponse.choices[0].message.content.trim();
+        const seqMoves = seqText.split(/\n+/).map(line => line.trim()).filter(line => line.length > 0);
+        while (seqMoves.length < 4) seqMoves.push("...");
+
+        // Now assign beast names based on starting order.
+        let roundMoves = [];
+        if (startingBeast.name === userBeast.name) {
+          // Order: Beast1, Beast2, Beast1, Beast2.
+          roundMoves.push(`${userBeast.name}: ${seqMoves[0]}`);
+          roundMoves.push(`${aiBeast.name}: ${seqMoves[1]}`);
+          roundMoves.push(`${userBeast.name}: ${seqMoves[2]}`);
+          roundMoves.push(`${aiBeast.name}: ${seqMoves[3]}`);
+        } else {
+          // Order: Beast2, Beast1, Beast2, Beast1.
+          roundMoves.push(`${aiBeast.name}: ${seqMoves[0]}`);
+          roundMoves.push(`${userBeast.name}: ${seqMoves[1]}`);
+          roundMoves.push(`${aiBeast.name}: ${seqMoves[2]}`);
+          roundMoves.push(`${userBeast.name}: ${seqMoves[3]}`);
+        }
+
+        roundMoves.forEach(move => battleLog.push(move));
+      }
     }
 
-    // --- AI Referee Judges the Battle ---
-    // Instruct the referee to provide reasoning and then output exactly a JSON object on a new line.
+    // --- AI Referee Judges the Overall Battle ---
     const responseReferee = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: `You are an impartial AI referee judging a logic battle between two beasts. First, provide a 2-3 sentence explanation of which beast performed best. Then, on a new line, output exactly:
-{"winner": "<winner beast name>"}
+          content: `You are an impartial AI referee. Evaluate the following battle transcript (divided into rounds with individual moves from each beast) and provide a 2-3 sentence explanation of which beast performed best overall. Then, on a new line, output exactly:
+The winner is <winner beast name>.
 with no additional text.`,
         },
         {
           role: "user",
-          content: `Battle log:\n\n${battleLog.join("\n")}\n\nExplain your reasoning and then output the JSON object as described.`,
+          content: `Battle Transcript:\n\n${battleLog.join("\n")}\n\nExplain your reasoning and then output the result as described.`,
         },
       ],
       temperature: 0.6,
@@ -133,106 +187,98 @@ with no additional text.`,
     });
 
     const refereeOutput = responseReferee.choices[0].message.content.trim();
-
-    // Parse the JSON object from the referee output.
-    let refereeData = null;
-    const lines = refereeOutput.split("\n").map((line) => line.trim());
-    const jsonLine = lines.find((line) => line.startsWith("{") && line.endsWith("}"));
-    if (jsonLine) {
-      try {
-        refereeData = JSON.parse(jsonLine);
-      } catch (e) {
-        console.error("Error parsing referee JSON:", e.message);
-      }
+    // Expect the final line to be in the format: "The winner is "<winner beast name>.""
+    // We extract the winner by finding the line starting with "The winner is".
+    const refereeLines = refereeOutput.split("\n").map(line => line.trim());
+    const winnerLine = refereeLines.find(line => line.startsWith("The winner is"));
+    let winnerName = "";
+    if (winnerLine) {
+      // Remove "The winner is" and any surrounding quotes or punctuation.
+      winnerName = winnerLine.replace("The winner is", "").replace(/[".]/g, "").trim();
     }
 
     let winnerId = null;
-    let character_winner = null;
-    if (refereeData && refereeData.winner) {
-      // Clean the winner name by removing extra punctuation.
-      let winnerFromRef = refereeData.winner.trim().replace(/[^a-zA-Z0-9 ]+$/, "");
-      character_winner = winnerFromRef;
-      const userBeastName = userBeast.name.trim().toLowerCase();
-      const aiBeastName = aiBeast.name.trim().toLowerCase();
+    let character_winner = winnerName;
+    const userBeastNameLC = userBeast.name.trim().toLowerCase();
+    const aiBeastNameLC = aiBeast.name.trim().toLowerCase();
+    const user1 = getUserId(authHeader);    // The user who joined (Player 1)
+    const user2 = lobbyDetails.created_by;  // Lobby creator (Player 2)
 
-      const user1 = getUserId(authHeader);            // Joiner's user id.
-      const user2 = lobbyDetails.created_by;            // Lobby creator's user id.
-
-      if (winnerFromRef.toLowerCase() === userBeastName) {
-        winnerId = user1;
-      } else if (winnerFromRef.toLowerCase() === aiBeastName) {
-        winnerId = user2;
-      }
+    if (winnerName.toLowerCase() === userBeastNameLC) {
+      winnerId = user1;
+    } else if (winnerName.toLowerCase() === aiBeastNameLC) {
+      winnerId = user2;
     }
+
     if (!winnerId) {
       return res.status(400).json({ error: "No winner determined by the AI judge." });
-  }
+    }
 
-      // --- Fetch the Winner's Wallet Address ---
-      let winnerWallet = null;
+    // --- Fetch the Winner's Wallet Address ---
+    let winnerWallet = null;
+    if (winnerId) {
+      const { data: winnerData, error: winnerError } = await supabase
+        .from("aibeasts_users")
+        .select("wallet")
+        .eq("id", winnerId)
+        .single();
 
-      if (winnerId) {
-          const { data: winnerData, error: winnerError } = await supabase
-              .from("aibeasts_users")
-              .select("wallet")
-              .eq("id", winnerId)
-              .single();
-  
-          if (winnerError || !winnerData?.wallet) {
-              console.warn(`⚠️ Could not fetch wallet for winner ID: ${winnerId}`);
-          } else {
-              winnerWallet = winnerData.wallet;
-              console.log(`🏆 Winner's wallet: ${winnerWallet}`);
-          }
+      if (winnerError || !winnerData?.wallet) {
+        console.warn(`⚠️ Could not fetch wallet for winner ID: ${winnerId}`);
+      } else {
+        winnerWallet = winnerData.wallet;
+        console.log(`🏆 Winner's wallet: ${winnerWallet}`);
       }
+    }
 
+    // --- Call the Smart Contract to Pay the Winner (if bet > 0) ---
+    const betAmount = lobbyDetails.bet_amount || 0;
+    if (betAmount > 0) {
+      console.log("Bet detected, sending payment to winner...");
+      const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_SEPOLIA_ENDPOINT);
+      const ownerWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+      const contract = new ethers.Contract(
+        process.env.VITE_SEPOLIA_BATTLE_CONTRACT,
+        BattleBetABI.abi,
+        ownerWallet
+      );
 
-      // --- Call the Smart Contract to Pay the Winner ---
-// Fetch bet amount from lobbyDetails
-const betAmount = lobbyDetails.bet_amount || 0; 
-
-if (betAmount > 0) { // Only pay the winner if there's a bet
-    console.log("Bet detected, sending payment to winner...");
-
-    // Call the Smart Contract to Pay the Winner
-    const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_SEPOLIA_ENDPOINT);
-    const ownerWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-    const contract = new ethers.Contract(process.env.VITE_SEPOLIA_BATTLE_CONTRACT, BattleBetABI.abi, ownerWallet);
-
-    console.log("Calling contract to declare winner and process payment...");
-    const payTx = await contract.declareWinner(lobbyDetails.battlecontract_id, winnerWallet);
-    await payTx.wait();
-    console.log("Payment successful: Winner has been paid on-chain.");
-} else {
-    console.log("Free match detected, skipping on-chain payment.");
-}
+      console.log("Calling contract to declare winner and process payment...");
+      const payTx = await contract.declareWinner(lobbyDetails.battlecontract_id, winnerWallet);
+      await payTx.wait();
+      console.log("Payment successful: Winner has been paid on-chain.");
+    } else {
+      console.log("Free match detected, skipping on-chain payment.");
+    }
 
     // --- Save the Battle Record ---
     const battleRecord = {
-      id: uuidv4(), // Remove this if your table auto-generates the id.
-      lobby_id: lobbyDetails.id, // Save the lobby id for replay association.
+      id: uuidv4(),
+      lobby_id: lobbyDetails.id,
       character_1: userBeast.name,
       character_2: aiBeast.name,
       character_winner: character_winner,
       user_1: getUserId(authHeader),
       user_2: lobbyDetails.created_by,
-      winner: winnerId, // The winning user's uuid.
-      battle_log: battleLog, // Saved as a JSON array.
-      judge_log: refereeOutput, // Save the full judge output (reasoning and JSON).
+      winner: winnerId,
+      battle_log: battleLog,
+      judge_log: refereeOutput,
       environment: "standard",
       winner_wallet: winnerWallet || null,
-
     };
 
     await supabase.from("aibeasts_battles").insert([battleRecord]);
 
     // **Step 2: Close the Lobby** (only allow one game per lobby)
-    await supabase.from("aibeasts_lobbies").update({ lobby_status: "played" }).eq("id", lobbyDetails.id);
+    await supabase
+      .from("aibeasts_lobbies")
+      .update({ lobby_status: "played" })
+      .eq("id", lobbyDetails.id);
 
     res.status(200).json({
       transcript: battleLog.join("\n"),
       judge_log: refereeOutput,
-      message: "Battle completed and lobby closed.",
+      message: "Battle completed (round-by-round interactions generated).",
     });
   } catch (error) {
     console.error("Error generating battle:", error);

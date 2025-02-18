@@ -7,33 +7,44 @@
   margin-top: 0px;
 }
 
-/* Ensure consistency with MonsterInfo */
+/* Container for grouping related components on desktop */
 .stats-activities-container {
   display: flex;
   justify-content: space-between;
   align-items: stretch; /* Ensures both sections are the same height */
   width: 85%; /* Match MonsterInfo width */
-  /* Keep consistency */
   margin: 0px 20px 20px 20px auto; /* Center it like MonsterInfo */
   gap: 20px;
- 
 }
 
-/* Individual items take equal space */
+/* Ensure each direct child of the container takes equal space on desktop */
 .stats-activities-container > div {
-  flex: 1; /* Ensures equal width */
+  flex: 1; 
   display: flex;
   flex-direction: column;
 }
 
 /* Make sure QuickStats & RecentActivities fill the full height */
 .quick-stats, .recent-activities {
-  flex-grow: 1; /* Makes them stretch to the same height */
+  flex-grow: 1;
 }
 
-/* Responsive: Stack on smaller screens */
+/* Responsive: On mobile, stack all components so that each one occupies its own row */
 @media (max-width: 768px) {
+  .dashboard {
+    padding: 10px;
+  }
+  
+  /* Make containers full-width and stack children vertically */
   .stats-activities-container {
     flex-direction: column;
+    width: 100%;
+    margin: 0;
+    gap: 10px;
+  }
+  
+  /* Each child takes full width */
+  .stats-activities-container > * {
+    width: 100%;
   }
 }

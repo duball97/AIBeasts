@@ -48,7 +48,7 @@ const TerminalChat = ({ userBeast, aiBeast, lobbyDetails }) => {
       setMessages([
         { role: "system", text: "⚔️ Battle Start! ⚔️" },
         { role: "system", text: `${userBeast.name} vs ${aiBeast.name}` },
-        { role: "system", text: "Generating battle dialogue... 🤖" },
+       
       ]);
 
       // Get the token from localStorage
@@ -98,7 +98,7 @@ const TerminalChat = ({ userBeast, aiBeast, lobbyDetails }) => {
 
   return (
     <div className="terminal-chat">
-      <h2>Battle Log</h2>
+      <h2>Battle Terminal</h2>
       <div className="chat-window" ref={chatWindowRef}>
         {messages.map((msg, index) => (
           <div key={index} className={`chat-message ${msg.role}`}>

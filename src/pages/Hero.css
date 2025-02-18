@@ -1,5 +1,3 @@
-/* src/components/Hero.css */
-
 /* Fullscreen Hero Section */
 .hero {
   display: flex;
@@ -33,7 +31,7 @@
 .hero-content {
   max-width: 900px;
   z-index: 2;
-  margin-top:-200px;
+  margin-top: -200px;
 }
 
 /* Hero Title - Futuristic Bold */
@@ -49,7 +47,7 @@
 /* Hero Subtitle */
 .hero-subtitle {
   font-size: 30px;
-  margin-top:0px;
+  margin-top: 0px;
   color: #ddd;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
   margin-bottom: 0px;
@@ -74,11 +72,10 @@
   font-family: 'Cinzel', serif;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #790000, #ae0900); 
+  background: linear-gradient(135deg, #790000, #ae0900);
   box-shadow: 
-  inset 0 0 10px rgba(255, 255, 255, 0.1),
-  0 3px 8px rgba(0, 0, 0, 0.6);
-  
+    inset 0 0 10px rgba(255, 255, 255, 0.1),
+    0 3px 8px rgba(0, 0, 0, 0.6);
   color: white;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
@@ -87,4 +84,39 @@
 .btn:hover {
   transform: scale(1.02);
   box-shadow: 0 0 20px rgb(133, 0, 0);
+}
+
+/* Mobile Version: Adjust layout for smaller screens */
+@media only screen and (max-width: 768px) {
+  .hero {
+    /* Let the hero section adjust its height and add padding */
+    height: auto;
+    padding: 20px;
+    background-position: center;
+  }
+  
+  .hero-content {
+    margin-top: 0;  /* Remove the large negative margin */
+    padding: 10px;
+  }
+  
+  .hero-title {
+    font-size: 26px;
+  }
+  
+  .hero-subtitle {
+    font-size: 24px;
+  }
+  
+  .hero-description {
+    font-size: 16px;
+    margin: 0 auto 20px;
+    max-width: 100%;
+  }
+  
+  .btn {
+    margin-top:-20px;
+    padding: 10px 20px;
+    font-size: 16px;
+  }
 }

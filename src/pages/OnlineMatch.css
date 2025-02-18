@@ -146,6 +146,7 @@
 
 /* Player 1 Image */
 .player1-image {
+  margin-top:20px;
   width: 80px;
   height: 80px;
   border-radius: 50%;
