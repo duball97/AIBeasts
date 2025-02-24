@@ -42,25 +42,23 @@ function Monster({ keys }) {
       if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(key)) {
         e.preventDefault();
         keysRef.current[key] = true;
-        // If not attacking, set to "walk"
         if (currentAction !== "attack1" && currentAction !== "attack2") {
           setCurrentAction("walk");
         }
       } else if (key.toLowerCase() === "f") {
         e.preventDefault();
         setCurrentAction("attack1");
-        // After 1 second, revert to walk if arrow key pressed, otherwise idle.
         setTimeout(() => {
           const moving = Object.values(keysRef.current).some((val) => val);
           setCurrentAction(moving ? "walk" : "idle");
-        }, 1000);
+        }, 500);
       } else if (key.toLowerCase() === "g") {
         e.preventDefault();
         setCurrentAction("attack2");
         setTimeout(() => {
           const moving = Object.values(keysRef.current).some((val) => val);
           setCurrentAction(moving ? "walk" : "idle");
-        }, 1000);
+        }, 500);
       }
     };
 
