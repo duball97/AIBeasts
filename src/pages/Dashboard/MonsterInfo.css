@@ -111,3 +111,8 @@
     font-size: 14px;
   }
 }
+
+/* Error Message */
+.monster-info.error {
+  color: #ffffff; /* Set text color to white */
+}
