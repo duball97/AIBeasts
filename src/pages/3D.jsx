@@ -8,16 +8,19 @@ import idleUrl from "../assets/monsterWalking.glb";
 import walkingUrl from "../assets/animationMonsterWalking.glb";
 import attack1Url from "../assets/animationMonsterAttack.glb";
 import attack2Url from "../assets/animationMonsterAttack2.glb";
+import arenaUrl from "../assets/arena2.glb";
+
+function Arena() {
+  const { scene } = useGLTF(arenaUrl);
+  return <primitive object={scene} scale={5} />;
+}
 
 function Monster({ keys }) {
-  // Load all four versions
+  const groupRef = useRef();
   const idleGLTF = useGLTF(idleUrl);
   const walkingGLTF = useGLTF(walkingUrl);
   const attack1GLTF = useGLTF(attack1Url);
   const attack2GLTF = useGLTF(attack2Url);
-
-  // We'll move all models together inside a group.
-  const groupRef = useRef();
 
   // Set up animation mixers for models that are animated.
   const walkingMixer = useRef();
@@ -109,11 +112,11 @@ function Monster({ keys }) {
     }
   }, [attack2GLTF]);
 
-  // Set initial rotation when the component mounts
+  // Set initial rotation and position when the component mounts
   useEffect(() => {
     if (groupRef.current) {
-      // Set the initial rotation to face away from the user
       groupRef.current.rotation.y = Math.PI; // 180 degrees in radians
+      groupRef.current.position.set(0, 0.5, 0); // Set the monster's height above the ground
     }
   }, []);
 
@@ -135,10 +138,10 @@ function Monster({ keys }) {
       const direction = new THREE.Vector3();
 
       // Determine movement direction based on key presses
-      if (keysRef.current.ArrowUp) direction.z -= 1; // Move forward
-      if (keysRef.current.ArrowDown) direction.z += 1; // Move backward
-      if (keysRef.current.ArrowLeft) direction.x -= 1; // Move left
-      if (keysRef.current.ArrowRight) direction.x += 1; // Move right
+      if (keys.current.ArrowUp) direction.z -= 1; // Move forward
+      if (keys.current.ArrowDown) direction.z += 1; // Move backward
+      if (keys.current.ArrowLeft) direction.x -= 1; // Move left
+      if (keys.current.ArrowRight) direction.x += 1; // Move right
 
       // Normalize the direction vector
       if (direction.length() > 0) {
@@ -154,12 +157,23 @@ function Monster({ keys }) {
           targetRotationY,
           0.2 // Adjust this value for faster/smoother rotation
         );
+
+        // Keep the monster's position fixed on the Y-axis
+        groupRef.current.position.y = 0.5; // Adjust this value as needed
+      } else {
+        // If not moving, keep the Y position fixed
+        groupRef.current.position.y = 0.5; // Adjust this value as needed
+      }
+
+      // If walking, adjust the Z position to be lower
+      if (currentAction === "walk") {
+        groupRef.current.position.z = -1; // Set to -1 from the original height
       }
     }
   });
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} scale={0.3}>
       {/* Only one model is visible at a time based on currentAction */}
       <primitive object={idleGLTF.scene} visible={currentAction === "idle"} scale={2} />
       <primitive object={walkingGLTF.scene} visible={currentAction === "walk"} scale={2} />
@@ -170,7 +184,7 @@ function Monster({ keys }) {
 }
 
 // Custom OrbitControls which waits for gl.domElement to be available
-function CameraControls() {
+function CameraControls({ keys }) {
   const { camera, gl } = useThree();
   const [domElement, setDomElement] = useState(null);
 
@@ -194,9 +208,16 @@ function Loading() {
 }
 
 export default function ThreeDScene() {
+  const keys = useRef({
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+  });
+
   return (
     <Canvas
-      camera={{ position: [0, 2, 5], fov: 75 }}
+      camera={{ position: [0, 2, 10], fov: 75 }}
       style={{
         width: "80vw",
         height: "80vh",
@@ -207,9 +228,10 @@ export default function ThreeDScene() {
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1.5} />
       <Suspense fallback={<Loading />}>
-        <Monster />
+        <Arena />
+        <Monster keys={keys} />
       </Suspense>
-      <CameraControls />
+      <CameraControls keys={keys} />
     </Canvas>
   );
 }
