@@ -6,4 +6,5 @@ export default defineConfig({
   build: {
     outDir: "dist", // Ensure Vite builds correctly
   },
+  assetsInclude: ["**/*.glb"],
 });
