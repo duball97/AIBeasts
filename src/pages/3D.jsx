@@ -12,25 +12,31 @@ import arenaUrl from "../assets/arena2.glb";
 
 function Arena() {
   const { scene } = useGLTF(arenaUrl);
-  return <primitive object={scene} scale={5} />;
+  // Make the arena bigger:
+  scene.scale.set(20, 20, 20);
+  // Optionally lower or raise the arena if needed:
+  scene.position.y = 0;
+  return <primitive object={scene} />;
 }
 
-function Monster({ keys }) {
+function Monster() {
   const groupRef = useRef();
+
+  // Load monster models
   const idleGLTF = useGLTF(idleUrl);
   const walkingGLTF = useGLTF(walkingUrl);
   const attack1GLTF = useGLTF(attack1Url);
   const attack2GLTF = useGLTF(attack2Url);
 
-  // Set up animation mixers for models that are animated.
+  // Animation mixers
   const walkingMixer = useRef();
   const attack1Mixer = useRef();
   const attack2Mixer = useRef();
 
-  // State to track current action: "idle", "walk", "attack1", or "attack2"
+  // Current action: idle, walk, attack1, attack2
   const [currentAction, setCurrentAction] = useState("idle");
 
-  // Keys state for movement (arrow keys)
+  // Track arrow key states
   const keysRef = useRef({
     ArrowUp: false,
     ArrowDown: false,
@@ -38,24 +44,23 @@ function Monster({ keys }) {
     ArrowRight: false,
   });
 
-  // Set up key event listeners.
+  // Keyboard listeners
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const key = e.key;
-      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(key)) {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
-        keysRef.current[key] = true;
+        keysRef.current[e.key] = true;
         if (currentAction !== "attack1" && currentAction !== "attack2") {
           setCurrentAction("walk");
         }
-      } else if (key.toLowerCase() === "f") {
+      } else if (e.key.toLowerCase() === "f") {
         e.preventDefault();
         setCurrentAction("attack1");
         setTimeout(() => {
           const moving = Object.values(keysRef.current).some((val) => val);
           setCurrentAction(moving ? "walk" : "idle");
         }, 500);
-      } else if (key.toLowerCase() === "g") {
+      } else if (e.key.toLowerCase() === "g") {
         e.preventDefault();
         setCurrentAction("attack2");
         setTimeout(() => {
@@ -66,10 +71,9 @@ function Monster({ keys }) {
     };
 
     const handleKeyUp = (e) => {
-      const key = e.key;
-      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(key)) {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
-        keysRef.current[key] = false;
+        keysRef.current[e.key] = false;
         // If no arrow keys are pressed and not attacking, go to idle.
         if (!Object.values(keysRef.current).some((val) => val)) {
           if (currentAction !== "attack1" && currentAction !== "attack2") {
@@ -87,7 +91,7 @@ function Monster({ keys }) {
     };
   }, [currentAction]);
 
-  // Initialize animation mixers for walking and attacks
+  // Setup walking mixer
   useEffect(() => {
     if (walkingGLTF.animations.length > 0) {
       walkingMixer.current = new THREE.AnimationMixer(walkingGLTF.scene);
@@ -96,6 +100,7 @@ function Monster({ keys }) {
     }
   }, [walkingGLTF]);
 
+  // Setup attack1 mixer
   useEffect(() => {
     if (attack1GLTF.animations.length > 0) {
       attack1Mixer.current = new THREE.AnimationMixer(attack1GLTF.scene);
@@ -104,6 +109,7 @@ function Monster({ keys }) {
     }
   }, [attack1GLTF]);
 
+  // Setup attack2 mixer
   useEffect(() => {
     if (attack2GLTF.animations.length > 0) {
       attack2Mixer.current = new THREE.AnimationMixer(attack2GLTF.scene);
@@ -112,17 +118,17 @@ function Monster({ keys }) {
     }
   }, [attack2GLTF]);
 
-  // Set initial rotation and position when the component mounts
+  // Initial position/rotation
   useEffect(() => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = Math.PI; // 180 degrees in radians
-      groupRef.current.position.set(0, 0.5, 0); // Set the monster's height above the ground
+      groupRef.current.rotation.y = Math.PI; // Face away from camera
+      groupRef.current.position.set(0, 0, 0); // Start at ground level
     }
   }, []);
 
-  // Update movement and active animations on each frame
+  // Movement + animation each frame
   useFrame((_, delta) => {
-    // Update active mixers based on currentAction
+    // Update mixers
     if (currentAction === "walk" && walkingMixer.current) {
       walkingMixer.current.update(delta);
     } else if (currentAction === "attack1" && attack1Mixer.current) {
@@ -131,50 +137,36 @@ function Monster({ keys }) {
       attack2Mixer.current.update(delta);
     }
 
-    // Update position and rotation if arrow keys are pressed (apply to the whole group)
-    if (groupRef.current) {
-      const speed = 2; // units per second
-      const moveDistance = speed * delta;
-      const direction = new THREE.Vector3();
+    // Movement
+    if (!groupRef.current) return;
+    const speed = 2; // Adjust as needed
+    const moveDistance = speed * delta;
+    const direction = new THREE.Vector3();
 
-      // Determine movement direction based on key presses
-      if (keys.current.ArrowUp) direction.z -= 1; // Move forward
-      if (keys.current.ArrowDown) direction.z += 1; // Move backward
-      if (keys.current.ArrowLeft) direction.x -= 1; // Move left
-      if (keys.current.ArrowRight) direction.x += 1; // Move right
+    if (keysRef.current.ArrowUp) direction.z -= 1;
+    if (keysRef.current.ArrowDown) direction.z += 1;
+    if (keysRef.current.ArrowLeft) direction.x -= 1;
+    if (keysRef.current.ArrowRight) direction.x += 1;
 
-      // Normalize the direction vector
-      if (direction.length() > 0) {
-        direction.normalize();
+    if (direction.length() > 0) {
+      direction.normalize();
+      groupRef.current.position.addScaledVector(direction, moveDistance);
 
-        // Move the character
-        groupRef.current.position.addScaledVector(direction, moveDistance);
-
-        // Calculate the target rotation based on movement direction
-        const targetRotationY = Math.atan2(direction.x, direction.z);
-        groupRef.current.rotation.y = THREE.MathUtils.lerp(
-          groupRef.current.rotation.y,
-          targetRotationY,
-          0.2 // Adjust this value for faster/smoother rotation
-        );
-
-        // Keep the monster's position fixed on the Y-axis
-        groupRef.current.position.y = 0.5; // Adjust this value as needed
-      } else {
-        // If not moving, keep the Y position fixed
-        groupRef.current.position.y = 0.5; // Adjust this value as needed
-      }
-
-      // If walking, adjust the Z position to be lower
-      if (currentAction === "walk") {
-        groupRef.current.position.z = -1; // Set to -1 from the original height
-      }
+      // Rotate to face movement direction
+      const targetY = Math.atan2(direction.x, direction.z);
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(
+        groupRef.current.rotation.y,
+        targetY,
+        0.2
+      );
     }
+    // Keep monster on the ground
+    groupRef.current.position.y = 0;
   });
 
   return (
     <group ref={groupRef} scale={0.3}>
-      {/* Only one model is visible at a time based on currentAction */}
+      {/* Show one model based on currentAction */}
       <primitive object={idleGLTF.scene} visible={currentAction === "idle"} scale={2} />
       <primitive object={walkingGLTF.scene} visible={currentAction === "walk"} scale={2} />
       <primitive object={attack1GLTF.scene} visible={currentAction === "attack1"} scale={2} />
@@ -183,17 +175,12 @@ function Monster({ keys }) {
   );
 }
 
-// Custom OrbitControls which waits for gl.domElement to be available
-function CameraControls({ keys }) {
+function CameraControls() {
   const { camera, gl } = useThree();
   const [domElement, setDomElement] = useState(null);
-
   useEffect(() => {
-    if (gl && gl.domElement) {
-      setDomElement(gl.domElement);
-    }
+    if (gl && gl.domElement) setDomElement(gl.domElement);
   }, [gl]);
-
   if (!domElement) return null;
   return <OrbitControls args={[camera, domElement]} enableKeys={false} />;
 }
@@ -208,16 +195,9 @@ function Loading() {
 }
 
 export default function ThreeDScene() {
-  const keys = useRef({
-    ArrowUp: false,
-    ArrowDown: false,
-    ArrowLeft: false,
-    ArrowRight: false,
-  });
-
   return (
     <Canvas
-      camera={{ position: [0, 2, 10], fov: 75 }}
+      camera={{ position: [0, 5, 10], fov: 75 }}
       style={{
         width: "80vw",
         height: "80vh",
@@ -226,12 +206,12 @@ export default function ThreeDScene() {
       }}
     >
       <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 5, 5]} intensity={1.5} />
+      <directionalLight position={[5, 10, 5]} intensity={1.5} />
       <Suspense fallback={<Loading />}>
         <Arena />
-        <Monster keys={keys} />
+        <Monster />
       </Suspense>
-      <CameraControls keys={keys} />
+      <CameraControls />
     </Canvas>
   );
 }
