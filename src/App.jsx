@@ -22,6 +22,7 @@ import LobbyBattle from './pages/BattleArena/LobbyBattle';
 import MyLobbies from './pages/MyLobbies';
 import ThreeDScene from './pages/3D';
 
+
 function App() {
   return (
     <VortexConnectProvider>
