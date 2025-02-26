@@ -21,7 +21,7 @@ import BattleArenaOnline from './pages/BattleArena/BattleArenaOnline';
 import LobbyBattle from './pages/BattleArena/LobbyBattle';
 import MyLobbies from './pages/MyLobbies';
 import ThreeDScene from './pages/3D';
-
+import ThreeScene from './pages/3d/ThreeScene';
 
 function App() {
   return (
@@ -32,6 +32,7 @@ function App() {
         <Route path="/" element={<Hero />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/connect" element={<Connect />} />
+        <Route path="/3dscene" element={<ThreeScene/>}/>
         <Route path="/arena" element={<BattleArena />} />
         <Route path="/crypto-match" element={<CryptoMatch />} />
         <Route path="/style" element={<Visuals />} />

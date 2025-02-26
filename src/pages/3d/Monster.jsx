@@ -1,26 +1,17 @@
-import React, { useRef, Suspense, useEffect, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+// Monster.jsx
+import React, { useRef, useEffect, useState } from "react";
+import { useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-// Import assets (adjust paths as needed)
-import idleUrl from "../assets/monsterWalking.glb";
-import walkingUrl from "../assets/animationMonsterWalking.glb";
-import attack1Url from "../assets/animationMonsterAttack.glb";
-import attack2Url from "../assets/animationMonsterAttack2.glb";
-import arenaUrl from "../assets/arena3.glb";
+// Import assets
+import idleUrl from "../../assets/monsterWalking.glb";
+import walkingUrl from "../../assets/animationMonsterWalking.glb";
+import attack1Url from "../../assets/animationMonsterAttack.glb";
+import attack2Url from "../../assets/animationMonsterAttack2.glb";
 
-function Arena() {
-  const { scene } = useGLTF(arenaUrl);
-  // Scale arena and shift it on the z-axis:
-  scene.scale.set(20, 20, 20);
-  scene.position.set(0, 2.5, 0);
-  return <primitive object={scene} />;
-}
-
-function Monster() {
+export default function Monster() {
   const groupRef = useRef();
-  // Ref to store the computed idle offset (y-position for idle state)
   const idleOffsetRef = useRef(0);
 
   // Load monster models
@@ -57,6 +48,7 @@ function Monster() {
       } else if (e.key.toLowerCase() === "f") {
         e.preventDefault();
         setCurrentAction("attack1");
+        // Return to idle/walk after 500 ms
         setTimeout(() => {
           const moving = Object.values(keysRef.current).some((val) => val);
           setCurrentAction(moving ? "walk" : "idle");
@@ -64,6 +56,7 @@ function Monster() {
       } else if (e.key.toLowerCase() === "g") {
         e.preventDefault();
         setCurrentAction("attack2");
+        // Return to idle/walk after 500 ms
         setTimeout(() => {
           const moving = Object.values(keysRef.current).some((val) => val);
           setCurrentAction(moving ? "walk" : "idle");
@@ -75,6 +68,7 @@ function Monster() {
       if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
         keysRef.current[e.key] = false;
+        // If no movement keys remain, revert to idle (unless attacking)
         if (!Object.values(keysRef.current).some((val) => val)) {
           if (currentAction !== "attack1" && currentAction !== "attack2") {
             setCurrentAction("idle");
@@ -122,12 +116,11 @@ function Monster() {
   useEffect(() => {
     if (groupRef.current) {
       groupRef.current.rotation.y = Math.PI;
-      // Set initial position; this may be overridden later
-      groupRef.current.position.set(0, 1, 0);
+      groupRef.current.position.set(3, 2.2, 0);
     }
   }, []);
 
-  // Compute the bounding box of the idle model to set the proper y offset
+  // Compute bounding box but force idle to 0.6
   useEffect(() => {
     if (groupRef.current && idleGLTF.scene) {
       const box = new THREE.Box3();
@@ -137,15 +130,19 @@ function Monster() {
           box.expandByObject(child);
         }
       });
-      const offsetY = -box.min.y;
+      let offsetY = -box.min.y;
+      console.log("Raw bounding-box offset:", offsetY);
+
+      // *** Force idle offset to 0.6
+      offsetY = 0.6;
+      
       idleOffsetRef.current = offsetY;
-      // Set the idle y-position initially
       groupRef.current.position.y = offsetY;
-      console.log("Computed idle offsetY:", offsetY);
+      console.log("Forced idle offsetY:", idleOffsetRef.current);
     }
   }, [idleGLTF.scene]);
 
-  // When switching back to idle, reset the y-position to the idle offset
+  // Reset Y when switching back to idle
   useEffect(() => {
     if (currentAction === "idle" && groupRef.current) {
       groupRef.current.position.y = idleOffsetRef.current;
@@ -155,6 +152,7 @@ function Monster() {
 
   // Movement + animation each frame
   useFrame((_, delta) => {
+    // Update active mixer
     if (currentAction === "walk" && walkingMixer.current) {
       walkingMixer.current.update(delta);
     } else if (currentAction === "attack1" && attack1Mixer.current) {
@@ -184,11 +182,18 @@ function Monster() {
       );
     }
 
-    // Optionally, if you need to lock the y-position while walking:
+    // Lock y-position to 0 during "walk"
     if (currentAction === "walk") {
-      // If needed, you can lock to a specific value, e.g., 0:
       groupRef.current.position.y = 0;
     }
+
+    if (currentAction === "attack1") {
+        groupRef.current.position.y = 0;
+      }
+
+      if (currentAction === "attack2") {
+        groupRef.current.position.y = 0;
+      }
   });
 
   return (
@@ -198,50 +203,5 @@ function Monster() {
       <primitive object={attack1GLTF.scene} visible={currentAction === "attack1"} scale={2} />
       <primitive object={attack2GLTF.scene} visible={currentAction === "attack2"} scale={2} />
     </group>
-  );
-}
-
-function CameraControls() {
-  const { camera, gl } = useThree();
-  const [domElement, setDomElement] = useState(null);
-  useEffect(() => {
-    if (gl && gl.domElement) setDomElement(gl.domElement);
-  }, [gl]);
-  if (!domElement) return null;
-  return <OrbitControls args={[camera, domElement]} enableKeys={false} />;
-}
-
-function Loading() {
-  return (
-    <mesh>
-      <sphereGeometry args={[0.5, 32, 32]} />
-      <meshStandardMaterial color="orange" />
-    </mesh>
-  );
-}
-
-export default function ThreeDScene() {
-  return (
-    <Canvas
-      camera={{ position: [0, 5, 10], fov: 75 }}
-      style={{
-        width: "80vw",
-        height: "80vh",
-        border: "4px solid red",
-        margin: "auto",
-      }}
-    >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 10, 5]} intensity={1.5} />
-      {/* Grid Helper to visualize the floor */}
-      <gridHelper args={[100, 100]} />
-      {/* Axes Helper to show orientation (red: x, green: y, blue: z) */}
-      <axesHelper args={[5]} />
-      <Suspense fallback={<Loading />}>
-        <Arena />
-        <Monster />
-      </Suspense>
-      <CameraControls />
-    </Canvas>
   );
 }
