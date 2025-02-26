@@ -28,8 +28,6 @@ const Header = () => {
           <li><Link to="/style" onClick={toggleMobileMenu}>Style</Link></li>
           <li><Link to="/connect" onClick={toggleMobileMenu}>Connect</Link></li>
           <li><Link to="/mylobbies" onClick={toggleMobileMenu}>MyLobbies</Link></li>
-          <li><Link to="/3d" onClick={toggleMobileMenu}>3d</Link></li>
-
           <li><Link to="/3dscene" onClick={toggleMobileMenu}>3dbattle</Link></li>
           <li><Link to="/signin" onClick={toggleMobileMenu}>Sign In</Link></li>
         </ul>
