@@ -8,19 +8,20 @@ import idleUrl from "../assets/monsterWalking.glb";
 import walkingUrl from "../assets/animationMonsterWalking.glb";
 import attack1Url from "../assets/animationMonsterAttack.glb";
 import attack2Url from "../assets/animationMonsterAttack2.glb";
-import arenaUrl from "../assets/arena2.glb";
+import arenaUrl from "../assets/arena3.glb";
 
 function Arena() {
   const { scene } = useGLTF(arenaUrl);
-  // Make the arena bigger:
+  // Scale arena and shift it on the z-axis:
   scene.scale.set(20, 20, 20);
-  // Optionally lower or raise the arena if needed:
-  scene.position.y = 0;
+  scene.position.set(0, 2.5, 0);
   return <primitive object={scene} />;
 }
 
 function Monster() {
   const groupRef = useRef();
+  // Ref to store the computed idle offset (y-position for idle state)
+  const idleOffsetRef = useRef(0);
 
   // Load monster models
   const idleGLTF = useGLTF(idleUrl);
@@ -74,7 +75,6 @@ function Monster() {
       if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
         keysRef.current[e.key] = false;
-        // If no arrow keys are pressed and not attacking, go to idle.
         if (!Object.values(keysRef.current).some((val) => val)) {
           if (currentAction !== "attack1" && currentAction !== "attack2") {
             setCurrentAction("idle");
@@ -121,14 +121,40 @@ function Monster() {
   // Initial position/rotation
   useEffect(() => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = Math.PI; // Face away from camera
-      groupRef.current.position.set(0, 0, 0); // Start at ground level
+      groupRef.current.rotation.y = Math.PI;
+      // Set initial position; this may be overridden later
+      groupRef.current.position.set(0, 1, 0);
     }
   }, []);
 
+  // Compute the bounding box of the idle model to set the proper y offset
+  useEffect(() => {
+    if (groupRef.current && idleGLTF.scene) {
+      const box = new THREE.Box3();
+      idleGLTF.scene.traverse((child) => {
+        if (child.isMesh) {
+          child.geometry.computeBoundingBox();
+          box.expandByObject(child);
+        }
+      });
+      const offsetY = -box.min.y;
+      idleOffsetRef.current = offsetY;
+      // Set the idle y-position initially
+      groupRef.current.position.y = offsetY;
+      console.log("Computed idle offsetY:", offsetY);
+    }
+  }, [idleGLTF.scene]);
+
+  // When switching back to idle, reset the y-position to the idle offset
+  useEffect(() => {
+    if (currentAction === "idle" && groupRef.current) {
+      groupRef.current.position.y = idleOffsetRef.current;
+      console.log("Switched to idle, y-position reset to", idleOffsetRef.current);
+    }
+  }, [currentAction]);
+
   // Movement + animation each frame
   useFrame((_, delta) => {
-    // Update mixers
     if (currentAction === "walk" && walkingMixer.current) {
       walkingMixer.current.update(delta);
     } else if (currentAction === "attack1" && attack1Mixer.current) {
@@ -137,9 +163,8 @@ function Monster() {
       attack2Mixer.current.update(delta);
     }
 
-    // Movement
     if (!groupRef.current) return;
-    const speed = 2; // Adjust as needed
+    const speed = 2;
     const moveDistance = speed * delta;
     const direction = new THREE.Vector3();
 
@@ -151,8 +176,6 @@ function Monster() {
     if (direction.length() > 0) {
       direction.normalize();
       groupRef.current.position.addScaledVector(direction, moveDistance);
-
-      // Rotate to face movement direction
       const targetY = Math.atan2(direction.x, direction.z);
       groupRef.current.rotation.y = THREE.MathUtils.lerp(
         groupRef.current.rotation.y,
@@ -160,13 +183,16 @@ function Monster() {
         0.2
       );
     }
-    // Keep monster on the ground
-    groupRef.current.position.y = 0;
+
+    // Optionally, if you need to lock the y-position while walking:
+    if (currentAction === "walk") {
+      // If needed, you can lock to a specific value, e.g., 0:
+      groupRef.current.position.y = 0;
+    }
   });
 
   return (
     <group ref={groupRef} scale={0.3}>
-      {/* Show one model based on currentAction */}
       <primitive object={idleGLTF.scene} visible={currentAction === "idle"} scale={2} />
       <primitive object={walkingGLTF.scene} visible={currentAction === "walk"} scale={2} />
       <primitive object={attack1GLTF.scene} visible={currentAction === "attack1"} scale={2} />
@@ -207,6 +233,10 @@ export default function ThreeDScene() {
     >
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 10, 5]} intensity={1.5} />
+      {/* Grid Helper to visualize the floor */}
+      <gridHelper args={[100, 100]} />
+      {/* Axes Helper to show orientation (red: x, green: y, blue: z) */}
+      <axesHelper args={[5]} />
       <Suspense fallback={<Loading />}>
         <Arena />
         <Monster />
