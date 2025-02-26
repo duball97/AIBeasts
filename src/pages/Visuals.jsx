@@ -49,7 +49,7 @@ const Visuals = () => {
 
     const description = physic.join(", ");
     setPrompt(
-      `Create a 2D cartoon-style monster illustration. It has ${description}. Style: Studio Ghibli, Dragon Ball, Family Guy.`
+      `Create a 2D cartoon-style cartoon illustration. It has ${description}. Style: comic books, Studio Ghibli, Dragon Ball, Family Guy`
     );
   };
 

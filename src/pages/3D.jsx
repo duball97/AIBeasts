@@ -251,16 +251,21 @@ useEffect(() => {
 
 function CameraControls() {
     const { camera, gl } = useThree();
+    const orbitRef = useRef();
   
-    // Each frame, check if the camera position is below 0.6 on the y-axis:
     useFrame(() => {
+      // After OrbitControls has moved the camera this frame,
+      // clamp the camera’s y if it goes below 0.6:
       if (camera.position.y < 0.6) {
         camera.position.y = 0.6;
+        // Force OrbitControls to recalc, so it won't fight our manual camera move
+        orbitRef.current?.update();
       }
     });
   
     return (
       <OrbitControls
+        ref={orbitRef}
         args={[camera, gl.domElement]}
         enableKeys={false}
       />
