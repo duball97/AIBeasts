@@ -9,7 +9,7 @@ import attack1Url from "../../assets/animationMonsterAttack.glb";
 import attack2Url from "../../assets/animationMonsterAttack2.glb";
 
 // Tweak this angle until the walk animation matches your code’s directions
-const WALK_ANGLE_OFFSET = Math.PI ; // 90° as an example
+const WALK_ANGLE_OFFSET = Math.PI/16 ; // 90° as an example
 
 export default function Monster() {
   const groupRef = useRef();
