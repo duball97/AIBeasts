@@ -10,3 +10,4 @@ export default function Arena() {
   scene.position.set(0, 2.5, 0);
   return <primitive object={scene} />;
 }
+    

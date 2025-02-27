@@ -6,7 +6,7 @@ import Monster from "./Monster";
 import CameraControls from "./CameraControls";
 import Loading from "./Loading";
 
-export default function ThreeDScene() {
+export default function ThreeScene() {
   return (
     <Canvas
       camera={{ position: [0, 5, 10], fov: 75 }}
