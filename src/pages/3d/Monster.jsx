@@ -3,8 +3,8 @@ import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-import idleUrl from "../../assets/jordanIdle.glb";
-import walkingUrl from "../../assets/jordanWalking.glb";
+import idleUrl from "../../assets/monsterIdle.glb";
+import walkingUrl from "../../assets/monsterWalking.glb";
 import attack1Url from "../../assets/animationMonsterAttack.glb";
 import attack2Url from "../../assets/animationMonsterAttack2.glb";
 
