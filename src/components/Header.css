@@ -3,12 +3,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 90%; /* Keeps it responsive */
+  width: 90%;
   max-width: 1500px;
   margin: 0 auto;
-  padding: 10px 20px;
+  padding: 20px;
   position: relative;
   z-index: 1000;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 61, 0, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
 /* Logo Section */
@@ -17,11 +21,17 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .logo img {
   height: 90px;
   max-width: 100%;
+  filter: drop-shadow(0 0 10px rgba(255, 61, 0, 0.3));
 }
 
 /* Navigation Menu (Desktop) */
@@ -33,24 +43,43 @@
 
 .nav ul {
   display: flex;
-  gap: 10px;
-  font-family: 'Cinzel', serif;
+  gap: 30px;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .nav ul li a {
-  color: white;  
+  color: var(--text-primary);
   text-decoration: none;
-  font-size: 12px;
-  font-weight: bold;
-  transition: color 0.3s ease-in-out;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav ul li a::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  transition: width 0.3s ease;
 }
 
 .nav ul li a:hover {
-  color: #ff0000;
-  text-shadow: 0 0 5px #cd0000;
+  color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(255, 61, 0, 0.5);
+}
+
+.nav ul li a:hover::before {
+  width: 100%;
 }
 
 /* Start Button (Desktop) */
@@ -62,120 +91,119 @@
 }
 
 .start-button .btn {
-  padding: 10px 40px;
+  padding: 12px 40px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 700;
   text-transform: uppercase;
-  font-family: 'Cinzel', serif;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   border: none;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #790000, #ae0900); 
-  border: 1px solid #ae090073;
+  border-radius: 8px;
   color: white;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 0 20px rgb(0, 0, 0);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(255, 61, 0, 0.3);
+}
+
+.start-button .btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
 }
 
 .start-button .btn:hover {
-  transform: scale(1.01);
-  box-shadow: 0 0 20px rgb(224, 0, 0);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 61, 0, 0.5);
 }
 
-/* Hamburger Menu (Hidden on Desktop) */
+.start-button .btn:hover::before {
+  left: 100%;
+}
+
+/* Hamburger Menu */
 .hamburger {
   display: none;
   flex-direction: column;
   cursor: pointer;
+  padding: 10px;
+  z-index: 1001;
 }
 
 .bar {
   width: 30px;
   height: 3px;
-  background-color: white;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   margin: 5px 0;
-  transition: 0.4s;
+  transition: all 0.4s ease;
+  border-radius: 2px;
 }
 
-/* Hamburger Animation */
-.change:nth-child(1) {
-  transform: rotate(-45deg) translate(-5px, 6px);
-}
-.change:nth-child(2) {
-  opacity: 0;
-}
-.change:nth-child(3) {
-  transform: rotate(45deg) translate(-5px, -6px);
-}
-
-
+/* Mobile Styles */
 @media (max-width: 768px) {
-  /* Universal box-sizing */
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-  
-  /* Header settings for mobile */
   .header {
-    width: 100%;
-    margin: 0;
-    padding: 10px 15px;
-    flex-direction: row;           /* Two columns: logo on left, hamburger on right */
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    height: 70px;                  /* Fixed header height */
-  }
-  
-  .logo {
-    margin: 0;
-    justify-content: flex-start;
+    padding: 15px;
+    height: 80px;
   }
   
   .logo img {
-    height: 60px;                /* Slightly smaller logo */
+    height: 60px;
   }
   
-  /* Hide the start button on mobile */
-  .start-button {
-    display: none;
-  }
-  
-  /* Hamburger menu */
   .hamburger {
     display: flex;
-    margin: 0;
   }
   
-  .hamburger .bar {
-    width: 25px;
-    height: 3px;
-    margin: 4px 0;
-  }
-  
-  /* Mobile Navigation Overlay */
   .nav {
     position: fixed;
-    top: 70px;                   /* Place the nav just below the header */
+    top: 80px;
     left: 0;
-    width: 100vw;                /* Full viewport width */
-    height: calc(100vh - 70px);    /* Occupies the remaining height */
-    background-color: rgba(0, 0, 0, 0.95);
-    display: none;               /* Hidden by default, no animation */
+    width: 100%;
+    height: calc(100vh - 80px);
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    display: none;
     flex-direction: column;
-    align-items: center;         /* Center contents horizontally */
-    justify-content: center;     /* Center contents vertically */
+    align-items: center;
+    justify-content: center;
     z-index: 999;
+    transition: all 0.3s ease;
   }
   
-  /* When active, simply display the overlay (no transitions or animations) */
   .nav.active {
     display: flex;
+    animation: slideIn 0.3s ease forwards;
   }
   
   .nav ul {
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .nav ul li a {
     font-size: 18px;
+    padding: 12px 24px;
+  }
+  
+  .start-button {
+    display: none;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

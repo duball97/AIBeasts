@@ -1,33 +1,127 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #ff3d00;
+  --secondary-color: #ff6e40;
+  --accent-color: #ffab40;
+  --dark-bg: #0a0a0a;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --glow-effect: 0 0 10px rgba(255, 61, 0, 0.5);
+}
 
 body {
-  background-color: black;
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
-  /* Optionally, set a default font-family */
-  font-family: "Cinzel", serif;
+  background-color: var(--dark-bg);
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+  color: var(--text-primary);
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 61, 0, 0.1) 0%, transparent 50%),
+    linear-gradient(to bottom, rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 1));
+  background-attachment: fixed;
 }
 
 /* Global Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px; /* For horizontal scrollbars */
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e1e1e; /* Dark track background */
+  background: rgba(30, 30, 30, 0.5);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ae0900;      /* Red scrollbar thumb */
-  border-radius: 5px;
+  background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ae0900;  /* Brighter red on hover */
+  background: linear-gradient(to bottom, var(--secondary-color), var(--accent-color));
 }
 
-h1, h2, h3 {
-  font-family: "Cinzel", serif;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Orbitron', sans-serif;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: var(--glow-effect);
+}
+
+/* Animation Classes */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px var(--primary-color); }
+  50% { box-shadow: 0 0 20px var(--primary-color); }
+  100% { box-shadow: 0 0 5px var(--primary-color); }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+.glow {
+  animation: glow 2s infinite;
+}
+
+/* Modern Button Styles */
+.btn {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border: none;
+  border-radius: 8px;
   color: white;
+  padding: 12px 24px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 61, 0, 0.4);
+}
+
+/* Modern Input Styles */
+input, textarea, select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--text-primary);
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(255, 61, 0, 0.3);
 }
